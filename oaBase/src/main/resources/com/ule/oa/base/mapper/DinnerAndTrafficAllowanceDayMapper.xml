@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ule.oa.base.mapper.DinnerAndTrafficAllowanceDayMapper" >
+  
+  <insert id="batchSave" parameterType="java.util.List">
+  	insert into attn_report_dinner_and_traffic_allowance_day (
+  	  report_id,attn_date,week,attn_class,off_duty_time,overtime_hours,dinner_allowance,
+  	  traffic_allowance,create_time,create_user,del_flag
+    )
+    select tmp.* from (
+    	<foreach collection="list" item="item" separator="UNION">
+    	    select 
+	    		#{item.reportId,jdbcType=BIGINT} as report_id,
+	    		#{item.attnDate,jdbcType=DATE} as attn_date,
+	    		#{item.week,jdbcType=VARCHAR} as week,
+	    		#{item.attnClass,jdbcType=VARCHAR} as attn_class,
+	    		#{item.offDutyTime,jdbcType=TIMESTAMP} as off_duty_time,
+	    		#{item.overTimeHours,jdbcType=DOUBLE} as overtime_hours,
+	    		#{item.dinnerAllowance,jdbcType=INTEGER} as dinner_allowance,
+	    		#{item.traffiAllowance,jdbcType=VARCHAR} as traffic_allowance,
+	    		now() as create_time,
+	    		#{item.createUser,jdbcType=VARCHAR} as create_user,
+	    		0 as del_flag
+    		from dual
+    	</foreach>
+    )tmp
+  </insert>
+  
+  <update id="deleteByReportId">
+      	update attn_report_dinner_and_traffic_allowance_day 
+      	 set del_flag=1 ,update_time = now() ,update_user = #{updateUser}
+      	   where del_flag=0 and report_id = #{reportId}
+  </update>
+  
+</mapper>

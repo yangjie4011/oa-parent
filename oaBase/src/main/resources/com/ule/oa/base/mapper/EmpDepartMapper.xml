@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ule.oa.base.mapper.EmpDepartMapper" >
+  <resultMap id="BaseResultMap" type="com.ule.oa.base.po.EmpDepart" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="employee_id" property="employeeId" jdbcType="BIGINT" />
+    <result column="depart_id" property="departId" jdbcType="BIGINT" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="del_flag" property="delFlag" jdbcType="INTEGER" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="version" property="version" jdbcType="BIGINT" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    id, employee_id, depart_id, create_time, create_user, update_time, update_user, del_flag, 
+    remark,version
+  </sql>
+  
+  <select id="getById" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select <include refid="Base_Column_List" />
+    from base_emp_depart
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  
+  <select id="getListByCondition" parameterType="com.ule.oa.base.po.EmpDepart" resultMap="BaseResultMap">
+  	select <include refid="Base_Column_List"/> from base_emp_depart
+  	where del_flag = 0
+  	  <if test="id != null" >
+        and id = #{id,jdbcType=BIGINT}
+      </if>
+      <if test="employeeId != null" >
+        and employee_id = #{employeeId,jdbcType=BIGINT}
+      </if>
+      <if test="departId != null" >
+        and depart_id = #{departId,jdbcType=BIGINT}
+      </if>
+      <if test="remark != null" >
+        and remark = #{remark,jdbcType=VARCHAR},
+      </if>
+  </select>
+  
+  <select id="getPayRollList" resultMap="BaseResultMap">
+  	select a.id as id,a.employee_id as employeeId,a.depart_id as departId,a.del_flag as delFlag  
+  	   from base_emp_depart a left join base_employee b on a.employee_id=b.id
+  	      where a.del_flag = 0 and b.del_flag = 0 and b.job_status in(0,2) and a.depart_id = #{departId,jdbcType=BIGINT}
+  </select>
+  
+  <insert id="save" parameterType="com.ule.oa.base.po.EmpDepart" >
+    insert into base_emp_depart
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="employeeId != null" >
+        employee_id,
+      </if>
+      <if test="departId != null" >
+        depart_id,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="createUser != null" >
+        create_user,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+      <if test="updateUser != null" >
+        update_user,
+      </if>
+      <if test="delFlag != null" >
+        del_flag,
+      </if>
+      <if test="remark != null" >
+        remark,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="employeeId != null" >
+        #{employeeId,jdbcType=BIGINT},
+      </if>
+      <if test="departId != null" >
+        #{departId,jdbcType=BIGINT},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUser != null" >
+        #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUser != null" >
+        #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="delFlag != null" >
+        #{delFlag,jdbcType=INTEGER},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  <update id="updateById" parameterType="com.ule.oa.base.po.EmpDepart" >
+    update base_emp_depart
+    <set >
+      <if test="employeeId != null" >
+        employee_id = #{employeeId,jdbcType=BIGINT},
+      </if>
+      <if test="departId != null" >
+        depart_id = #{departId,jdbcType=BIGINT},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="delFlag != null" >
+        del_flag = #{delFlag,jdbcType=INTEGER},
+      </if>
+      <if test="remark != null" >
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      version = version + 1
+    </set>
+    where id = #{id,jdbcType=BIGINT} and version = #{version,jdbcType=BIGINT }
+  </update>
+  
+  <update id="updateByEmployeeId" parameterType="com.ule.oa.base.po.EmpDepart" >
+    update base_emp_depart
+    <set >
+      <if test="departId != null" >
+        depart_id = #{departId,jdbcType=BIGINT},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="delFlag != null" >
+        del_flag = #{delFlag,jdbcType=INTEGER},
+      </if>
+      <if test="remark != null" >
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where employee_id = #{employeeId,jdbcType=BIGINT}
+  </update>
+  
+</mapper>

@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ule.oa.base.mapper.EmpSelfAssessmentMapper" >
+
+    <resultMap id="BaseResultMap" type="com.ule.oa.base.po.EmpSelfAssessment" >
+	    <id column="id" property="id" jdbcType="BIGINT" />
+	    <result column="employee_id" property="employeeId" jdbcType="BIGINT" />
+	    <result column="employment_date" property="employmentDate" jdbcType="TIMESTAMP" />
+	    <result column="probation_expire" property="probationExpire" jdbcType="TIMESTAMP" />
+	    <result column="entry_week" property="entryWeek" jdbcType="VARCHAR" />
+	    <result column="entry_one_month" property="entryOneMonth" jdbcType="VARCHAR" />
+	    <result column="entry_three_month" property="entryThreeMonth" jdbcType="VARCHAR" />
+	    <result column="entry_five_month" property="entryFiveMonth" jdbcType="VARCHAR" />
+	    <result column="entry_status" property="entryStatus" jdbcType="INTEGER" />
+	    <result column="process_status" property="processStatus" jdbcType="BIGINT" />
+	    <result column="version" property="version" jdbcType="VARCHAR" />
+	    <result column="del_flag" property="delFlag" jdbcType="INTEGER" />
+	    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+	    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+	    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+	    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    </resultMap>
+ 
+    <sql id="Base_Column_List">
+	    id,employee_id,employment_date,probation_expire,entry_week,
+	    entry_one_month,entry_three_month,entry_five_month,entry_status,
+	    process_status,version,del_flag,create_time,update_time,
+	    create_user,update_user
+    </sql>
+    
+    <select id="getByEmpId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    	select <include refid="Base_Column_List"/>
+    	  from base_emp_self_assessment
+    	 where del_flag = 0
+    	   and employee_id = #{employeeId,jdbcType=BIGINT}
+    </select>
+    
+    <select id="getById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+ 	    select <include refid="Base_Column_List"/>
+ 	      from base_emp_self_assessment
+ 	     where del_flag = 0
+ 	       and id = #{id,jdbcType=BIGINT}
+    </select>
+    
+	<insert id="save" parameterType="com.ule.oa.base.po.EmpSelfAssessment" >
+		<selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">
+			SELECT LAST_INSERT_ID() AS id
+		</selectKey>
+	    insert into base_emp_self_assessment
+	    <trim prefix="(" suffix=")" suffixOverrides="," >
+	      <if test="employeeId != null" >employee_id,</if>
+	      <if test="employmentDate != null" >employment_date,</if>
+	      <if test="probationExpire != null" >probation_expire,</if>
+	      <if test="entryWeek != null" >entry_week,</if>
+	      <if test="entryOneMonth != null" >entry_one_month,</if>
+	      <if test="entryThreeMonth != null" >entry_three_month,</if>
+	      <if test="entryFiveMonth != null" >entry_five_month,</if>
+	      <if test="entryStatus != null" >entry_status,</if>
+	      <if test="processStatus != null" >process_status,</if>
+	      <if test="version != null" >version,</if>
+	      <if test="delFlag != null" >del_flag,</if>
+	      <if test="createTime != null" >create_time,</if>
+	      <if test="updateTime != null" >update_time,</if>
+	      <if test="createUser != null" >create_user,</if>
+	      <if test="updateUser != null" >update_user,</if>
+	    </trim>
+	    <trim prefix="values (" suffix=")" suffixOverrides="," >
+	      <if test="employeeId != null" >#{employeeId,jdbcType=BIGINT},</if>
+	      <if test="employmentDate != null" >#{employmentDate,jdbcType=TIMESTAMP},</if>
+	      <if test="probationExpire != null" >#{probationExpire,jdbcType=TIMESTAMP},</if>
+	      <if test="entryWeek != null" >#{entryWeek,jdbcType=VARCHAR},</if>
+	      <if test="entryOneMonth != null" >#{entryOneMonth,jdbcType=VARCHAR},</if>
+	      <if test="entryThreeMonth != null" >#{entryThreeMonth,jdbcType=VARCHAR},</if>
+	      <if test="entryFiveMonth != null" >#{entryFiveMonth,jdbcType=VARCHAR},</if>
+	      <if test="entryStatus != null" >#{entryStatus,jdbcType=INTEGER},</if>
+	      <if test="processStatus != null" >#{processStatus,jdbcType=BIGINT},</if>
+	      <if test="version != null" >#{version,jdbcType=VARCHAR},</if>
+	      <if test="delFlag != null" >#{delFlag,jdbcType=VARCHAR},</if>
+	      <if test="createTime != null" >#{createTime,jdbcType=TIMESTAMP},</if>
+	      <if test="updateTime != null" >#{updateTime,jdbcType=TIMESTAMP},</if>
+	      <if test="createUser != null" >#{createUser,jdbcType=VARCHAR},</if>
+	      <if test="updateUser != null" >#{updateUser,jdbcType=VARCHAR},</if>
+	    </trim>
+  	</insert>
+  	
+  	<update id="update" parameterType="com.ule.oa.base.po.EmpSelfAssessment" >
+	    <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">
+			SELECT LAST_INSERT_ID() AS id
+		</selectKey>
+	    update base_emp_self_assessment
+	    <set >
+	      <if test="employeeId != null" >employee_Id = #{employeeId,jdbcType=BIGINT},</if>
+	      <if test="employmentDate != null" >employment_Date = #{employmentDate,jdbcType=TIMESTAMP},</if>
+	      <if test="probationExpire != null" >probation_Expire = #{probationExpire,jdbcType=TIMESTAMP},</if>
+	      <if test="entryWeek != null" >entry_Week = #{entryWeek,jdbcType=VARCHAR},</if>
+	      <if test="entryOneMonth != null" >entry_One_Month = #{entryOneMonth,jdbcType=VARCHAR},</if>
+	      <if test="entryThreeMonth != null" >entry_Three_Month = #{entryThreeMonth,jdbcType=VARCHAR},</if>
+	      <if test="entryFiveMonth != null" >entry_Five_Month = #{entryFiveMonth,jdbcType=VARCHAR},</if>
+	      <if test="entryStatus != null" >entry_Status = #{entryStatus,jdbcType=INTEGER},</if>
+	      <if test="processStatus != null" >process_Status = #{processStatus,jdbcType=BIGINT},</if>
+	      <if test="version != null" >version = #{version,jdbcType=VARCHAR},</if>
+	      <if test="delFlag != null" >del_Flag = #{delFlag,jdbcType=VARCHAR},</if>
+	      <if test="createTime != null" >create_Time = #{createTime,jdbcType=TIMESTAMP},</if>
+	      <if test="updateTime != null" >update_Time = #{updateTime,jdbcType=TIMESTAMP},</if>
+	      <if test="createUser != null" >create_User = #{createUser,jdbcType=VARCHAR},</if>
+	      <if test="updateUser != null" >update_User = #{updateUser,jdbcType=VARCHAR},</if>
+    	</set>
+    	where id = #{id,jdbcType=BIGINT}
+  	</update>
+  	
+</mapper>

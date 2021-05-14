@@ -1,0 +1,419 @@
+/* CSS Document */
+/* mod-login */
+.mod-login {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 450px;
+  height: 280px;
+  margin-top: -140px;
+  margin-left: -236px;
+  padding: 0 10px;
+  color: #555;
+  font-size: 14px;
+  background-color: #fafafa;
+  border: solid 1px #e5e5e5;
+  border-top: solid 2px #c7181d;
+}
+.mod-login h3 {
+  line-height: 40px;
+  color: #666;
+  border-bottom: solid 1px #e5e5e5;
+}
+.mod-login h3:before {
+  content: '\e696';
+  font-family: iconfont,serif;
+  font-size: 18px;
+  color: #c7181d;
+  margin: 0 8px;
+}
+.mod-login form {
+  margin-top: 20px;
+}
+.mod-login dl {
+  height: 30px;
+  line-height: 30px;
+  padding: 5px 0;
+}
+.mod-login dl dt {
+  float: left;
+  width: 100px;
+  text-align: right;
+}
+.mod-login dl dd {
+  margin-left: 115px;
+}
+.mod-login .txt-input {
+  width: 228px;
+  height: 28px;
+  line-height: 28px;
+  padding: 0 10px;
+  border: solid 1px #e5e5e5;
+  vertical-align: middle;
+  font-size: 14px;
+  background-color: #fff;
+}
+.mod-login .txt-input:focus {
+  border-color: #999;
+  -webkit-box-shadow: 0 0 2px 0 #cccccc;
+  box-shadow: 0 0 2px 0 #cccccc;
+}
+.mod-login .txt-select {
+  width: 250px;
+  height: 30px;
+  line-height: 28px;
+  padding-left: 10px;
+  border: solid #e5e5e5 1px;
+  vertical-align: middle;
+  font-size: 14px;
+  background-color: #fff;
+}
+.mod-login .txt-select option {
+  padding: 5px 10px;
+}
+.mod-login .txt-select:focus {
+  border-color: #999;
+  -webkit-box-shadow: 0 0 2px 0 #cccccc;
+  box-shadow: 0 0 2px 0 #cccccc;
+}
+.mod-login .btn-submit {
+  width: 120px;
+  height: 30px;
+  font-size: 14px;
+  color: #fff;
+  letter-spacing: 8px;
+  background-color: #c7181d;
+  border: none;
+  cursor: pointer;
+}
+.mod-recheckinput {
+  height: 170px;
+  padding: 20px;
+  background-color: #fffceb;
+}
+.mod-recheckinput dl {
+  height: 80px;
+  line-height: 40px;
+}
+.mod-recheckinput dl dt {
+  font-size: 18px;
+  font-family: 'Microsoft Yahei',serif;
+}
+.mod-recheckinput dl dt label {
+  margin-right: 20px;
+}
+.mod-recheckinput dl dd {
+  height: 40px;
+}
+.mod-recheckinput dl dd input {
+  float: left;
+  width: 348px;
+  height: 38px;
+  line-height: 38px;
+  padding: 0 10px;
+  border: solid 1px #e5e5e5;
+  vertical-align: middle;
+  font-size: 24px;
+  font-family: Arial,serif;
+}
+.mod-recheckinput dl dd button {
+  float: right;
+  width: 80px;
+  height: 40px;
+  font-size: 18px;
+  text-align: center;
+  background-color: #f5f5f5;
+  border: solid 1px #e5e5e5;
+}
+.mod-recheckinput dl.weight {
+  padding-top: 30px;
+  height: 50px;
+  line-height: 50px;
+}
+.mod-recheckinput dl.weight dt {
+  float: left;
+  font-size: 18px;
+}
+.mod-recheckinput dl.weight dd {
+  float: right;
+  font-size: 24px;
+  font-family: Arial,serif;
+}
+.mod-recheckinput dl.weight dd strong {
+  font-weight: normal;
+  font-size: 48px;
+  margin-right: 5px;
+}
+.mod-countbox {
+  width: 170px;
+  height: 210px;
+  background-color: #f5f5f5;
+}
+.mod-countbox dt {
+  height: 45px;
+  line-height: 45px;
+  padding-left: 15px;
+  font-size: 18px;
+  font-family: 'Microsoft Yahei',serif;
+  border-bottom: solid 1px #fff;
+}
+.mod-countbox dd {
+  height: 164px;
+  line-height: 160px;
+  font-size: 64px;
+  font-family: Arial,serif;
+  text-align: center;
+}
+.mod-countbox th {
+  height: 45px;
+  padding-left: 15px;
+  font-size: 18px;
+  font-family: 'Microsoft Yahei',serif;
+  text-align: left;
+  font-weight: normal;
+  border-bottom: solid 1px #fff;
+}
+.mod-countbox td.count {
+  height: 164px;
+  line-height: 160px;
+  padding: 0 10px;
+  font-size: 64px;
+  font-family: Arial,serif;
+  text-align: center;
+  color: #ba0708;
+}
+.mod-countbox td.name {
+  height: 164px;
+  padding: 0 10px;
+  font-size: 32px;
+  line-height: 40px;
+  font-family: Arial,serif;
+  text-align: center;
+}
+.mod-recheckdetail {
+  margin-top: 10px;
+  background-color: #fafafa;
+  padding: 10px 0;
+}
+.mod-recheckdetail dt {
+  font-size: 16px;
+}
+.mod-recheckdetail input {
+  width: 198px;
+  height: 28px;
+  line-height: 28px;
+  padding: 0 10px;
+  border: solid 1px #e5e5e5;
+  vertical-align: middle;
+  font-size: 16px;
+  font-family: Arial,serif;
+}
+.mod-despatchdetail {
+  width: 830px;
+  margin: 10px;
+  padding: 20px;
+  background-color: #fafafa;
+  *zoom: 1;
+}
+.mod-despatchdetail:after {
+  content: ".";
+  display: block;
+  height: 0;
+  clear: both;
+  visibility: hidden;
+}
+.mod-despatchdetail .datatable {
+  float: left;
+  width: 650px;
+}
+.mod-despatchdetail .datatable dt {
+  font-size: 16px;
+}
+.mod-despatchdetail .datatable .ctrl-input {
+  padding-right: 22px;
+}
+.mod-despatchdetail .datatable .ctrl-input input {
+  height: 28px;
+  padding: 0 10px;
+  font-size: 16px;
+  font-family: Arial,serif;
+}
+.mod-despatchdetail .btns {
+  float: right;
+  width: 140px;
+}
+.mod-despatchdetail .btns .btn-large {
+  display: block;
+  width: 118px;
+  margin-bottom: 6px;
+  text-align: center;
+}
+.mw1000 {
+  max-width: 1000px;
+}
+.datapage {
+  min-width: 930px;
+}
+.datadialog {
+  min-width: 0;
+}
+.grid-l200m {
+  *zoom: 1;
+}
+.grid-l200m:after {
+  content: ".";
+  display: block;
+  height: 0;
+  clear: both;
+  visibility: hidden;
+}
+.grid-l200m .col-left {
+  float: left;
+  width: 200px;
+}
+.grid-l200m .col-left .datatable dd {
+  margin-right: 0;
+}
+.grid-l200m .col-main {
+  margin-left: 215px;
+}
+.grid-m500r350 {
+  width: 870px;
+  margin: 10px;
+  *zoom: 1;
+}
+.grid-m500r350:after {
+  content: ".";
+  display: block;
+  height: 0;
+  clear: both;
+  visibility: hidden;
+}
+.grid-m500r350 .col-main {
+  float: left;
+  width: 500px;
+}
+.grid-m500r350 .col-right {
+  float: right;
+  width: 350px;
+}
+.databar-lightyellow {
+  line-height: 24px;
+  margin-bottom: 10px;
+  padding: 10px 0;
+  background-color: #fffceb;
+  border-bottom: solid 1px #eee7d4;
+}
+.tag-red,
+.tag-orange,
+.tag-blue,
+.tag-green {
+  color: #fff !important;
+}
+.tag-red:hover,
+.tag-orange:hover,
+.tag-blue:hover,
+.tag-green:hover {
+  color: #fff !important;
+  text-decoration: none;
+}
+.tag-red {
+  background-color: #ba0708;
+}
+.tag-orange {
+  background-color: #f90;
+}
+.tag-blue {
+  background-color: #03c;
+}
+.tag-green {
+  background-color: #090;
+}
+body,
+button,
+input,
+select,
+textarea {
+  font: 14px/1.5 "microsoft yahei",Tahoma, SimSun,serif;
+}
+.ctrl-select select{font-family: "microsoft yahei",serif;}
+.datapage{padding: 5px;}
+.datatitle-fixed{padding-top: 5px;background-color: #fff}
+.main{top:5px!important;overflow: hidden;}
+.main .pagetabs li{margin: 1px 5px 0 0!important;}
+@media screen and (max-width:1024px){
+	.header{
+		width: 1024px;
+	 position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 52px;
+  color: #fff;
+  background-color: #c7181d;
+  z-index: 2;
+	}
+}
+.upward:after{
+font-size: 13px;
+font-family: "iconfont",serif !important;
+content: "\e6d4" !important;
+margin-left: 5px;
+}
+.downward:after{
+font-size: 13px;
+font-family: "iconfont",serif !important;
+content: "\e6d5" !important;
+margin-left: 5px;
+}
+tr.csp{	cursor: pointer;}
+/*.btn-red{background: #006F45;border-color: #006F45;}
+.btn-red:hover{background: #0D8457;border-color: #006F45;}
+.btn-red:active {
+  color: #ffffff;
+  background-color: #006F45;
+  border-color: #006F45;
+}
+.pdb-title{background: #006F45!important}
+#util-dialog .pdb-main a.btn-action,#util-dialog .pdb-main a.btn em { border:1px solid #006F45!important;background: #006F45!important; }*/
+#util-dialog .pdb-main a.btn-cancel em{border:1px solid #afafaf!important;background: #AFAFAF!important;}
+			
+.header .userinfo li.dropdown h3{
+	cursor: pointer;
+}
+.header .userinfo li.dropdown ul {
+	display: none;
+	width: 90px;
+}
+.header .userinfo li.dropdown:hover ul {
+	display: block;
+}
+.header .userinfo li.dropdown {
+	text-align: center;
+	width: 85px;
+}
+.header .userinfo li.dropdown h3:after {
+	font-size: 10px;
+	font-family: "iconfont",serif !important;
+	content: "\e6d5" !important;
+	margin-right: 5px;
+	margin-left: 5px;
+}
+.header .userinfo li.dropdown:hover h3:after {
+	font-size: 12px;
+	font-family: "iconfont",serif !important;
+	content: "\e6d4" !important;
+	margin-right: 5px;
+	margin-left: 5px;
+}
+.header .userinfo li.dropdown ul li {
+	line-height: 22px;
+	float: left;
+	padding: 0;
+	display: block;
+	background: #c7181d;
+	height: 30px;
+	width: 90px;
+	text-align: center;
+	padding-bottom: 5px;
+}

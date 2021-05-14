@@ -1,0 +1,345 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ule.oa.base.mapper.DepartMapper" >
+
+  <resultMap id="BaseResultMap" type="com.ule.oa.base.po.Depart" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="company_id" property="companyId" jdbcType="BIGINT" />
+    <result column="code" property="code" jdbcType="VARCHAR" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="leader" property="leader" jdbcType="BIGINT" />
+    <result column="parent_id" property="parentId" jdbcType="BIGINT" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="del_flag" property="delFlag" jdbcType="INTEGER" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="rank" property="rank" jdbcType="INTEGER" />
+    <result column="type" property="type" jdbcType="INTEGER" />
+    <result column="power" property="power" jdbcType="BIGINT" />
+    <result column="version" property="version" jdbcType="BIGINT" />
+    <result column="is_show_in_mo" property="isShowInMo" jdbcType="INTEGER" />
+    <result column="whether_scheduling" property="whetherScheduling" jdbcType="INTEGER" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    id, company_id,code, name, leader, parent_id, create_time, create_user, update_time, update_user, 
+    del_flag, remark, rank, type, power,version,is_show_in_mo,whether_scheduling
+  </sql>
+  
+  <!-- 获得一级部门 -->
+  <select id="getFirstDepart" resultMap="BaseResultMap">
+  	select <include refid="Base_Column_List" /> from base_depart 
+  	where type = 1 
+  	and del_flag = 0
+  </select>
+  
+  <select id="getByCodeOrName" resultMap="BaseResultMap">
+  	select <include refid="Base_Column_List" /> from base_depart 
+  	where del_flag = 0 and (code = #{code,jdbcType=VARCHAR} or name = #{name,jdbcType=VARCHAR}) limit 0,1
+  </select>
+  
+  <select id="getAllDepart" resultMap="BaseResultMap">
+  	select <include refid="Base_Column_List" /> from base_depart 
+  	where type &gt; 0
+  	and del_flag = 0
+  </select>
+  
+  <select id="getById" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from base_depart
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  
+  <select id="getByParentId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+  	select <include refid="Base_Column_List"/> from base_depart
+  	where parent_id = #{parentId,jdbcType=BIGINT}
+  	and del_flag = 0
+  </select>
+  
+  <select id="getByGroupId" parameterType="java.lang.Long" resultType="java.lang.String" >
+  	select b.`name`  from base_schedule_group a
+	  	left join base_depart b	 on b.id=a.depart_id
+	where 1=1  	
+	and a.id= #{groupId,jdbcType=BIGINT}
+	and a.del_flag = 0
+  </select>
+  
+  <select id="getListByCondition" resultMap="BaseResultMap" parameterType="com.ule.oa.base.po.Depart" >
+    select 
+    <include refid="Base_Column_List" />
+    from base_depart
+    where del_flag = 0
+	    <if test="id != null" >
+	        and id = #{id,jdbcType=BIGINT}
+	    </if>
+	    <if test="companyId != null" >
+	        and company_id = #{companyId,jdbcType=BIGINT}
+	    </if>
+	    <if test="code != null" >
+	        and code = #{code,jdbcType=VARCHAR}
+	    </if>
+	    <if test="name != null" >
+	        and name = #{name,jdbcType=VARCHAR}
+	    </if>
+	    <if test="leader != null" >
+	        and leader = #{leader,jdbcType=BIGINT}
+	    </if>
+	    <if test="parentId != null" >
+	        and parent_id = #{parentId,jdbcType=BIGINT}
+	    </if>
+	    <if test="remark != null" >
+	        and remark = #{remark,jdbcType=VARCHAR}
+	    </if>
+	    <if test="rank != null" >
+	        and rank = #{rank,jdbcType=INTEGER}
+	    </if>
+	    <if test="type != null" >
+	        and type = #{type,jdbcType=INTEGER}
+	    </if>
+	    <if test="power != null" >
+	        and power = #{power,jdbcType=BIGINT}
+	    </if>
+	    <if test="whetherScheduling != null">
+	    	and whether_scheduling = #{whetherScheduling,jdbcType=INTEGER}
+	    </if>
+  </select>
+  
+  <select id="getListByLeaderOrPower" resultMap="BaseResultMap" parameterType="com.ule.oa.base.po.Depart" >
+    select 
+    <include refid="Base_Column_List" />
+    from base_depart
+    where del_flag = 0
+	    <if test="leader != null" >
+	        and (leader = #{leader,jdbcType=BIGINT}
+	        or
+	        power = #{leader,jdbcType=BIGINT}
+	        )
+	    </if>
+  </select>
+  
+  <select id="getTreeAppCondition" resultMap="BaseResultMap" parameterType="com.ule.oa.base.po.Depart" >
+    select 
+    <include refid="Base_Column_List" />
+    from base_depart
+    where del_flag = 0 and is_show_in_mo=0
+	    <if test="parentId != null" >
+	        and parent_id = #{parentId,jdbcType=BIGINT}
+	    </if>
+	    <if test="parentId == null" >
+	        and parent_id is null
+	    </if>
+  </select>
+  
+  <select id="getChildrenList" resultMap="BaseResultMap" parameterType="com.ule.oa.base.po.Depart" >
+    SELECT d.id, d.rank, d.name as 'name', 
+    	p.position_name as 'positionName', e.cn_name as 'leaderName', d.parent_id,
+    	d.type, ee.cn_name as 'powerName', d.power, pd.name as 'parentName', d.type,d.whether_scheduling
+    FROM base_depart d 
+    LEFT JOIN base_employee e on d.leader = e.id
+    LEFT JOIN base_employee ee on d.power = ee.id
+	LEFT JOIN base_emp_position ep on e.id = ep.employee_id 
+	LEFT JOIN base_position p on ep.position_id = p.id
+	LEFT JOIN base_depart pd on pd.id = d.parent_id
+    WHERE d.del_flag = 0
+    AND (d.parent_id = #{parentId,jdbcType=BIGINT} or d.id = #{parentId,jdbcType=BIGINT})
+    order by d.id
+  </select>
+  
+  <!-- 查询部门树结构（部门名称,负责人职位,负责人姓名） -->
+  <select id="getDListByParentId" resultMap="BaseResultMap" parameterType="com.ule.oa.base.po.Depart" >
+    SELECT d.id, d.name as 'name', d.parent_id, p.position_name as 'positionName', e.cn_name as 'leaderName',
+    	CONCAT(p.position_name, ' ', e.cn_name) as title, d.type
+    FROM base_depart d 
+    LEFT JOIN base_employee e on d.leader = e.id
+    LEFT JOIN base_emp_position ep on e.id = ep.employee_id 
+	LEFT JOIN base_position p on ep.position_id = p.id
+    <where>
+    	d.del_flag = 0
+    	AND e.del_flag = 0
+    	AND p.del_flag = 0
+    	<if test="parentId != null and parentId !=''"> 
+	       AND d.parent_id = #{parentId,jdbcType=BIGINT}
+	    </if>
+	    <if test="parentId == null or parentId ==''"> 
+	       AND d.parent_id is NULL
+	    </if>
+    </where> 
+  </select>
+  
+  <!-- 根据id获取所需信息 -->
+  <select id="getInfoById" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select p.position_name as 'positionName', e.cn_name as 'leaderName', ee.cn_name as 'powerName', d.power, 
+    d.*
+    from base_depart d
+    LEFT JOIN base_employee e on d.leader = e.id
+    LEFT JOIN base_employee ee on d.power = ee.id
+	LEFT JOIN base_emp_position ep on e.id = ep.employee_id 
+	LEFT JOIN base_position p on ep.position_id = p.id
+    where d.del_flag = 0 
+    	and d.id = #{id,jdbcType=BIGINT}
+  </select>
+  
+  <!-- 查询根据人员Id查询该人员所在部门 -->
+  <select id="getByEmpId" resultMap="BaseResultMap" parameterType="com.ule.oa.base.po.Depart" >
+    SELECT d.code as code,d.id, d.name, e.cn_name as 'empName', d.parent_id, d.type, e.id as 'empId',d.leader as leaderId,d.power,e.report_to_leader as managerId,(select cn_name from base_employee where id=e.report_to_leader) as managerName
+    FROM base_depart d 
+    LEFT JOIN base_emp_depart ed on ed.depart_id = d.id 
+    LEFT JOIN base_employee e on ed.employee_id = e.id
+    <where>
+    	d.del_flag = 0 and ed.del_flag = 0
+    	<if test="empId != null and empId !=''"> 
+	       AND ed.employee_id = #{empId,jdbcType=BIGINT}
+	    </if>
+    </where> 
+  </select>
+  
+  <select id="getLeaderOrPowerCount" parameterType="java.lang.Long" resultType="java.lang.Integer">
+  		SELECT COUNT(*) FROM base_depart d where leader =  #{leader} or power = #{leader};
+  </select>
+  
+  <!-- 新增 -->
+  <insert id="save" useGeneratedKeys="true" keyProperty="id" parameterType="com.ule.oa.base.po.Depart">  
+      insert into base_depart
+     <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">
+		SELECT LAST_INSERT_ID() AS id
+	</selectKey>
+      (
+      	company_id, 
+      	code, 
+      	name, 
+      	leader, 
+      	parent_id, 
+      	remark, 
+      	del_flag, 
+      	rank, 
+      	type,
+      	power,
+      	create_time, 
+      	create_user
+      ) values
+      (
+        #{companyId,jdbcType=BIGINT},
+        #{code,jdbcType=VARCHAR},
+        #{name,jdbcType=VARCHAR},
+        #{leader,jdbcType=BIGINT},
+        #{parentId,jdbcType=BIGINT},
+        #{remark,jdbcType=VARCHAR},
+        #{delFlag,jdbcType=INTEGER},
+        #{rank,jdbcType=INTEGER},
+        #{type,jdbcType=INTEGER},
+        #{power,jdbcType=BIGINT},
+        #{createTime,jdbcType=TIMESTAMP},
+        #{createUser,jdbcType=VARCHAR}
+      )  
+    </insert>
+  
+  <!-- 修改 -->
+  <update id="updateById" parameterType="com.ule.oa.base.po.Depart" >
+    update base_depart
+    <set >
+      <if test="code != null" >
+        code = #{code,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null" >
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="delFlag != null" >
+        del_flag = #{delFlag,jdbcType=INTEGER},
+      </if>
+      <if test="remark != null" >
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="rank != null" >
+        rank = #{rank,jdbcType=INTEGER},
+      </if>
+      <if test="null != power">
+      	power = #{power,jdbcType=BIGINT},
+      </if>
+      leader = #{leader,jdbcType=BIGINT},
+      type = #{type,jdbcType=INTEGER},
+      version = version + 1
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+  <!-- 修改是否需要排班 -->
+  <update id="updateWhetherScheduling" parameterType="com.ule.oa.base.po.Depart" >
+    update base_depart set update_time = #{updateTime,jdbcType=TIMESTAMP},
+     update_user = #{updateUser,jdbcType=VARCHAR},whether_scheduling = #{whetherScheduling,jdbcType=INTEGER}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+  <select id="getLeaders" resultMap="BaseResultMap">
+  	  SELECT DISTINCT leader FROM base_depart WHERE del_flag=0 and leader IS NOT NULL
+  </select>
+  
+  <select id="getAllDepartByLeaderId" resultMap="BaseResultMap">
+  	SELECT <include refid="Base_Column_List" /> FROM base_depart d
+  	WHERE d.leader = #{empId}
+  	AND d.del_flag = 0;
+  </select>
+  
+  <select id="getByLeaderAndId" resultMap="BaseResultMap">
+  	SELECT <include refid="Base_Column_List" /> FROM base_depart d
+  	WHERE d.id= #{id} and d.leader = #{empId} AND d.del_flag = 0;
+  </select>
+  
+  <!-- 根据条件查询部门下所有未离职员工 -->
+	<select id="getEmpListByDepartAndCondition" resultType="com.ule.oa.base.po.Employee">
+		select e.*
+		from base_employee e
+		left join base_emp_depart d on e.id = d.employee_id
+		where d.depart_id = #{departId}
+		and d.del_flag = 0
+		and e.job_status in(0,2)
+		and e.del_flag = 0
+		<if test="condition != null">
+			and (e.code like concat('%',#{condition,jdbcType=VARCHAR},'%')
+				or e.cn_name like concat('%',#{condition,jdbcType=VARCHAR},'%'))
+		</if>
+	</select>
+	<select id="getAllDepartByEmpList" resultMap="BaseResultMap">
+		SELECT distinct d.code as code,d.id, d.name
+	    FROM base_depart d
+	    LEFT JOIN base_emp_depart ed on ed.depart_id = d.id
+	    LEFT JOIN base_employee e on ed.employee_id = e.id
+	    <where>
+	    	d.del_flag = 0 and ed.del_flag = 0
+	    	<if test="empList != null"> 
+		      and e.id in 
+		      <foreach collection="empList" index="index" item="item" open="(" separator="," close=")">
+	               #{item.id}
+	          </foreach>
+	 		</if>
+	    </where> 
+	</select>
+	
+	<select id="getEmployeeTreeList" resultType="Map">
+		SELECT 
+		  COUNT(a.id) AS count,
+		  any_value (c.id) AS id,
+		  0 AS type,
+		  CASE WHEN any_value (c.parent_id) IS NULL THEN 0 ELSE any_value (c.parent_id) END AS pId,
+		  c.name AS name
+		FROM
+		  base_employee a 
+		  LEFT JOIN base_emp_depart b 
+		    ON a.id = b.employee_id 
+		  LEFT JOIN base_depart c 
+		    ON b.depart_id = c.id 
+		WHERE a.job_status IN (0, 2) 
+		  AND a.del_flag = 0 
+		  AND b.del_flag = 0 
+		  AND c.del_flag = 0 
+		GROUP BY c.id ;
+	</select>
+</mapper>

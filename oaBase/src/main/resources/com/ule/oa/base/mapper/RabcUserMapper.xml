@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ule.oa.base.mapper.RabcUserMapper" >
+  
+  <!-- 数据权限（可以查询哪些员工的数据） -->
+  <select id="getDataPermissions" resultType="java.lang.Long" parameterType="java.lang.Long"  >
+	 
+	 SELECT employee_id FROM base_emp_depart  WHERE del_flag=0 AND depart_id IN(
+	 	SELECT 
+		  DISTINCT a.depart_id 
+		FROM
+		  rabc_role a 
+		  LEFT JOIN rabc_user_role b 
+		    ON a.id = b.role_id 
+		  LEFT JOIN base_user c 
+		    ON b.user_id = c.id 
+		WHERE a.del_flag = 0 AND b.del_flag = 0 AND c.del_flag = 0 AND c.employee_id=#{employId,jdbcType=BIGINT}
+	 ) 	
+	  	
+  </select>
+
+</mapper>

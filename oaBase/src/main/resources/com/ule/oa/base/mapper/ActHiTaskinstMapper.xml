@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ule.oa.base.mapper.ActHiTaskinstMapper" >
+
+  <resultMap id="BaseResultMap" type="com.ule.oa.base.po.ActHiTaskinst" >
+    <id column="ID_" property="id" jdbcType="VARCHAR" />
+    <result column="TASK_DEF_KEY_" property="taskDefKey" jdbcType="VARCHAR" />
+    <result column="PROC_INST_ID_" property="procInstId" jdbcType="VARCHAR" />
+    <result column="EXECUTION_ID_" property="executionId" jdbcType="VARCHAR" />
+    <result column="NAME_" property="name" jdbcType="VARCHAR"/>
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+      ID_, TASK_DEF_KEY_, PROC_INST_ID_, EXECUTION_ID_, NAME_
+  </sql>
+  
+  <select id="selectByCondition" resultMap="BaseResultMap" parameterType="com.ule.oa.base.po.ActHiTaskinst" >
+    select 
+    <include refid="Base_Column_List" />
+       from ACT_HI_TASKINST where PROC_INST_ID_ = #{procInstId} and TASK_DEF_KEY_ = #{taskDefKey} order by ID_ desc
+  </select>
+	
+</mapper>

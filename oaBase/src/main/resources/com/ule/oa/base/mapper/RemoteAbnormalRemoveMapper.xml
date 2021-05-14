@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ule.oa.base.mapper.RemoteAbnormalRemoveMapper" >
+  
+  
+  <select id="getEmployeeList" parameterType="com.ule.oa.base.po.RemoteAbnormalRemoveDTO" resultType="com.ule.oa.base.po.RemoteAbnormalRemoveDTO">
+	  	SELECT 
+	  	  a.employee_id as employeeId,
+		  a.register_date as registerDate,
+		  a.approve_status as approvalStatus,
+		  a.resaon as reason,
+		  b.code as code,
+		  b.cn_name as cnName,
+		  c.name as className,
+		  c.start_time as classStartTime,
+		  c.end_time as classEndTime,
+		  b.work_type as workType,
+		  a.update_user as updateUser,
+		  (SELECT cn_name FROM base_employee WHERE id=b.report_to_leader) AS reportToLeaderName,
+		  e.name AS departName,
+		  b.emp_type_id as empTypeId
+		FROM
+		  remote_work_register a 
+		  LEFT JOIN base_employee b 
+		    ON a.employee_id = b.id 
+		  LEFT JOIN attn_class_setting c 
+		    ON a.classs_setting_id = c.id 
+		  LEFT JOIN base_emp_depart d
+		    ON a.employee_id=d.employee_id
+		  LEFT JOIN base_depart e 
+		    ON d.depart_id = e.id
+		  WHERE a.del_flag=0 AND a.is_remote=0
+		  AND b.del_flag=0 
+		  <if test="cnName != null and cnName != ''" >
+		  	and b.cn_name like concat('%',#{cnName,jdbcType=VARCHAR},'%')
+		  </if>
+		  <if test="code != null and code != ''" >
+		 	 and b.code  like concat('%',#{code,jdbcType=VARCHAR},'%')
+		  </if>
+  		  <if test="departId != null and departId!=''" >
+	       	 and e.id = #{departId,jdbcType=BIGINT}
+	      </if>
+  		  <if test="reportToLeader != null">
+  			 and b.report_to_leader = #{reportToLeader,jdbcType=BIGINT}
+  		  </if>
+  		  <if test="workType != null">
+  			 and b.work_type = #{workType,jdbcType=BIGINT}
+  		  </if>
+  		  <if test="approvalStatus != null">
+  			and a.approve_status = #{approvalStatus,jdbcType=INTEGER}
+  		  </if>
+  		  <if test="startDate != null">
+  			 and a.register_date &gt;= #{startDate,jdbcType=DATE}
+  		  </if>
+  		   <if test="endDate != null">
+  			 and a.register_date &lt;= #{endDate,jdbcType=DATE}
+  		  </if>
+  		ORDER BY b.emp_type_id,CAST(SUBSTRING(b.CODE, 3) AS SIGNED),a.register_date
+  		<if test="offset != null and limit != null">
+			limit #{offset},#{limit}
+		</if>
+  </select>
+  
+  <select id="getEmployeeCount" parameterType="com.ule.oa.base.po.RemoteAbnormalRemoveDTO" resultType="java.lang.Integer">
+	  	SELECT 
+		  count(1)
+		FROM
+		  remote_work_register a 
+		  LEFT JOIN base_employee b 
+		    ON a.employee_id = b.id 
+		  LEFT JOIN attn_class_setting c 
+		    ON a.classs_setting_id = c.id 
+		  LEFT JOIN base_emp_depart d
+		    ON a.employee_id=d.employee_id
+		  LEFT JOIN base_depart e 
+		    ON d.depart_id = e.id
+		  WHERE a.del_flag=0 AND a.is_remote=0
+		  AND b.del_flag=0 
+		  <if test="cnName != null and cnName != ''" >
+		  	and b.cn_name like concat('%',#{cnName,jdbcType=VARCHAR},'%')
+		  </if>
+		  <if test="code != null and code != ''" >
+		 	 and b.code  like concat('%',#{code,jdbcType=VARCHAR},'%')
+		  </if>
+  		  <if test="departId != null and departId!=''" >
+	       	 and e.id = #{departId,jdbcType=BIGINT}
+	      </if>
+  		  <if test="reportToLeader != null">
+  			 and b.report_to_leader = #{reportToLeader,jdbcType=BIGINT}
+  		  </if>
+  		  <if test="workType != null">
+  			 and b.work_type = #{workType,jdbcType=BIGINT}
+  		  </if>
+  		  <if test="approvalStatus != null">
+  			and a.approve_status = #{approvalStatus,jdbcType=INTEGER}
+  		  </if>
+  		  <if test="startDate != null">
+  			 and a.register_date &gt;= #{startDate,jdbcType=DATE}
+  		  </if>
+  		   <if test="endDate != null">
+  			 and a.register_date &lt;= #{endDate,jdbcType=DATE}
+  		  </if>
+  </select>
+  
+  <select id="getByEmployeeIdAndRegisterDate" parameterType="com.ule.oa.base.po.RemoteAbnormalRemoveDTO" resultType="com.ule.oa.base.po.RemoteAbnormalRemoveDTO">
+	  	SELECT 
+	  	  a.id as id,
+	  	  a.employee_id as employeeId,
+		  a.register_date as registerDate,
+		  c.name as className,
+		  c.start_time as classStartTime,
+		  c.end_time as classEndTime,
+		  c.must_attn_time as mustAttnTime
+		FROM
+		  remote_work_register a 
+		  LEFT JOIN attn_class_setting c 
+		    ON a.classs_setting_id = c.id 
+		  WHERE a.del_flag=0 AND a.is_remote=0 
+		  and a.register_date = #{registerDate,jdbcType=DATE}
+		  and a.employee_id = #{employeeId,jdbcType=BIGINT}
+		  limit 0,1
+  </select>
+  
+  <update id="updateApprovalStatusById">
+    update remote_work_register set approve_status=#{approvalStatus,jdbcType=INTEGER},
+           resaon=#{reason,jdbcType=VARCHAR},update_time=#{updateTime,jdbcType=TIMESTAMP},
+           update_user=#{updateUser,jdbcType=VARCHAR} where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+</mapper>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ule.oa.base.mapper.QuitHistoryMapper" >
+
+  <resultMap id="BaseResultMap" type="com.ule.oa.base.po.QuitHistory" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="EMPLOYEE_ID" property="employeeId" jdbcType="BIGINT" />
+    <result column="employee_type" property="employeeType" jdbcType="VARCHAR" />
+    <result column="DEPART_NAME" property="departName" jdbcType="VARCHAR" />
+    <result column="POSITION_NAME" property="positionName" jdbcType="VARCHAR" />
+    <result column="report_leader" property="reportLeader" jdbcType="VARCHAR" />
+    <result column="depart_header" property="departHeader" jdbcType="VARCHAR" />
+    <result column="del_flag" property="delFlag" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <insert id="save" parameterType="com.ule.oa.base.po.QuitHistory">
+    insert into quit_history (
+      EMPLOYEE_ID,
+      employee_type,
+      DEPART_NAME,
+      POSITION_NAME,
+      report_leader,
+      depart_header,
+      create_time,
+      create_user,  
+      del_flag
+      )
+    values (
+      #{employeeId,jdbcType=BIGINT},
+      #{employeeType,jdbcType=VARCHAR},
+      #{departName,jdbcType=VARCHAR}, 
+      #{positionName,jdbcType=VARCHAR}, 
+      #{reportLeader,jdbcType=VARCHAR},
+      #{departHeader,jdbcType=VARCHAR},
+      #{createTime,jdbcType=TIMESTAMP}, 
+      #{createUser,jdbcType=VARCHAR},
+      #{delFlag,jdbcType=INTEGER}
+      )
+  </insert>
+
+</mapper>

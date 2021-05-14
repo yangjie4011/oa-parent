@@ -1,0 +1,629 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ule.oa.base.mapper.EmpApplicationLeaveMapper" >
+
+  <resultMap id="BaseResultMap" type="com.ule.oa.base.po.EmpApplicationLeave" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="EMPLOYEE_ID" property="employeeId" jdbcType="BIGINT" />
+    <result column="CN_NAME" property="cnName" jdbcType="VARCHAR" />
+    <result column="code" property="code" jdbcType="VARCHAR" />
+    <result column="DEPART_ID" property="departId" jdbcType="BIGINT" />
+    <result column="DEPART_NAME" property="departName" jdbcType="VARCHAR" />
+    <result column="POSITION_NAME" property="positionName" jdbcType="VARCHAR" />
+    <result column="POSITION_ID" property="positionId" jdbcType="BIGINT" />
+    <result column="SUBMIT_DATE" property="submitDate" jdbcType="TIMESTAMP" />
+    <result column="START_TIME" property="startTime" jdbcType="TIMESTAMP" />
+    <result column="END_TIME" property="endTime" jdbcType="TIMESTAMP" />
+    <result column="DURATION" property="duration" jdbcType="DOUBLE" />
+    <result column="REASON" property="reason" jdbcType="VARCHAR" />
+    <result column="MOBILE" property="mobile" jdbcType="VARCHAR" />
+    <result column="AGENT_ID" property="agentId" jdbcType="BIGINT" />
+    <result column="AGENT" property="agent" jdbcType="VARCHAR" />
+    <result column="AGENT_MOBILE" property="agentMobile" jdbcType="VARCHAR" />
+    <result column="Approval_status" property="approvalStatus" jdbcType="BIGINT" />
+    <result column="approval_Reason" property="approvalReason" jdbcType="VARCHAR" />
+    <result column="VERSION" property="version" jdbcType="VARCHAR" />
+    <result column="del_flag" property="delFlag" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="leave_Type_Flag" property="leaveTypeFlag" jdbcType="BIGINT" />
+    <result column="PROCESSINSTANCE_ID" property="processInstanceId" jdbcType="VARCHAR" />
+    <result column="to_persions" property="toPersions" jdbcType="VARCHAR" />
+    <result column="to_emails" property="toEmails" jdbcType="VARCHAR" />
+    
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    id, EMPLOYEE_ID,CN_NAME,code,DEPART_ID,DEPART_NAME,POSITION_NAME,POSITION_ID,SUBMIT_DATE,START_TIME,END_TIME,DURATION,
+    REASON,MOBILE,AGENT_ID,AGENT,AGENT_MOBILE,Approval_status,approval_Reason,VERSION,del_flag,create_time, create_user, update_time, update_user,leave_Type_Flag,PROCESSINSTANCE_ID
+    ,to_persions,to_emails
+  </sql>
+  
+  <select id="getById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+  	select <include refid="Base_Column_List"/> from base_emp_application_leave
+  	where id = #{id,jdbcType=BIGINT}
+  </select>
+  
+  <select id="getAntenatalLeaveList" parameterType="com.ule.oa.base.po.EmpApplicationLeave" resultMap="BaseResultMap">
+  	select <include refid="Base_Column_List"/> from base_emp_application_leave
+  	where EMPLOYEE_ID = #{employeeId,jdbcType=BIGINT} and START_TIME &lt;= #{startTime,jdbcType=TIMESTAMP} and Approval_status=200 and leave_Type_Flag=1 ORDER BY id DESC
+  </select>
+  
+  <select id="getListByCondition" parameterType="com.ule.oa.base.po.EmpApplicationLeave" resultMap="BaseResultMap">
+  	select <include refid="Base_Column_List"/> from base_emp_application_leave
+  	where approval_status = #{approvalStatus,jdbcType=BIGINT}
+  	and del_flag = 0
+  	<if test="null != employeeId">
+  		and EMPLOYEE_ID = #{employeeId,jdbcType=BIGINT}
+  	</if>
+  	<if test="null != applyDate">
+  		and START_TIME &lt;= #{applyDate,jdbcType=TIMESTAMP}
+  		and END_TIME &gt;= #{applyDate,jdbcType=TIMESTAMP}
+  	</if>
+  </select>
+  
+  <select id="getListByEmployeeId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+  	select <include refid="Base_Column_List"/> from base_emp_application_leave
+  		where EMPLOYEE_ID = #{employeeId,jdbcType=BIGINT} ORDER BY submit_date DESC
+  </select>
+  
+  
+  <insert id="save" parameterType="com.ule.oa.base.po.EmpApplicationLeave" useGeneratedKeys="true" keyProperty="id">
+    insert into base_emp_application_leave (
+      EMPLOYEE_ID,
+      CN_NAME,
+      code,
+      DEPART_ID,
+      DEPART_NAME,
+      POSITION_ID,
+      POSITION_NAME,
+      SUBMIT_DATE,
+      START_TIME,
+      END_TIME,
+      DURATION,
+      REASON,
+      Approval_status,
+      MOBILE,
+      AGENT_ID,
+      AGENT,
+      AGENT_MOBILE,
+      VERSION,
+      create_time,
+      create_user,  
+      del_flag,
+      leave_Type_Flag,
+      PROCESSINSTANCE_ID,
+      to_persions,
+      to_emails
+      )
+    values (
+      #{employeeId,jdbcType=BIGINT},
+      #{cnName,jdbcType=VARCHAR}, 
+      #{code,jdbcType=VARCHAR}, 
+      #{departId,jdbcType=BIGINT},
+      #{departName,jdbcType=VARCHAR}, 
+      #{positionId,jdbcType=BIGINT},
+      #{positionName,jdbcType=VARCHAR}, 
+      #{submitDate,jdbcType=TIMESTAMP}, 
+      #{startTime,jdbcType=TIMESTAMP}, 
+      #{endTime,jdbcType=TIMESTAMP}, 
+      #{duration,jdbcType=DOUBLE},
+      #{reason,jdbcType=VARCHAR},
+      #{approvalStatus,jdbcType=BIGINT},
+      #{mobile,jdbcType=VARCHAR},
+      #{agentId,jdbcType=BIGINT}, 
+      #{agent,jdbcType=VARCHAR}, 
+      #{agentMobile,jdbcType=VARCHAR}, 
+      #{version,jdbcType=VARCHAR}, 
+      #{createTime,jdbcType=TIMESTAMP}, 
+      #{createUser,jdbcType=VARCHAR},
+      #{delFlag,jdbcType=INTEGER},
+      #{leaveTypeFlag,jdbcType=INTEGER},
+      #{processInstanceId,jdbcType=VARCHAR},
+      #{toPersions,jdbcType=VARCHAR},
+      #{toEmails,jdbcType=VARCHAR}
+      )
+  </insert>
+  
+  <update id="updateById" parameterType="com.ule.oa.base.po.EmpApplicationLeave" >
+    update base_emp_application_leave
+    <set >
+   	 <if test="startTime != null" >
+        START_TIME = #{startTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endTime != null" >
+        END_TIME = #{endTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="duration != null" >
+        Duration = #{duration,jdbcType=DOUBLE},
+      </if>
+      <if test="approvalStatus != null" >
+        Approval_status = #{approvalStatus,jdbcType=BIGINT},
+      </if>
+      <if test="approvalReason != null and approvalReason !=''" >
+        approval_Reason = #{approvalReason,jdbcType=VARCHAR},
+      </if>
+      <if test="version != null and version !=''" >
+        version = #{version,jdbcType=VARCHAR},
+      </if>
+      <if test="delFlag != null" >
+        del_flag = #{delFlag,jdbcType=INTEGER},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="processInstanceId != null" >
+        PROCESSINSTANCE_ID = #{processInstanceId,jdbcType=VARCHAR}
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+  <!-- 分页查询报表 -->
+  <select id="getReportPageList" parameterType="com.ule.oa.base.po.EmpApplicationLeave" resultType="com.ule.oa.base.po.EmpApplicationLeave">
+	 SELECT  ao.id,aod.leave_ID,ao.code,ao.cn_name cnName,ao.PROCESSINSTANCE_ID processInstanceId,ao.depart_id departId,ao.depart_name departName,ao.position_id positionId,ao.position_name positionName,ao.employee_id employeeId,
+	 cc.display_name workType,ao.START_TIME startTime,ao.END_TIME endTime,aod.leave_days leaveDays,aod.leave_hours leaveHours,aod.leave_type leaveType,ao.reason,ao.submit_date submitDate,
+	 ao.APPROVAL_STATUS FROM base_emp_application_leave_detail aod
+	 LEFT JOIN base_emp_application_leave ao 
+	 ON ao.id = aod.leave_ID
+	 LEFT JOIN base_employee be
+	 ON ao.employee_id = be.id
+	 LEFT JOIN sys_company_config cc
+	 ON be.work_type = cc.id
+	 <where>
+	   <if test="applyStartDate != null">
+  		  ( date_format(aod.START_TIME,'%Y-%m-%d') BETWEEN #{applyStartDate,jdbcType=DATE} AND #{applyEndDate,jdbcType=DATE}
+  		   or #{applyStartDate,jdbcType=DATE} BETWEEN date_format(aod.START_TIME,'%Y-%m-%d') and date_format(aod.END_TIME,'%Y-%m-%d')
+  		   or date_format(aod.END_TIME,'%Y-%m-%d') BETWEEN #{applyStartDate,jdbcType=DATE} AND #{applyEndDate,jdbcType=DATE}
+  		   or #{applyEndDate,jdbcType=DATE} BETWEEN date_format(aod.START_TIME,'%Y-%m-%d') and date_format(aod.END_TIME,'%Y-%m-%d'))
+  		</if>
+  		and ao.del_flag = 0
+	  	<if test="code != null and code != ''">
+	  		and ao.code like concat('%',#{code,jdbcType=VARCHAR},'%')
+	  	</if>
+  		<if test="cnName != null and cnName != ''">
+  			and ao.cn_name like concat('%',#{cnName,jdbcType=VARCHAR},'%')
+  		</if>
+  		<if test="departId != null">
+  			and ao.depart_id = #{departId,jdbcType=BIGINT}
+  		</if>
+  		<if test="departList != null">
+  			and ao.depart_id in
+  			<foreach collection="departList" item="departId" open="(" separator="," close=")">
+  				#{departId,jdbcType=BIGINT}
+  			</foreach>
+  		</if>
+  		<if test="workType != null and workType != ''">
+  			and be.work_type = #{workType,jdbcType=BIGINT}
+  		</if>
+  		<if test="empTypeId != null">
+  			and be.emp_type_id = #{empTypeId,jdbcType=BIGINT}
+  		</if>
+  		<if test="whetherScheduling != null">
+  			and be.whether_scheduling = #{whetherScheduling,jdbcType=BIGINT}
+  		</if>
+  		<if test="approvalStatus != null" >
+	        and ao.approval_status = #{approvalStatus,jdbcType=BIGINT}
+        </if>
+        <if test="leaveType != null" >
+	        and aod.leave_type = #{leaveType,jdbcType=BIGINT}
+        </if>
+         <if test="assignee != null and assignee != ''" >
+	        and PROCESSINSTANCE_ID in (select DISTINCT
+				* 
+			FROM
+				(
+			SELECT
+				rt.PROC_INST_ID_ 
+			FROM
+				ACT_RU_IDENTITYLINK ri
+				LEFT JOIN ACT_RU_TASK rt ON ri.TASK_ID_ = rt.ID_ 
+			WHERE
+				ri.TYPE_ = 'candidate' 
+				AND ri.USER_ID_ = #{assignee,jdbcType=VARCHAR}
+				
+				UNION ALL
+				
+			SELECT
+				PROC_INST_ID_ 
+			FROM
+				ACT_RU_TASK 
+			WHERE
+				ASSIGNEE_ = #{assignee,jdbcType=VARCHAR}
+				) instance_id
+				)
+        </if>
+        <if test="currentUserDepart != null and currentUserDepart.size > 0">
+			and be.id in
+			<foreach collection="currentUserDepart" item="ids" open="(" separator="," close=")">
+				#{ids,jdbcType=BIGINT}
+			</foreach>
+		</if>
+		<if test="subEmployeeIdList != null and subEmployeeIdList.size > 0">
+			and be.id in
+			<foreach collection="subEmployeeIdList" item="ids" open="(" separator="," close=")">
+				#{ids,jdbcType=BIGINT}
+			</foreach>
+		</if>
+	</where>
+	order by ao.SUBMIT_DATE desc ,convert(ao.cn_name using gbk) collate gbk_chinese_ci asc
+	<if test="offset != null and limit != null">
+			limit #{offset},#{limit}
+		</if>
+  </select>
+  
+    <!-- 导出查询 -->
+  <select id="getExportReportList" parameterType="com.ule.oa.base.po.EmpApplicationLeave" resultType="com.ule.oa.base.po.EmpApplicationLeave">
+	 SELECT  ao.id,aod.leave_ID,ao.code,ao.cn_name cnName,ao.depart_id departId,ao.depart_name departName,ao.position_id positionId,ao.position_name positionName,ao.PROCESSINSTANCE_ID processInstanceId,
+	 cc.display_name workType,ao.START_TIME startTime,ao.END_TIME endTime,aod.leave_days,aod.leave_hours leaveHours,aod.LEAVE_TYPE,ao.reason,ao.submit_date submitDate,
+	 ao.APPROVAL_STATUS FROM base_emp_application_leave_detail aod
+	 LEFT JOIN base_emp_application_leave ao 
+	 ON ao.id = aod.leave_ID
+	 LEFT JOIN base_employee be
+	 ON ao.employee_id = be.id
+	 LEFT JOIN sys_company_config cc
+	 ON be.work_type = cc.id
+	 <where>
+	    <if test="applyStartDate != null">
+  		  ( date_format(aod.START_TIME,'%Y-%m-%d') BETWEEN #{applyStartDate,jdbcType=DATE} AND #{applyEndDate,jdbcType=DATE}
+  		   or #{applyStartDate,jdbcType=DATE} BETWEEN date_format(aod.START_TIME,'%Y-%m-%d') and date_format(aod.END_TIME,'%Y-%m-%d')
+  		   or date_format(aod.END_TIME,'%Y-%m-%d') BETWEEN #{applyStartDate,jdbcType=DATE} AND #{applyEndDate,jdbcType=DATE}
+  		   or #{applyEndDate,jdbcType=DATE} BETWEEN date_format(aod.START_TIME,'%Y-%m-%d') and date_format(aod.END_TIME,'%Y-%m-%d'))
+  		</if>
+  		and ao.del_flag = 0
+	  	<if test="code != null and code != ''">
+	  		and ao.code like concat('%',#{code,jdbcType=VARCHAR},'%')
+	  	</if>
+  		<if test="cnName != null and cnName != ''">
+  			and ao.cn_name like concat('%',#{cnName,jdbcType=VARCHAR},'%')
+  		</if>
+  		<if test="departId != null">
+  			and ao.depart_id = #{departId,jdbcType=BIGINT}
+  		</if>
+  		<if test="departList != null">
+  			and ao.depart_id in
+  			<foreach collection="departList" item="departId" open="(" separator="," close=")">
+  				#{departId,jdbcType=BIGINT}
+  			</foreach>
+  		</if>
+  		<if test="workType != null and workType != ''">
+  			and be.work_type = #{workType,jdbcType=BIGINT}
+  		</if>
+  		<if test="empTypeId != null">
+  			and be.emp_type_id = #{empTypeId,jdbcType=BIGINT}
+  		</if>
+  		<if test="whetherScheduling != null">
+  			and be.whether_scheduling = #{whetherScheduling,jdbcType=BIGINT}
+  		</if>
+  		<if test="approvalStatus != null" >
+	        and ao.approval_status = #{approvalStatus,jdbcType=BIGINT}
+        </if>
+        <if test="leaveType != null" >
+	        and aod.leave_type = #{leaveType,jdbcType=BIGINT}
+        </if>
+        <if test="currentUserDepart != null and currentUserDepart.size > 0">
+			and be.id in
+			<foreach collection="currentUserDepart" item="ids" open="(" separator="," close=")">
+				#{ids,jdbcType=BIGINT}
+			</foreach>
+		</if>
+		<if test="subEmployeeIdList != null and subEmployeeIdList.size > 0">
+			and be.id in
+			<foreach collection="subEmployeeIdList" item="ids" open="(" separator="," close=")">
+				#{ids,jdbcType=BIGINT}
+			</foreach>
+		</if>
+	</where>
+	order by ao.SUBMIT_DATE desc,convert(ao.cn_name using gbk) collate gbk_chinese_ci asc
+  </select>
+  
+  <!-- 查询报表总记录数 -->
+  <select id="getReportCount" parameterType="com.ule.oa.base.po.EmpApplicationLeave" resultType="java.lang.Integer">
+  	 SELECT  count(1) FROM base_emp_application_leave_detail aod
+	   LEFT JOIN base_emp_application_leave ao 
+	     ON ao.id = aod.leave_ID
+	   LEFT JOIN base_employee be
+	     ON ao.employee_id = be.id
+	   LEFT JOIN sys_company_config cc
+	     ON be.work_type = cc.id
+	<where>
+	    <if test="applyStartDate != null">
+  		   (date_format(aod.START_TIME,'%Y-%m-%d') BETWEEN #{applyStartDate,jdbcType=DATE} AND #{applyEndDate,jdbcType=DATE}
+  		   or #{applyStartDate,jdbcType=DATE} BETWEEN date_format(aod.START_TIME,'%Y-%m-%d') and date_format(aod.END_TIME,'%Y-%m-%d')
+  		   or date_format(aod.END_TIME,'%Y-%m-%d') BETWEEN #{applyStartDate,jdbcType=DATE} AND #{applyEndDate,jdbcType=DATE}
+  		   or #{applyEndDate,jdbcType=DATE} BETWEEN date_format(aod.START_TIME,'%Y-%m-%d') and date_format(aod.END_TIME,'%Y-%m-%d'))
+  		</if>
+		and ao.del_flag = 0
+		<if test="code != null and code != ''">
+	  		and ao.code like concat('%',#{code,jdbcType=VARCHAR},'%')
+	  	</if>
+  		<if test="cnName != null and cnName != ''">
+  			and ao.cn_name like concat('%',#{cnName,jdbcType=VARCHAR},'%')
+  		</if>
+  		<if test="departId != null">
+  			and ao.depart_id = #{departId,jdbcType=BIGINT}
+  		</if>
+  		<if test="departList != null">
+  			and ao.depart_id in
+  			<foreach collection="departList" item="departId" open="(" separator="," close=")">
+  				#{departId,jdbcType=BIGINT}
+  			</foreach>
+  		</if>
+  		<if test="workType != null and workType != ''">
+  			and be.work_type = #{workType,jdbcType=BIGINT}
+  		</if>
+  		<if test="empTypeId != null">
+  			and be.emp_type_id = #{empTypeId,jdbcType=BIGINT}
+  		</if>
+  		<if test="whetherScheduling != null">
+  			and be.whether_scheduling = #{whetherScheduling,jdbcType=BIGINT}
+  		</if>
+  		<if test="approvalStatus != null" >
+	        and ao.approval_status = #{approvalStatus,jdbcType=BIGINT}
+        </if>
+        <if test="leaveType != null" >
+	        and aod.leave_type = #{leaveType,jdbcType=BIGINT}
+        </if>
+        <if test="assignee != null and assignee != ''" >
+	        and PROCESSINSTANCE_ID in (select DISTINCT
+				* 
+			FROM
+				(
+			SELECT
+				rt.PROC_INST_ID_ 
+			FROM
+				ACT_RU_IDENTITYLINK ri
+				LEFT JOIN ACT_RU_TASK rt ON ri.TASK_ID_ = rt.ID_ 
+			WHERE
+				ri.TYPE_ = 'candidate' 
+				AND ri.USER_ID_ = #{assignee,jdbcType=VARCHAR}
+				
+				UNION ALL
+				
+			SELECT
+				PROC_INST_ID_ 
+			FROM
+				ACT_RU_TASK 
+			WHERE
+				ASSIGNEE_ = #{assignee,jdbcType=VARCHAR}
+				) instance_id
+				)
+        </if>
+        <if test="currentUserDepart != null and currentUserDepart.size > 0">
+			and be.id in
+			<foreach collection="currentUserDepart" item="ids" open="(" separator="," close=")">
+				#{ids,jdbcType=BIGINT}
+			</foreach>
+		</if>
+        <if test="subEmployeeIdList != null and subEmployeeIdList.size > 0">
+			and be.id in
+			<foreach collection="subEmployeeIdList" item="ids" open="(" separator="," close=")">
+				#{ids,jdbcType=BIGINT}
+			</foreach>
+		</if>
+     </where>
+  </select>
+  
+  <select id="getRepairDate" resultType="Map">
+  	select sum(al.duration) duration,al.employee_id,al.cn_name from base_emp_application_leave al
+	left join base_emp_application_leave_detail ld
+	on al.id = ld.leave_id
+	where al.approval_status = 200
+	and ld.leave_type = 2
+	and al.start_time &gt;= '2018-01-01 00:00:00'
+	group by al.employee_id,al.cn_name
+  </select>
+  
+  <select id="queryByProcessId" resultMap="BaseResultMap">
+  	select <include refid="Base_Column_List"/> from base_emp_application_leave
+  	where PROCESSINSTANCE_ID = #{processId,jdbcType=BIGINT}
+  </select>
+  
+   <!-- 假期已办列表 -->
+  <select id="myLeaveTaskList" parameterType="com.ule.oa.base.po.EmpApplicationLeave" resultType="com.ule.oa.base.po.EmpApplicationLeave">
+	 SELECT  ao.id,aod.leave_ID,ao.code,ao.cn_name cnName,ao.PROCESSINSTANCE_ID processInstanceId,ao.depart_id departId,ao.depart_name departName,ao.position_id positionId,ao.position_name positionName,ao.employee_id employeeId,
+	 cc.display_name workType,ao.START_TIME startTime,ao.END_TIME endTime,aod.leave_days leaveDays,aod.leave_hours leaveHours,aod.leave_type leaveType,ao.reason,ao.submit_date submitDate,
+	 ao.APPROVAL_STATUS FROM base_emp_application_leave_detail aod
+	 LEFT JOIN base_emp_application_leave ao 
+	 ON ao.id = aod.leave_ID
+	 LEFT JOIN base_employee be
+	 ON ao.employee_id = be.id
+	 LEFT JOIN sys_company_config cc
+	 ON be.work_type = cc.id 
+	 LEFT JOIN ACT_HI_TASKINST t 
+	 ON ao.PROCESSINSTANCE_ID = t.PROC_INST_ID_
+	 <where>
+	   <if test="applyStartDate != null">
+  		  ( date_format(aod.START_TIME,'%Y-%m-%d') BETWEEN #{applyStartDate,jdbcType=DATE} AND #{applyEndDate,jdbcType=DATE}
+  		   or #{applyStartDate,jdbcType=DATE} BETWEEN date_format(aod.START_TIME,'%Y-%m-%d') and date_format(aod.END_TIME,'%Y-%m-%d')
+  		   or date_format(aod.END_TIME,'%Y-%m-%d') BETWEEN #{applyStartDate,jdbcType=DATE} AND #{applyEndDate,jdbcType=DATE}
+  		   or #{applyEndDate,jdbcType=DATE} BETWEEN date_format(aod.START_TIME,'%Y-%m-%d') and date_format(aod.END_TIME,'%Y-%m-%d'))
+  		</if>
+  		and ao.del_flag = 0  
+  		and t.ASSIGNEE_ = #{assignee,jdbcType=VARCHAR}
+    	AND t.TASK_DEF_KEY_ != 'proposer' 
+    	AND t.TASK_DEF_KEY_ != 'usertask1' 
+    	AND t.END_TIME_ IS NOT NULL 
+    	AND t.PROC_DEF_ID_ LIKE '%leave%'
+	  	<if test="code != null and code != ''">
+	  		and ao.code like concat('%',#{code,jdbcType=VARCHAR},'%')
+	  	</if>
+  		<if test="cnName != null and cnName != ''">
+  			and ao.cn_name like concat('%',#{cnName,jdbcType=VARCHAR},'%')
+  		</if>
+  		<if test="departId != null">
+  			and ao.depart_id = #{departId,jdbcType=BIGINT}
+  		</if>
+  		<if test="departList != null">
+  			and ao.depart_id in
+  			<foreach collection="departList" item="departId" open="(" separator="," close=")">
+  				#{departId,jdbcType=BIGINT}
+  			</foreach>
+  		</if>
+  		<if test="workType != null and workType != ''">
+  			and be.work_type = #{workType,jdbcType=BIGINT}
+  		</if>
+  		<if test="empTypeId != null">
+  			and be.emp_type_id = #{empTypeId,jdbcType=BIGINT}
+  		</if>
+  		<if test="whetherScheduling != null">
+  			and be.whether_scheduling = #{whetherScheduling,jdbcType=BIGINT}
+  		</if>
+  		<if test="approvalStatus != null" >
+	        and ao.approval_status = #{approvalStatus,jdbcType=BIGINT}
+        </if>
+        <if test="leaveType != null" >
+	        and aod.leave_type = #{leaveType,jdbcType=BIGINT}
+        </if>
+	</where>
+    ORDER BY t.END_TIME_ DESC limit #{offset},#{limit}
+  </select>
+  
+  <!-- 假期已办总记录数 -->
+  <select id="myLeaveTaskListCount" parameterType="com.ule.oa.base.po.EmpApplicationLeave" resultType="java.lang.Integer">
+  	 SELECT  count(1) FROM base_emp_application_leave_detail aod
+	   LEFT JOIN base_emp_application_leave ao 
+	     ON ao.id = aod.leave_ID
+	   LEFT JOIN base_employee be
+	     ON ao.employee_id = be.id
+	   LEFT JOIN sys_company_config cc
+	     ON be.work_type = cc.id
+	   LEFT JOIN ACT_HI_TASKINST t 
+	     ON ao.PROCESSINSTANCE_ID = t.PROC_INST_ID_
+	<where>
+	    <if test="applyStartDate != null">
+  		   (date_format(aod.START_TIME,'%Y-%m-%d') BETWEEN #{applyStartDate,jdbcType=DATE} AND #{applyEndDate,jdbcType=DATE}
+  		   or #{applyStartDate,jdbcType=DATE} BETWEEN date_format(aod.START_TIME,'%Y-%m-%d') and date_format(aod.END_TIME,'%Y-%m-%d')
+  		   or date_format(aod.END_TIME,'%Y-%m-%d') BETWEEN #{applyStartDate,jdbcType=DATE} AND #{applyEndDate,jdbcType=DATE}
+  		   or #{applyEndDate,jdbcType=DATE} BETWEEN date_format(aod.START_TIME,'%Y-%m-%d') and date_format(aod.END_TIME,'%Y-%m-%d'))
+  		</if>
+		and ao.del_flag = 0
+		and t.ASSIGNEE_ = #{assignee,jdbcType=VARCHAR}
+    	AND t.TASK_DEF_KEY_ != 'proposer' 
+    	AND t.TASK_DEF_KEY_ != 'usertask1' 
+    	AND t.END_TIME_ IS NOT NULL 
+    	AND t.PROC_DEF_ID_ LIKE '%leave%'
+		<if test="code != null and code != ''">
+	  		and ao.code like concat('%',#{code,jdbcType=VARCHAR},'%')
+	  	</if>
+  		<if test="cnName != null and cnName != ''">
+  			and ao.cn_name like concat('%',#{cnName,jdbcType=VARCHAR},'%')
+  		</if>
+  		<if test="departId != null">
+  			and ao.depart_id = #{departId,jdbcType=BIGINT}
+  		</if>
+  		<if test="departList != null">
+  			and ao.depart_id in
+  			<foreach collection="departList" item="departId" open="(" separator="," close=")">
+  				#{departId,jdbcType=BIGINT}
+  			</foreach>
+  		</if>
+  		<if test="workType != null and workType != ''">
+  			and be.work_type = #{workType,jdbcType=BIGINT}
+  		</if>
+  		<if test="empTypeId != null">
+  			and be.emp_type_id = #{empTypeId,jdbcType=BIGINT}
+  		</if>
+  		<if test="whetherScheduling != null">
+  			and be.whether_scheduling = #{whetherScheduling,jdbcType=BIGINT}
+  		</if>
+  		<if test="approvalStatus != null" >
+	        and ao.approval_status = #{approvalStatus,jdbcType=BIGINT}
+        </if>
+        <if test="leaveType != null" >
+	        and aod.leave_type = #{leaveType,jdbcType=BIGINT}
+        </if>
+     </where>
+  </select>
+  
+  <select id="getOtherLeaveAfter2018" resultMap="BaseResultMap">
+     SELECT a.* FROM base_emp_application_leave a LEFT JOIN base_emp_application_leave_detail b ON a.id=b.leave_ID 
+       WHERE b.LEAVE_TYPE  NOT IN(1,2,5) and a.APPROVAL_STATUS=200
+  </select>
+  
+  <select id="getUsedDaysGroupByEmployeeId" parameterType="java.lang.Long" resultType="java.util.Map">
+    	SELECT a.EMPLOYEE_ID as employeeId,SUM(b.LEAVE_Days) as usedDays,SUM(b.LEAVE_HOURS) as usedHours FROM base_emp_application_leave a LEFT JOIN base_emp_application_leave_detail b ON a.id= b.leave_id 
+    	   WHERE a.del_flag = 0 and a.APPROVAL_STATUS=200 AND b.LEAVE_TYPE=#{leaveType} GROUP BY a.EMPLOYEE_ID
+  </select>
+  
+  <select id="getListByTypeAndEmployeeId" parameterType="com.ule.oa.base.po.EmpApplicationLeave" resultType="com.ule.oa.base.po.EmpApplicationLeave">
+  	 SELECT a.id,a.employee_id employeeId,a.duration,a.START_TIME startTime,b.leave_hours leaveHours FROM base_emp_application_leave a LEFT JOIN base_emp_application_leave_detail b ON a.id= b.leave_id 
+  	   WHERE a.del_flag = 0 and a.APPROVAL_STATUS=200 AND b.LEAVE_TYPE=#{leaveType}
+  	   <if test="employeeId != null" >
+	        AND a.employee_id=#{employeeId}
+       </if>
+  	   ORDER BY a.start_time DESC
+  </select>
+  
+  <select id="getSickUsedDays" resultType="java.util.Map">
+	SELECT 
+		  employee_id as employeeId,
+		  DATE_FORMAT(a.start_time, '%Y') as year,
+		  SUM(a.DURATION) as usedDays
+		FROM
+		  base_emp_application_leave a 
+		  LEFT JOIN base_emp_application_leave_detail b 
+		    ON a.id = b.leave_id 
+		WHERE a.del_flag = 0 and b.LEAVE_TYPE = 2 
+		  AND a.APPROVAL_STATUS = 200 GROUP BY DATE_FORMAT(a.start_time, '%Y'),employee_id
+  </select>
+  
+  <select id="getInOneMonthLeaveDaysByTypes" resultType="com.ule.oa.base.po.LeaveDaysGBTypeResultDto">
+	SELECT
+		b.LEAVE_TYPE as leaveType,sum( a.DURATION ) as leaveDays
+		FROM
+			base_emp_application_leave a
+			LEFT JOIN base_emp_application_leave_detail b ON a.id = b.leave_ID 
+		WHERE
+			a.EMPLOYEE_ID = #{employeeId,jdbcType=BIGINT} 
+			AND b.LEAVE_TYPE IN (2,11,12) 
+			AND a.DEL_FLAG = 0 
+			AND a.APPROVAL_STATUS IN (100,200,500,600) 
+			AND (
+				date_format( a.START_TIME, '%Y-%m-%d' ) BETWEEN #{startTime,jdbcType=DATE} 
+				AND #{endTime,jdbcType=DATE}
+				OR #{startTime,jdbcType=DATE} BETWEEN date_format( a.START_TIME, '%Y-%m-%d' ) 
+				AND date_format( a.END_TIME, '%Y-%m-%d' ) 
+				OR date_format( a.END_TIME, '%Y-%m-%d' ) BETWEEN #{startTime,jdbcType=DATE}
+				AND #{endTime,jdbcType=DATE} 
+				OR #{endTime,jdbcType=DATE} BETWEEN date_format( a.START_TIME, '%Y-%m-%d' ) 
+				AND date_format( a.END_TIME, '%Y-%m-%d' ) 
+			) GROUP BY b.LEAVE_TYPE
+  </select>
+  
+  <select id="getInOneMonthMinStartTimeByTypes" resultType="java.util.Date">
+	SELECT
+		min(a.START_TIME)
+		FROM
+			base_emp_application_leave a
+			LEFT JOIN base_emp_application_leave_detail b ON a.id = b.leave_ID 
+		WHERE
+			a.EMPLOYEE_ID = #{employeeId,jdbcType=BIGINT} 
+			<if test="leaveTypes != null and leaveTypes.size >0">
+	  			AND b.LEAVE_TYPE in
+	  			<foreach collection="leaveTypes" item="leaveType" open="(" separator="," close=")">
+	  				#{leaveType,jdbcType=INTEGER}
+	  			</foreach>
+  			</if>
+			AND a.DEL_FLAG = 0 
+			AND a.APPROVAL_STATUS IN (100,200,500,600) 
+			AND (
+				date_format( a.START_TIME, '%Y-%m-%d' ) BETWEEN #{startTime,jdbcType=DATE} 
+				AND #{endTime,jdbcType=DATE}
+				OR #{startTime,jdbcType=DATE} BETWEEN date_format( a.START_TIME, '%Y-%m-%d' ) 
+				AND date_format( a.END_TIME, '%Y-%m-%d' ) 
+				OR date_format( a.END_TIME, '%Y-%m-%d' ) BETWEEN #{startTime,jdbcType=DATE}
+				AND #{endTime,jdbcType=DATE} 
+				OR #{endTime,jdbcType=DATE} BETWEEN date_format( a.START_TIME, '%Y-%m-%d' ) 
+				AND date_format( a.END_TIME, '%Y-%m-%d' ) 
+			) 
+  </select>
+  
+  
+  
+</mapper>

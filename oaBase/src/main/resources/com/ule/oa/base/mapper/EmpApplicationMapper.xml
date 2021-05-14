@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ule.oa.base.mapper.EmpApplicationMapper" >
+  <resultMap id="BaseResultMap" type="com.ule.oa.base.po.EmpApplication" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="TYPE" property="type" jdbcType="BIGINT" />
+    <result column="MODULE_DETAIL" property="moduleDetail" jdbcType="VARCHAR" />
+    <result column="MODULE" property="module" jdbcType="VARCHAR" />
+    <result column="OLD_VALUE" property="oldValue" jdbcType="VARCHAR" />
+    <result column="NEW_VALUE" property="newValue" jdbcType="VARCHAR" />
+    <result column="SHOW_VALUE" property="showValue" jdbcType="VARCHAR" />
+    <result column="APPROVAL_STATUS" property="approvalStatus" jdbcType="BIGINT" />
+    <result column="APPROVAL_ID" property="approvalId" jdbcType="BIGINT" />
+    <result column="APPROVAL_NAME" property="approvalName" jdbcType="VARCHAR" />
+    <result column="ARRAY_VALUE" property="arrayValue" jdbcType="BIGINT" />
+    <result column="VERSION" property="version" jdbcType="VARCHAR" />
+    <result column="DEL_FLAG" property="delFlag" jdbcType="BIGINT" />
+    <result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="UPDATE_TIME" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="CREATE_USER" property="createUser" jdbcType="VARCHAR" />
+    <result column="UPDATE_USER" property="updateUser" jdbcType="VARCHAR" />
+    <result column="EMPLOYEE_ID" property="employeeId" jdbcType="BIGINT" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    id, TYPE, MODULE_DETAIL, MODULE, OLD_VALUE, NEW_VALUE, SHOW_VALUE, APPROVAL_STATUS, 
+    APPROVAL_ID, APPROVAL_NAME, ARRAY_VALUE, VERSION, DEL_FLAG, CREATE_TIME, UPDATE_TIME, 
+    CREATE_USER, UPDATE_USER, EMPLOYEE_ID
+  </sql>
+  
+  <select id="selectByCondition" resultMap="BaseResultMap" parameterType="com.ule.oa.base.po.EmpApplication" >
+    select 
+    <include refid="Base_Column_List" />
+    from base_emp_application
+    <where>
+      <if test="id != null" >
+        AND ID = #{id,jdbcType=BIGINT}
+      </if>
+      <if test="type != null" >
+        AND TYPE = #{type,jdbcType=BIGINT}
+      </if>
+      <if test="moduleDetail != null and moduleDetail != ''" >
+        AND MODULE_DETAIL = #{moduleDetail,jdbcType=VARCHAR}
+      </if>
+      <if test="module != null and module != ''" >
+        AND MODULE = #{module,jdbcType=VARCHAR}
+      </if>
+      <if test="version != null and version != ''" >
+        AND VERSION = #{version,jdbcType=VARCHAR}
+      </if>
+      <if test="delFlag != null" >
+        AND DEL_FLAG = #{delFlag,jdbcType=BIGINT}
+      </if>
+      <if test="createTime != null" >
+        AND CREATE_TIME = #{createTime,jdbcType=TIMESTAMP}
+      </if>
+      <if test="updateTime != null" >
+        AND UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP}
+      </if>
+      <if test="employeeId != null" >
+        AND EMPLOYEE_ID = #{employeeId,jdbcType=BIGINT}
+      </if>
+      <if test="approvalStatus != null" >
+        AND APPROVAL_STATUS = #{approvalStatus,jdbcType=BIGINT}
+      </if>
+    </where>
+  </select>
+  
+  <delete id="deleteById" parameterType="java.lang.Long" >
+    delete from base_emp_application
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  
+  <insert id="insertBatch" parameterType="com.ule.oa.base.po.EmpApplication" >
+     <!-- <selectKey resultType ="java.lang.Integer" keyProperty= "id" order= "AFTER">
+          SELECT LAST_INSERT_ID()
+     </selectKey > -->
+      insert into base_emp_application ( TYPE, MODULE_DETAIL, 
+      MODULE, OLD_VALUE, NEW_VALUE, 
+      SHOW_VALUE, APPROVAL_STATUS, APPROVAL_ID, 
+      APPROVAL_NAME, ARRAY_VALUE, VERSION, 
+      DEL_FLAG, CREATE_TIME, UPDATE_TIME, 
+      CREATE_USER, UPDATE_USER, EMPLOYEE_ID
+      )
+      values
+      <foreach collection ="list" item="item" index= "index" separator =",">
+	      ( #{item.type,jdbcType=BIGINT}, #{item.moduleDetail,jdbcType=VARCHAR}, 
+	      #{item.module,jdbcType=VARCHAR}, #{item.oldValue,jdbcType=VARCHAR}, #{item.newValue,jdbcType=VARCHAR}, 
+	      #{item.showValue,jdbcType=VARCHAR}, #{item.approvalStatus,jdbcType=BIGINT}, #{item.approvalId,jdbcType=BIGINT}, 
+	      #{item.approvalName,jdbcType=VARCHAR}, #{item.arrayValue,jdbcType=BIGINT}, #{item.version,jdbcType=VARCHAR}, 
+	      #{item.delFlag,jdbcType=BIGINT}, #{item.createTime,jdbcType=TIMESTAMP}, #{item.updateTime,jdbcType=TIMESTAMP}, 
+	      #{item.createUser,jdbcType=VARCHAR}, #{item.updateUser,jdbcType=VARCHAR}, #{item.employeeId,jdbcType=BIGINT}
+	      )
+      </foreach >
+  </insert>
+  
+  <select id="getMaxVersionByEmpId" parameterType="java.lang.Long" resultType="java.lang.String">
+     SELECT IFNULL(max(version),0) FROM base_emp_application
+     WHERE DEL_FLAG = 0 AND EMPLOYEE_ID = #{employeeId,jdbcType=BIGINT}
+  </select>
+  
+  <update id="updateAppyLogStatus"  parameterType="com.ule.oa.base.po.EmpApplication">
+    update base_emp_application
+    <set >
+      <if test="approvalStatus != null" >
+        APPROVAL_STATUS = #{approvalStatus,jdbcType=BIGINT},
+      </if>
+      <if test="approvalId != null" >
+        APPROVAL_ID = #{approvalId,jdbcType=BIGINT},
+      </if>
+      <if test="approvalName != null and approvalName != ''" >
+        APPROVAL_NAME = #{approvalName,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUser != null and updateUser != ''" >
+        UPDATE_USER = #{updateUser,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where EMPLOYEE_ID = #{employeeId,jdbcType=BIGINT}
+    and APPROVAL_STATUS = 100
+  </update>
+  
+  <update id="updateById" parameterType="com.ule.oa.base.po.EmpApplication" >
+    update base_emp_application
+    <set >
+      <if test="type != null" >
+        TYPE = #{type,jdbcType=BIGINT},
+      </if>
+      <if test="moduleDetail != null and moduleDetail != ''" >
+        MODULE_DETAIL = #{moduleDetail,jdbcType=VARCHAR},
+      </if>
+      <if test="module != null  and module != ''" >
+        MODULE = #{module,jdbcType=VARCHAR},
+      </if>
+      <if test="oldValue != null" >
+        OLD_VALUE = #{oldValue,jdbcType=VARCHAR},
+      </if>
+      <if test="newValue != null" >
+        NEW_VALUE = #{newValue,jdbcType=VARCHAR},
+      </if>
+      <if test="showValue != null" >
+        SHOW_VALUE = #{showValue,jdbcType=VARCHAR},
+      </if>
+      <if test="approvalStatus != null" >
+        APPROVAL_STATUS = #{approvalStatus,jdbcType=BIGINT},
+      </if>
+      <if test="approvalId != null" >
+        APPROVAL_ID = #{approvalId,jdbcType=BIGINT},
+      </if>
+      <if test="approvalName != null and approvalName != ''" >
+        APPROVAL_NAME = #{approvalName,jdbcType=VARCHAR},
+      </if>
+      <if test="arrayValue != null" >
+        ARRAY_VALUE = #{arrayValue,jdbcType=BIGINT},
+      </if>
+      <if test="version != null" >
+        VERSION = #{version,jdbcType=VARCHAR},
+      </if>
+      <if test="delFlag != null" >
+        DEL_FLAG = #{delFlag,jdbcType=BIGINT},
+      </if>
+      <if test="createTime != null" >
+        CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUser != null" >
+        CREATE_USER = #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUser != null" >
+        UPDATE_USER = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="employeeId != null" >
+        EMPLOYEE_ID = #{employeeId,jdbcType=BIGINT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

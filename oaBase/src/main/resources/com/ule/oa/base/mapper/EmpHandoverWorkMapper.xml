@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ule.oa.base.mapper.EmpHandoverWorkMapper" >
+
+  <resultMap id="BaseResultMap" type="com.ule.oa.base.po.EmpHandoverWork" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="EMP_RESIGN_ID" property="empResignId" jdbcType="BIGINT" />
+    <result column="NUMBER" property="number" jdbcType="INTEGER" />
+    <result column="HANDOVER_CONTENT" property="handoverContent" jdbcType="CLOB" />
+    <result column="IS_TRANSFER" property="isTransfer" jdbcType="INTEGER" />
+    <result column="REMARK" property="remark" jdbcType="VARCHAR" />
+    <result column="RECEIVER" property="receiver" jdbcType="VARCHAR" />
+    <result column="RECEIVER_ID" property="receiverId" jdbcType="BIGINT" />
+    <result column="IS_HANDOVER_COMPLETED" property="isHandoverCompleted" jdbcType="INTEGER" />
+    <result column="COMPLETE_HANDOVER_DATE" property="completeHandoverDate" jdbcType="TIMESTAMP" />
+    <result column="LEADER_STATUS" property="leaderStatus" jdbcType="INTEGER" />
+    <result column="LEADER_ID" property="leaderId" jdbcType="BIGINT" />
+    <result column="DH_ID" property="dhId" jdbcType="BIGINT" />
+    <result column="DH_STATUS" property="dhStatus" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="del_flag" property="delFlag" jdbcType="INTEGER" />
+    <result column="VERSION" property="version" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    id, EMP_RESIGN_ID, NUMBER, HANDOVER_CONTENT, IS_TRANSFER, REMARK, RECEIVER, RECEIVER_ID, IS_HANDOVER_COMPLETED, 
+    COMPLETE_HANDOVER_DATE, LEADER_STATUS,LEADER_ID,DH_ID,DH_STATUS,create_time, create_user, update_time, update_user,
+    del_flag, VERSION
+  </sql>
+  
+  <select id="getListByCondition" resultMap="BaseResultMap" parameterType="com.ule.oa.base.po.EmpHandoverWork" >
+    select <include refid="Base_Column_List" /> from hr_emp_handover_work
+    where del_flag = 0
+     <if test="id != null and id !=''">
+    	and id = #{id,jdbcType=BIGINT}
+     </if>
+     <if test="empResignId != null and empResignId !=''">
+    	and EMP_RESIGN_ID = #{empResignId,jdbcType=BIGINT}
+     </if>
+     <if test="receiverId != null and receiverId !=''">
+    	and RECEIVER_ID = #{receiverId,jdbcType=BIGINT}
+     </if>
+     <if test="leaderId != null and leaderId !=''">
+    	and LEADER_ID = #{leaderId,jdbcType=BIGINT}
+     </if>
+     <if test="dhId != null and dhId !=''">
+    	and DH_ID = #{dhId,jdbcType=BIGINT}
+     </if>
+     ORDER BY number ASC		
+  </select>
+  
+  <select id="getById" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+	   SELECT  <include refid="Base_Column_List" /> FROM hr_emp_handover_work
+	    where emr.del_flag = 0
+     <if test="id != null and id !=''">
+    	and id = #{id,jdbcType=BIGINT}
+     </if>
+  </select>
+  
+  <insert id="save" parameterType="com.ule.oa.base.po.EmpHandoverWork" >
+    insert into hr_emp_handover_work (
+        EMP_RESIGN_ID,
+        NUMBER,
+        HANDOVER_CONTENT,
+        IS_TRANSFER,
+        RECEIVER,
+        RECEIVER_ID,
+        REMARK,
+        IS_HANDOVER_COMPLETED,
+        LEADER_STATUS,
+        LEADER_ID,
+        DH_ID,
+        DH_STATUS,
+        create_time,
+        create_user,
+        del_flag,
+        VERSION
+      )
+    values (
+      #{empResignId,jdbcType=BIGINT},
+      #{number,jdbcType=INTEGER}, 
+      #{handoverContent,jdbcType=CLOB}, 
+      #{isTransfer,jdbcType=INTEGER}, 
+      #{receiver,jdbcType=VARCHAR}, 
+      #{receiverId,jdbcType=BIGINT}, 
+      #{remark,jdbcType=VARCHAR}, 
+      #{isHandoverCompleted,jdbcType=INTEGER}, 
+      #{leaderStatus,jdbcType=INTEGER}, 
+      #{leaderId,jdbcType=BIGINT}, 
+      #{dhId,jdbcType=BIGINT}, 
+      #{dhStatus,jdbcType=INTEGER}, 
+      #{createTime,jdbcType=TIMESTAMP}, 
+      #{createUser,jdbcType=VARCHAR},
+      #{delFlag,jdbcType=INTEGER}, 
+      #{version,jdbcType=VARCHAR}
+      )
+  </insert>
+  
+  <insert id="batchSave" parameterType="java.util.List">
+	insert into hr_emp_handover_work (
+	    EMP_RESIGN_ID,
+        NUMBER,
+        HANDOVER_CONTENT,
+        IS_TRANSFER,
+        REMARK,
+        IS_HANDOVER_COMPLETED,
+        LEADER_STATUS,
+        LEADER_ID,
+        DH_ID,
+        DH_STATUS,
+        create_time,
+        create_user,
+        del_flag,
+        VERSION
+	)
+	select T.* FROM (
+     	<foreach collection="list" item="item" index="index" separator="UNION">
+		SELECT
+			#{item.empResignId} as EMP_RESIGN_ID,
+			#{item.number} as NUMBER,
+			#{item.handoverContent} as HANDOVER_CONTENT,
+			#{item.isTransfer} as IS_TRANSFER,
+			#{item.remark} as REMARK,
+			#{item.isHandoverCompleted} as IS_HANDOVER_COMPLETED,
+			#{item.leaderStatus} as LEADER_STATUS,
+			#{item.leaderId} as LEADER_ID,
+			#{item.dhId} as DH_ID,
+			#{item.dhStatus} as DH_STATUS,
+			#{item.createTime} as create_time,
+			#{item.createUser} as create_user,
+			#{item.delFlag} as del_flag,
+			#{item.version} as VERSION
+		FROM DUAL
+	</foreach>
+       ) T
+  </insert>
+  
+  <update id="updateById" parameterType="com.ule.oa.base.po.EmpHandoverWork" >
+    update hr_emp_handover_work
+    <set >
+      <if test="empResignId != null" >
+        EMP_RESIGN_ID = #{empResignId,jdbcType=BIGINT},
+      </if>
+      <if test="number != null" >
+        NUMBER = #{number,jdbcType=INTEGER},
+      </if>
+      <if test="handoverContent != null" >
+        HANDOVER_CONTENT = #{handoverContent,jdbcType=CLOB},
+      </if>
+      <if test="isTransfer != null" >
+        IS_TRANSFER = #{isTransfer,jdbcType=INTEGER},
+      </if>
+      <if test="remark != null" >
+        REMARK = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="receiver != null" >
+        RECEIVER = #{receiver,jdbcType=VARCHAR},
+      </if>
+      <if test="receiverId != null" >
+        RECEIVER_ID = #{receiverId,jdbcType=BIGINT},
+      </if>
+      <if test="isHandoverCompleted != null" >
+        IS_HANDOVER_COMPLETED = #{isHandoverCompleted,jdbcType=INTEGER},
+      </if>
+      <if test="completeHandoverDate != null" >
+        COMPLETE_HANDOVER_DATE = #{completeHandoverDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="leaderStatus != null" >
+        LEADER_STATUS = #{leaderStatus,jdbcType=INTEGER},
+      </if>
+      <if test="dhStatus != null" >
+        DH_STATUS = #{dhStatus,jdbcType=INTEGER},
+      </if>
+      <if test="leaderId != null" >
+        LEADER_ID = #{leaderId,jdbcType=BIGINT},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR}
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+  <update id="delete" parameterType="com.ule.oa.base.po.EmpHandoverWork" >
+    update hr_emp_handover_work set del_flag=#{delFlag,jdbcType=NUMERIC}
+     <if test="updateTime != null" >
+       ,update_time = #{updateTime,jdbcType=TIMESTAMP}
+     </if>
+     <if test="updateUser != null" >
+       ,update_user = #{updateUser,jdbcType=VARCHAR}
+     </if>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+</mapper>

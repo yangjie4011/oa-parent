@@ -1,0 +1,291 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ule.oa.base.mapper.AttnUsersMapper" >
+  <resultMap id="BaseResultMap" type="com.ule.oa.base.po.AttnUsers" >
+    <id column="userid" property="userid" jdbcType="INTEGER" />
+    <result column="deptid" property="deptid" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="NVARCHAR" />
+    <result column="usercode" property="usercode" jdbcType="NVARCHAR" />
+    <result column="sex" property="sex" jdbcType="NVARCHAR" />
+    <result column="job" property="job" jdbcType="NVARCHAR" />
+    <result column="joindate" property="joindate" jdbcType="TIMESTAMP" />
+    <result column="idcard" property="idcard" jdbcType="NVARCHAR" />
+    <result column="phone" property="phone" jdbcType="NVARCHAR" />
+    <result column="email" property="email" jdbcType="NVARCHAR" />
+    <result column="address" property="address" jdbcType="NVARCHAR" />
+    <result column="notes" property="notes" jdbcType="NVARCHAR" />
+    <result column="TimeRangeType" property="timerangetype" jdbcType="TINYINT" />
+    <result column="groupid" property="groupid" jdbcType="INTEGER" />
+    <result column="teamid" property="teamid" jdbcType="INTEGER" />
+    <result column="crewid" property="crewid" jdbcType="INTEGER" />
+    <result column="birthday" property="birthday" jdbcType="TIMESTAMP" />
+    <result column="nativeplace" property="nativeplace" jdbcType="NVARCHAR" />
+    <result column="dimissiondate" property="dimissiondate" jdbcType="TIMESTAMP" />
+    <result column="FloorNumber" property="floornumber" jdbcType="INTEGER" />
+    <result column="TimeRangeDays" property="timerangedays" jdbcType="INTEGER" />
+    <result column="oa_emp_id" property="oaEmpId" jdbcType="BIGINT" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.ule.oa.base.po.AttnUsers" extends="BaseResultMap" >
+    <result column="photo" property="photo" jdbcType="LONGVARBINARY" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    userid, deptid, name, usercode, sex, job, joindate, idcard, phone, email, address, 
+    notes, TimeRangeType, groupid, teamid, crewid, birthday, nativeplace, dimissiondate, 
+    FloorNumber, TimeRangeDays, oa_emp_id
+  </sql>
+  <sql id="Blob_Column_List" >
+    photo
+  </sql>
+  <select id="selectByCondition" resultMap="ResultMapWithBLOBs" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from users
+    where userid = #{userid,jdbcType=INTEGER}
+  </select>
+ 
+  <select id="selectByFingerprintId" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+     select a.userid,a.oa_emp_id from users a left join card_user b on a.userid=b.userid where a.deptid=1 
+        and b.cardid=#{cardid,jdbcType=INTEGER}
+  </select>
+
+  <insert id="save" parameterType="com.ule.oa.base.po.AttnUsers">
+    insert into users
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+        userid,
+      <if test="deptid != null" >
+        deptid,
+      </if>
+      <if test="name != null" >
+        name,
+      </if>
+      <if test="usercode != null" >
+        usercode,
+      </if>
+      <if test="sex != null" >
+        sex,
+      </if>
+      <if test="job != null" >
+        job,
+      </if>
+      <if test="joindate != null" >
+        joindate,
+      </if>
+      <if test="idcard != null" >
+        idcard,
+      </if>
+      <if test="phone != null" >
+        phone,
+      </if>
+      <if test="email != null" >
+        email,
+      </if>
+      <if test="address != null" >
+        address,
+      </if>
+      <if test="notes != null" >
+        notes,
+      </if>
+      <if test="timerangetype != null" >
+        TimeRangeType,
+      </if>
+      <if test="groupid != null" >
+        groupid,
+      </if>
+      <if test="teamid != null" >
+        teamid,
+      </if>
+      <if test="crewid != null" >
+        crewid,
+      </if>
+      <if test="birthday != null" >
+        birthday,
+      </if>
+      <if test="nativeplace != null" >
+        nativeplace,
+      </if>
+      <if test="dimissiondate != null" >
+        dimissiondate,
+      </if>
+      <if test="floornumber != null" >
+        FloorNumber,
+      </if>
+      <if test="timerangedays != null" >
+        TimeRangeDays,
+      </if>
+      <if test="oaEmpId != null" >
+        oa_emp_id,
+      </if>
+    </trim>
+    <trim prefix=" (SELECT " suffix=")" suffixOverrides="," >
+      (SELECT max(userid)+1 from users),
+      <if test="deptid != null" >
+        #{deptid,jdbcType=INTEGER},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=NVARCHAR},
+      </if>
+      <if test="usercode != null" >
+        #{usercode,jdbcType=NVARCHAR},
+      </if>
+      <if test="sex != null" >
+        #{sex,jdbcType=NVARCHAR},
+      </if>
+      <if test="job != null" >
+        #{job,jdbcType=NVARCHAR},
+      </if>
+      <if test="joindate != null" >
+        #{joindate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="idcard != null" >
+        #{idcard,jdbcType=NVARCHAR},
+      </if>
+      <if test="phone != null" >
+        #{phone,jdbcType=NVARCHAR},
+      </if>
+      <if test="email != null" >
+        #{email,jdbcType=NVARCHAR},
+      </if>
+      <if test="address != null" >
+        #{address,jdbcType=NVARCHAR},
+      </if>
+      <if test="notes != null" >
+        #{notes,jdbcType=NVARCHAR},
+      </if>
+      <if test="timerangetype != null" >
+        #{timerangetype,jdbcType=TINYINT},
+      </if>
+      <if test="groupid != null" >
+        #{groupid,jdbcType=INTEGER},
+      </if>
+      <if test="teamid != null" >
+        #{teamid,jdbcType=INTEGER},
+      </if>
+      <if test="crewid != null" >
+        #{crewid,jdbcType=INTEGER},
+      </if>
+      <if test="birthday != null" >
+        #{birthday,jdbcType=TIMESTAMP},
+      </if>
+      <if test="nativeplace != null" >
+        #{nativeplace,jdbcType=NVARCHAR},
+      </if>
+      <if test="dimissiondate != null" >
+        #{dimissiondate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="floornumber != null" >
+        #{floornumber,jdbcType=INTEGER},
+      </if>
+      <if test="timerangedays != null" >
+        #{timerangedays,jdbcType=INTEGER},
+      </if>
+      <if test="oaEmpId != null" >
+        #{oaEmpId,jdbcType=BIGINT},
+      </if>
+    </trim>
+  </insert>
+  
+  <insert id= "saveBatch" parameterType="com.ule.oa.base.po.AttnUsers">
+  
+    <foreach collection ="list" item="item" index= "index" separator =";">
+	    insert into users (userid,deptid, name, 
+	      usercode, sex, job, 
+	      joindate, idcard, phone, 
+	      email, address, notes, 
+	      TimeRangeType, groupid, teamid, 
+	      crewid, birthday, nativeplace, 
+	      dimissiondate, FloorNumber, TimeRangeDays, 
+	      oa_emp_id)
+	      SELECT (SELECT max(userid)+1 from users),#{item.deptid,jdbcType=INTEGER}, #{item.name,jdbcType=NVARCHAR}, 
+	      #{item.usercode,jdbcType=NVARCHAR}, #{item.sex,jdbcType=NVARCHAR}, #{item.job,jdbcType=NVARCHAR}, 
+	      #{item.joindate,jdbcType=TIMESTAMP}, #{item.idcard,jdbcType=NVARCHAR}, #{item.phone,jdbcType=NVARCHAR}, 
+	      #{item.email,jdbcType=NVARCHAR}, #{item.address,jdbcType=NVARCHAR}, #{item.notes,jdbcType=NVARCHAR}, 
+	      #{item.timerangetype,jdbcType=TINYINT}, #{item.groupid,jdbcType=INTEGER}, #{item.teamid,jdbcType=INTEGER}, 
+	      #{item.crewid,jdbcType=INTEGER}, #{item.birthday,jdbcType=TIMESTAMP}, #{item.nativeplace,jdbcType=NVARCHAR}, 
+	      #{item.dimissiondate,jdbcType=TIMESTAMP}, #{item.floornumber,jdbcType=INTEGER}, #{item.timerangedays,jdbcType=INTEGER}, 
+	      #{item.oaEmpId,jdbcType=BIGINT}
+    </foreach>
+  </insert>
+  
+  <update id="updateById" parameterType="com.ule.oa.base.po.AttnUsers" >
+    update users
+    <set >
+      <if test="deptid != null" >
+        deptid = #{deptid,jdbcType=INTEGER},
+      </if>
+      <if test="name != null" >
+        name = #{name,jdbcType=NVARCHAR},
+      </if>
+      <if test="usercode != null" >
+        usercode = #{usercode,jdbcType=NVARCHAR},
+      </if>
+      <if test="sex != null" >
+        sex = #{sex,jdbcType=NVARCHAR},
+      </if>
+      <if test="job != null" >
+        job = #{job,jdbcType=NVARCHAR},
+      </if>
+      <if test="joindate != null" >
+        joindate = #{joindate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="idcard != null" >
+        idcard = #{idcard,jdbcType=NVARCHAR},
+      </if>
+      <if test="phone != null" >
+        phone = #{phone,jdbcType=NVARCHAR},
+      </if>
+      <if test="email != null" >
+        email = #{email,jdbcType=NVARCHAR},
+      </if>
+      <if test="address != null" >
+        address = #{address,jdbcType=NVARCHAR},
+      </if>
+      <if test="notes != null" >
+        notes = #{notes,jdbcType=NVARCHAR},
+      </if>
+      <if test="timerangetype != null" >
+        TimeRangeType = #{timerangetype,jdbcType=TINYINT},
+      </if>
+      <if test="groupid != null" >
+        groupid = #{groupid,jdbcType=INTEGER},
+      </if>
+      <if test="teamid != null" >
+        teamid = #{teamid,jdbcType=INTEGER},
+      </if>
+      <if test="crewid != null" >
+        crewid = #{crewid,jdbcType=INTEGER},
+      </if>
+      <if test="birthday != null" >
+        birthday = #{birthday,jdbcType=TIMESTAMP},
+      </if>
+      <if test="nativeplace != null" >
+        nativeplace = #{nativeplace,jdbcType=NVARCHAR},
+      </if>
+      <if test="dimissiondate != null" >
+        dimissiondate = #{dimissiondate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="floornumber != null" >
+        FloorNumber = #{floornumber,jdbcType=INTEGER},
+      </if>
+      <if test="timerangedays != null" >
+        TimeRangeDays = #{timerangedays,jdbcType=INTEGER},
+      </if>
+      <if test="oaEmpId != null" >
+        oa_emp_id = #{oaEmpId,jdbcType=BIGINT},
+      </if>
+      <if test="photo != null" >
+        photo = #{photo,jdbcType=LONGVARBINARY},
+      </if>
+    </set>
+    where userid = #{userid,jdbcType=INTEGER}
+  </update>
+  
+  <update id="bindFingerPrint">
+  	update users 
+  	<set>
+  	oa_emp_id = #{empId}
+  	</set>
+  	where userid in(select userid from card_user where cardid=#{fingerPrint});
+  </update>
+</mapper>

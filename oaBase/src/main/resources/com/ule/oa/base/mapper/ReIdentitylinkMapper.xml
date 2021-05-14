@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ule.oa.base.mapper.ReIdentitylinkMapper">
+
+	<resultMap id="BaseResultMap" type="com.ule.oa.base.po.ReIdentitylink">
+		<result column="ID" property="id" jdbcType="BIGINT"/>
+		<result column="TYPE" property="type" jdbcType="VARCHAR"/>
+		<result column="EMPLOYEE_ID" property="employeeId" jdbcType="BIGINT"/>
+		<result column="GROUP_ID" property="groupId" jdbcType="BIGINT"/>
+		<result column="RE_PROCDEF_CODE" property="reProcdefCode" jdbcType="VARCHAR"/>
+		<result column="NODE_CODE" property="nodeCode" jdbcType="VARCHAR"/>
+		<result column="VERSION" property="version" jdbcType="BIGINT"/>
+		<result column="DEL_FLAG" property="delFlag" jdbcType="BIGINT"/>
+		<result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP"/>
+		<result column="UPDATE_TIME" property="updateTime" jdbcType="TIMESTAMP"/>
+		<result column="CREATE_USER" property="createUser" jdbcType="VARCHAR"/>
+		<result column="UPDATE_USER" property="updateUser" jdbcType="VARCHAR"/>
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		ID,TYPE,EMPLOYEE_ID,GROUP_ID,RE_PROCDEF_CODE,NODE_CODE,
+		VERSION,DEL_FLAG,CREATE_TIME,UPDATE_TIME,CREATE_USER,UPDATE_USER
+	</sql>
+
+	<select id="getById" parameterType="java.lang.Long" resultType="com.ule.oa.base.po.ReIdentitylink">
+		select
+		<include refid="Base_Column_List" />
+		from bpm_re_identitylink
+		where id = #{id,jdbcType=BIGINT}
+	</select>
+	
+	<!-- 查询我的待办事项 -->
+	<select id="getList" parameterType="com.ule.oa.base.po.ReIdentitylink" resultType="com.ule.oa.base.po.ReIdentitylink">
+		select * from bpm_re_identitylink r
+		where r.del_flag != ${@com.ule.oa.common.po.CommonPo@STATUS_DELETE}
+		<if test="reProcdefCode!=null"> and RE_PROCDEF_CODE=#{reProcdefCode,jdbcType=VARCHAR}</if>
+		<if test="nodeCode!=null"> and NODE_CODE=#{nodeCode,jdbcType=VARCHAR}</if>
+		order by r.id desc
+	</select>
+
+	<!-- 分页查询我的待办事项 -->
+	<select id="getPageList" parameterType="com.ule.oa.base.po.ReIdentitylink"
+		resultType="com.ule.oa.base.po.ReIdentitylink">
+		select * from bpm_re_identitylink r
+		where r.del_flag != ${@com.ule.oa.common.po.CommonPo@STATUS_DELETE}
+		order by r.id desc limit #{offset},#{limit}
+	</select>
+	<!-- 保存待办事项信息 -->
+	<insert id="save" parameterType="com.ule.oa.base.po.ReIdentitylink" useGeneratedKeys="true" keyProperty="id">
+		insert into bpm_re_identitylink
+		(   
+			TYPE,
+			EMPLOYEE_ID,
+			GROUP_ID,
+			RE_PROCDEF_CODE,
+			NODE_CODE,
+			VERSION,
+			DEL_FLAG,
+			CREATE_TIME,
+			UPDATE_TIME,
+			CREATE_USER,
+			UPDATE_USER
+		)
+		values  ( 
+			#{type,jdbcType=VARCHAR},
+			#{employeeId,jdbcType=BIGINT},
+			#{groupId,jdbcType=BIGINT},
+			#{reProcdefCode,jdbcType=VARCHAR},
+			#{nodeCode,jdbcType=VARCHAR},
+			1,
+			#{delFlag,jdbcType=BIGINT},
+			#{createTime,jdbcType=TIMESTAMP},
+			#{updateTime,jdbcType=TIMESTAMP},
+			#{createUser,jdbcType=VARCHAR},
+			#{updateUser,jdbcType=VARCHAR}
+		)
+	</insert>
+	<!-- 批量保存待办事项信息 -->
+	<insert id="batchSave" parameterType="java.util.List" >
+   		insert into bpm_re_identitylink 
+   		(      
+   			TYPE,
+			EMPLOYEE_ID,
+			GROUP_ID,
+			RE_PROCDEF_CODE,
+			NODE_CODE,
+			VERSION,
+			DEL_FLAG,
+			CREATE_TIME,
+			UPDATE_TIME,
+			CREATE_USER,
+			UPDATE_USER
+	    )
+        select T.* FROM (
+      	<foreach collection="list" item="item" index="index" separator="UNION">
+			SELECT
+				#{item.type,jdbcType=VARCHAR} as TYPE,
+				#{item.employeeId,jdbcType=BIGINT} as EMPLOYEE_ID,
+				#{item.groupId,jdbcType=BIGINT} as GROUP_ID,
+				#{item.reProcdefCode,jdbcType=VARCHAR} as RE_PROCDEF_CODE,
+				#{item.nodeCode,jdbcType=VARCHAR} as NODE_CODE,
+				1 as VERSION,
+				#{item.delFlag,jdbcType=BIGINT} as DEL_FLAG,
+				#{item.createTime,jdbcType=TIMESTAMP} as CREATE_TIME,
+				#{item.updateTime,jdbcType=TIMESTAMP} as UPDATE_TIME,
+				#{item.createUser,jdbcType=VARCHAR} as CREATE_USER,
+				#{item.updateUser,jdbcType=VARCHAR} as UPDATE_USER
+			FROM DUAL
+		</foreach>
+      ) T
+    </insert>
+
+	<!-- 根据主键更新位置信息 -->
+	<update id="updateById" parameterType="com.ule.oa.base.po.ReIdentitylink">
+		update base_position
+		<set>
+		    <if test="id!=null">ID=#{id,jdbcType=BIGINT},</if>
+			<if test="type!=null">TYPE=#{type,jdbcType=VARCHAR},</if>
+			<if test="employeeId!=null">EMPLOYEE_ID=#{employeeId,jdbcType=BIGINT},</if>
+			<if test="groupId!=null">GROUP_ID=#{groupId,jdbcType=BIGINT},</if>
+			<if test="reProcdefCode!=null">RE_PROCDEF_CODE=#{reProcdefCode,jdbcType=VARCHAR},</if>
+			<if test="nodeCode!=null">NODE_CODE=#{nodeCode,jdbcType=VARCHAR},</if>
+			<if test="version!=null">VERSION=#{version,jdbcType=BIGINT},</if>
+			<if test="delFlag!=null">DEL_FLAG=#{delFlag,jdbcType=BIGINT},</if>
+			<if test="createTime!=null">CREATE_TIME=#{createTime,jdbcType=TIMESTAMP},</if>
+			<if test="updateTime!=null">UPDATE_TIME=#{updateTime,jdbcType=TIMESTAMP},</if>
+			<if test="createUser!=null">CREATE_USER=#{createUser,jdbcType=VARCHAR},</if>
+			<if test="updateUser!=null">UPDATE_USER=#{updateUser,jdbcType=VARCHAR},</if>
+		    UPDATE_TIME = now()
+		</set>
+		where id = #{id,jdbcType=BIGINT}
+	</update>
+</mapper>

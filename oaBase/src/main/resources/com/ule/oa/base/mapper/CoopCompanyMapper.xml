@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ule.oa.base.mapper.CoopCompanyMapper" >
+  <resultMap id="BaseResultMap" type="com.ule.oa.base.po.CoopCompany" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="emp_type_id" property="empTypeId" jdbcType="BIGINT" />
+    <result column="coop_company_code" property="coopCompanyCode" jdbcType="VARCHAR" />
+    <result column="coop_company_name" property="coopCompanyName" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="del_flag" property="delFlag" jdbcType="INTEGER" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, emp_type_id, coop_company_code, coop_company_name, create_time, create_user, update_time, 
+    update_user, del_flag, remark
+  </sql>
+  
+  <select id="getListByCondition" parameterType="com.ule.oa.base.po.CoopCompany" resultMap="BaseResultMap">
+  	select <include refid="Base_Column_List"/> from base_coop_company
+  	where del_flag = 0
+  	<if test="null != id">
+  		and id = #{id,jdbcType=BIGINT}
+  	</if>
+  	<if test="empTypeId != null">
+  		and emp_type_id = #{empTypeId,jdbcType=BIGINT}
+  	</if>
+  	<if test="coopCompanyCode != null and coopCompanyCode !=''">
+  		and coop_company_code = #{coopCompanyCode,jdbcType=VARCHAR}
+  	</if>
+  	<if test="coopCompanyName != null and coopCompanyName !=''">
+  		and coop_company_name = #{coopCompanyName,jdbcType=VARCHAR}
+  	</if>
+  	<if test="remark != null and remark !=''">
+  		and remark = #{remark,jdbcType=VARCHAR}
+  	</if>
+  </select>
+
+  <insert id="save" parameterType="com.ule.oa.base.po.CoopCompany" >
+    insert into base_coop_company (emp_type_id, coop_company_code, 
+      coop_company_name, create_time, create_user, 
+      update_time, update_user, del_flag, 
+      remark)
+    values (#{empTypeId,jdbcType=BIGINT}, #{coopCompanyCode,jdbcType=VARCHAR}, 
+      #{coopCompanyName,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{createUser,jdbcType=VARCHAR}, 
+      #{updateTime,jdbcType=TIMESTAMP}, #{updateUser,jdbcType=VARCHAR}, #{delFlag,jdbcType=INTEGER}, 
+      #{remark,jdbcType=VARCHAR})
+  </insert>
+  
+  <update id="updateById" parameterType="com.ule.oa.base.po.CoopCompany" >
+    update base_coop_company
+    <set >
+      <if test="empTypeId != null" >
+        emp_type_id = #{empTypeId,jdbcType=BIGINT},
+      </if>
+      <if test="coopCompanyCode != null" >
+        coop_company_code = #{coopCompanyCode,jdbcType=VARCHAR},
+      </if>
+      <if test="coopCompanyName != null" >
+        coop_company_name = #{coopCompanyName,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUser != null" >
+        create_user = #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="delFlag != null" >
+        del_flag = #{delFlag,jdbcType=INTEGER},
+      </if>
+      <if test="remark != null" >
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

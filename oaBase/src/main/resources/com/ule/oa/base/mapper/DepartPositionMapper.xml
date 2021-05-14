@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ule.oa.base.mapper.DepartPositionMapper" >
+  <resultMap id="BaseResultMap" type="com.ule.oa.base.po.DepartPosition" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="company_id" property="companyId" jdbcType="BIGINT" />
+    <result column="depart_id" property="departId" jdbcType="BIGINT" />
+    <result column="position_id" property="positionId" jdbcType="BIGINT" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="del_flag" property="delFlag" jdbcType="INTEGER" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    id, company_id, depart_id, position_id, create_time, create_user, update_time, update_user, 
+    del_flag, remark
+  </sql>
+  
+  <select id="getListByCondition" parameterType="com.ule.oa.base.po.DepartPosition" resultMap="BaseResultMap">
+  	select <include refid="Base_Column_List"/> from base_depart_position
+  	where del_flag = 0
+  	<if test="companyId != null and companyId != ''">
+  		and company_id = #{companyId,jdbcType=BIGINT}
+  	</if>
+  	<if test="departId != null and departId !=''">
+  		and depart_id = #{departId,jdbcType=BIGINT}
+  	</if>
+  	<if test="positionId != null and positionId !=''">
+  		and position_id = #{positionId,jdbcType=BIGINT}
+  	</if>
+  	<if test="remark != null and remark !=''">
+  		and remark = #{remark,jdbcType=BIGINT}
+  	</if>
+  </select>
+  
+  <insert id="save" parameterType="com.ule.oa.base.po.DepartPosition" >
+    insert into base_depart_position (company_id, depart_id, 
+      position_id, create_time, create_user, 
+      update_time, update_user, del_flag, 
+      remark)
+    values (#{companyId,jdbcType=BIGINT}, #{departId,jdbcType=BIGINT}, 
+      #{positionId,jdbcType=BIGINT}, #{createTime,jdbcType=TIMESTAMP}, #{createUser,jdbcType=VARCHAR}, 
+      #{updateTime,jdbcType=TIMESTAMP}, #{updateUser,jdbcType=VARCHAR}, #{delFlag,jdbcType=INTEGER}, 
+      #{remark,jdbcType=VARCHAR})
+  </insert>
+  
+  <update id="updateById" parameterType="com.ule.oa.base.po.DepartPosition" >
+    update base_depart_position
+    <set >
+      <if test="companyId != null" >
+        company_id = #{companyId,jdbcType=BIGINT},
+      </if>
+      <if test="departId != null" >
+        depart_id = #{departId,jdbcType=BIGINT},
+      </if>
+      <if test="positionId != null" >
+        position_id = #{positionId,jdbcType=BIGINT},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUser != null" >
+        create_user = #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="delFlag != null" >
+        del_flag = #{delFlag,jdbcType=INTEGER},
+      </if>
+      <if test="remark != null" >
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+  <update id="delByPositionId" parameterType="java.lang.Long">
+  	update base_depart_position set del_flag = 1 where position_id = #{positionId,jdbcType=BIGINT}
+  </update>
+  
+  <update id="delByDepartId">
+  	update base_depart_position set del_flag = 1,update_time = #{updateTime,jdbcType=TIMESTAMP},update_user = #{updateUser,jdbcType=VARCHAR} where 
+  	   del_flag = 0 and depart_id = #{departId,jdbcType=BIGINT} 
+  </update>
+  
+</mapper>

@@ -1,0 +1,344 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ule.oa.base.mapper.LeaveRecordMapper" >
+ 
+ <resultMap id="UsedLeaveMap" type="com.ule.oa.base.po.LeaveRecord" >
+    <result column="employee_id" property="employeeId" jdbcType="BIGINT" />
+    <result column="type" property="type" jdbcType="INTEGER" />
+    <result column="year" property="year" jdbcType="INTEGER" />
+    <result column="bill_type" property="billType" jdbcType="INTEGER" />
+    <result column="category" property="category" jdbcType="VARCHAR" />
+    <result column="days" property="days" jdbcType="DOUBLE" />
+    <result column="parend_id" property="parendId" jdbcType="BIGINT" />
+  </resultMap>
+
+  <sql id="Base_Column_List">
+  	id,employee_id,type,days,days_unit,bill_id,bill_type,update_type,create_time,create_user,del_flag,remark,source
+  </sql>
+	
+  <insert id="save" parameterType="com.ule.oa.base.po.LeaveRecord" useGeneratedKeys="true" keyProperty="id">
+    insert into leave_record (
+      employee_id,
+      type,
+      days,
+      days_unit,
+      bill_id,
+      bill_type,
+      create_time,
+      create_user,
+      del_flag,
+      source,
+      <if test="updateType != null"> 
+        update_type,
+      </if>
+      remark
+      )
+    values (
+      #{employeeId,jdbcType=BIGINT},
+      #{type,jdbcType=INTEGER}, 
+      #{days,jdbcType=DOUBLE}, 
+      #{daysUnit,jdbcType=INTEGER},
+      #{billId,jdbcType=BIGINT}, 
+      #{billType,jdbcType=VARCHAR}, 
+      #{createTime,jdbcType=TIMESTAMP}, 
+      #{createUser,jdbcType=VARCHAR},
+      #{delFlag,jdbcType=INTEGER},
+      #{source,jdbcType=INTEGER},
+      <if test="updateType != null"> 
+         #{updateType,jdbcType=INTEGER},
+      </if>
+      #{remark,jdbcType=VARCHAR}
+      )
+  </insert>
+  
+  <select id="getUsedLeaveListByEmployeeId" resultMap="UsedLeaveMap" parameterType="java.lang.Long">
+      SELECT 
+		 a.employee_id,a.type,c.year,a.bill_type,c.category,SUM(b.days) as days,c.parend_id
+		FROM
+		  leave_record a 
+		  LEFT JOIN leave_record_detail b 
+		    ON a.id = b.leave_record_id 
+		  LEFT JOIN base_emp_leave c ON b.base_emp_leave_id = c.id
+		WHERE a.del_flag=0 and b.del_flag=0 and c.del_flag=0 and a.employee_id=#{employeeId,jdbcType=BIGINT} GROUP BY c.year,a.employee_id,a.bill_type,a.type,c.category,c.parend_id
+  </select>
+  
+  <select id="getUsedLeaveListByEmployeeIds" resultMap="UsedLeaveMap" parameterType="java.util.List">
+      SELECT 
+		 a.employee_id,a.type,c.year,a.bill_type,c.category,SUM(b.days) as days,c.parend_id
+		FROM
+		  leave_record a 
+		  LEFT JOIN leave_record_detail b 
+		    ON a.id = b.leave_record_id 
+		  LEFT JOIN base_emp_leave c ON b.base_emp_leave_id = c.id
+		WHERE  a.del_flag=0 and b.del_flag=0 and c.del_flag=0 and
+		<if test="employeeIdList != null"> 
+	              and a.employee_id in 
+	      <foreach collection="employeeIdList" index="index" item="item" open="(" separator="," close=")">
+               #{item}
+          </foreach>
+	    </if>
+	    GROUP BY c.year,a.employee_id,a.bill_type,a.type,c.category,c.parend_id
+  </select>
+  
+   <select id="getLeaveRecordList" parameterType="com.ule.oa.base.po.RequestQueryLeaveRecord" resultType="com.ule.oa.base.po.LeaveRecord">
+   		select 
+		lr.id as id,
+		lr.employee_id as employeeId,
+		lr.type as type,
+		lr.days as days,
+		lr.days_unit as daysUnit,
+		lr.bill_type as billType
+		from leave_record lr
+		left join base_emp_application_leave al
+		on lr.bill_id = al.id
+	  	where lr.del_flag = 0
+	  	<if test="employeeCode != null and employeeCode !=''">
+	  		and lr.employee_id = (SELECT id FROM base_employee WHERE code = #{employeeCode} AND del_flag = 0 limit 1)
+	  	</if>
+	  	<if test="employeeName != null and employeeName !=''">
+	  		and lr.employee_id = (SELECT id FROM base_employee WHERE cn_name = #{employeeName} AND del_flag = 0 limit 1)
+	  	</if>
+	  	<if test="billType != null and billType !=''">
+	  		and lr.bill_type = #{billType}
+	  	</if>
+	  	<if test="submitStartDate != null">
+	  		and al.SUBMIT_DATE &gt;= #{submitStartDate}
+	  	</if>
+	  	<if test="submitEndDate != null">
+	  		and al.SUBMIT_DATE &lt;=#{submitEndDate}
+	  	</if>
+	  	order by lr.id desc
+		<if test="offset != null and limit != null">
+			limit #{offset},#{limit}
+		</if>
+   </select>
+   <select id="getLeaveRecordDetailList" parameterType="com.ule.oa.base.po.RequestQueryLeaveRecord" resultType="com.ule.oa.base.po.LeaveRecordDetail">
+   		select 
+		lrd.id as id,
+		lrd.leave_record_id as leaveRecordId,
+		lrd.base_emp_leave_id as baseEmpLeaveId,
+		lrd.days as days,
+		lrd.create_time as createTime,
+		lrd.create_user as createUser,
+		el.type as type
+		from leave_record_detail lrd
+		left join leave_record lr
+		on lr.id = lrd.leave_record_id
+		left join base_emp_leave el
+		on lrd.base_emp_leave_id = el.id
+		left join base_employee be
+		on be.id = lr.employee_id
+	  	where lr.del_flag = 0 and lr.days&lt;&gt;0
+	  	and bill_type != 'overtime'
+	  	<if test="employeeCode != null and employeeCode !=''">
+	  		and be.code like concat('%',#{employeeCode,jdbcType=VARCHAR},'%')
+	  	</if>
+	  	<if test="employeeName != null and employeeName !=''">
+	  		and be.cn_name like concat('%',#{employeeName,jdbcType=VARCHAR},'%')
+	  	</if>
+	  	<if test="source != null">
+	  		and lr.source = #{source}
+	  	</if>
+	  	<if test="leaveTypeList != null and leaveTypeList.size > 0">
+			and el.type in
+			<foreach collection="leaveTypeList" item="leaveType" open="(" separator="," close=")">
+				#{leaveType,jdbcType=BIGINT}
+			</foreach>
+	    </if>
+	  	<if test="createStartDate != null">
+	  		and lrd.create_time &gt;= #{createStartDate}
+	  	</if>
+	  	<if test="createEndDate != null">
+	  		and lrd.create_time &lt;=#{createEndDate}
+	  	</if>
+	  	order by lrd.id desc
+		<if test="offset != null and limit != null">
+			limit #{offset},#{limit}
+		</if>
+   </select>
+   <select id="getleaveRecordInfo" resultType="com.ule.oa.base.po.LeaveRecord">
+   		SELECT
+   		<include refid="Base_Column_List"></include>
+   		FROM leave_record
+   		WHERE id = #{leaveRecordId}
+   		and del_flag = 0 limit 1;
+   </select>
+   <select id="getLeaveRecordCount" parameterType="com.ule.oa.base.po.RequestQueryLeaveRecord" resultType="int">
+   		select 
+		count(1)
+		from leave_record_detail lrd
+		left join leave_record lr
+		on lr.id = lrd.leave_record_id
+		left join base_emp_leave el
+		on lrd.base_emp_leave_id = el.id
+		left join base_employee be
+		on be.id = lr.employee_id
+	  	where lr.del_flag = 0 and lr.days&lt;&gt;0
+	  	and bill_type != 'overtime'
+	  	<if test="employeeCode != null and employeeCode !=''">
+	  		and be.code like concat('%',#{employeeCode,jdbcType=VARCHAR},'%')
+	  	</if>
+	  	<if test="employeeName != null and employeeName !=''">
+	  		and be.cn_name like concat('%',#{employeeName,jdbcType=VARCHAR},'%')
+	  	</if>
+	  	<if test="source != null and source !=''">
+	  		and lr.source = #{source}
+	  	</if>
+	  	<if test="leaveTypeList != null and leaveTypeList.size > 0">
+			and el.type in
+			<foreach collection="leaveTypeList" item="leaveType" open="(" separator="," close=")">
+				#{leaveType,jdbcType=BIGINT}
+			</foreach>
+	    </if>
+	  	<if test="createStartDate != null">
+	  		and lrd.create_time &gt;= #{createStartDate}
+	  	</if>
+	  	<if test="createEndDate != null">
+	  		and lrd.create_time &lt;=#{createEndDate}
+	  	</if>
+   </select>
+   <select id="getEmpInfo" resultType="com.ule.oa.base.po.Employee">
+   		select
+   		id as id,
+   		code as code,
+   		cn_name as cnName,
+   		first_Entry_time as firstEntryTime,
+   		Quit_time as quitTime,
+   		job_status as jobStatus
+   		from base_employee
+   		where del_flag = 0 
+   		<if test="employeeCode != null and employeeCode !=''">
+	  		and code like concat('%',#{employeeCode,jdbcType=VARCHAR},'%') 
+	  	</if>
+	  	<if test="employeeName != null and employeeName !=''">
+	  		and cn_name like concat('%',#{employeeName,jdbcType=VARCHAR},'%') 
+	  	</if>
+   </select>
+   <select id="getDepartName" resultType="java.lang.String">
+   		select
+   		name
+   		from base_depart d
+   		left join base_emp_depart ed
+   		on d.id = ed.depart_id
+   		where ed.employee_id = #{employeeId}
+   		and d.del_flag = 0
+   </select>
+   <select id="getEmployeeById" resultType="com.ule.oa.base.po.Employee">
+   		SELECT code,cn_name
+   		FROM base_employee
+   		WHERE id = #{employeeId}
+   </select>
+   <select id="getLeaveTypeText" resultType="java.lang.String">
+   		SELECT display_name FROM sys_config WHERE code = 'leaveType' and display_code = #{type} and del_flag = 0
+   </select>
+   <select id="getLeaveIdByLeaveRecordId" resultType="com.ule.oa.base.po.LeaveRecordDetail">
+   		SELECT
+   		base_emp_leave_id as baseEmpLeaveId,
+   		days as days,
+   		create_time as createTime,
+   		create_user as createUser
+   		FROM leave_record_detail WHERE leave_record_id = #{leaveRecordId}
+   </select>
+   
+   <select id="getUsedDaysByYear" parameterType="com.ule.oa.base.po.LeaveRecord" resultType="com.ule.oa.base.po.LeaveRecord">
+   		SELECT 
+		  a.employee_id as employeeId,c.year as year,a.bill_type as billType,c.category as category,SUM(b.days) as days
+		FROM
+		  leave_record a 
+		  LEFT JOIN leave_record_detail b 
+		    ON a.id = b.leave_record_id 
+		  LEFT JOIN base_emp_leave c 
+		    ON c.id = b.base_emp_leave_id 
+		WHERE a.update_type =0 and a.bill_type IN('leave','cancelLeave') and a.employee_id = #{employeeId}
+		      AND a.type= #{type}
+		      AND c.year = #{year}
+		GROUP BY a.employee_id,c.year,a.bill_type,c.category
+   </select>
+   
+   <select id="getUsedDaysByYears" parameterType="com.ule.oa.base.po.LeaveRecord" resultType="com.ule.oa.base.po.LeaveRecord">
+   		SELECT 
+		  a.employee_id as employeeId,c.year as year,a.bill_type as billType,c.category as category,SUM(b.days) as days
+		FROM
+		  leave_record a 
+		  LEFT JOIN leave_record_detail b 
+		    ON a.id = b.leave_record_id 
+		  LEFT JOIN base_emp_leave c 
+		    ON c.id = b.base_emp_leave_id 
+		WHERE a.update_type =0 and a.bill_type IN('leave','cancelLeave') and a.employee_id = #{employeeId}
+		      AND a.type= #{type}
+		      AND c.year in 
+		      <foreach collection="years" index="index" item="item" open="(" separator="," close=")">
+               #{item}
+              </foreach>  
+		GROUP BY a.employee_id,c.year,a.bill_type,c.category
+   </select>
+   
+   <select id="getUsedDaysByYearAndTypes" parameterType="com.ule.oa.base.po.LeaveRecord" resultType="com.ule.oa.base.po.LeaveRecord">
+   		SELECT 
+		  a.employee_id as employeeId,c.year as year,a.type as type,a.bill_type as billType,c.category as category,SUM(b.days) as days
+		FROM
+		  leave_record a 
+		  LEFT JOIN leave_record_detail b 
+		    ON a.id = b.leave_record_id 
+		  LEFT JOIN base_emp_leave c 
+		    ON c.id = b.base_emp_leave_id 
+		WHERE a.update_type =0 and a.bill_type IN('leave','cancelLeave') and a.employee_id = #{employeeId}
+		      AND a.type in
+		      <foreach collection="types" index="index" item="item" open="(" separator="," close=")">
+               #{item}
+              </foreach>
+		      AND c.year = #{year}
+		GROUP BY a.employee_id,c.year,a.type,a.bill_type,c.category
+   </select>
+   
+   <delete id="deleteByCondition" parameterType="com.ule.oa.base.po.LeaveRecord">
+       delete from leave_record where TYPE=#{type} AND bill_type=#{billType}
+   </delete>
+  
+   <select id="selectByCondition" parameterType="com.ule.oa.base.po.LeaveRecord" resultType="com.ule.oa.base.po.LeaveRecord">
+   		select * from leave_record where TYPE=#{type} AND bill_type=#{billType}
+   </select>
+	<select id="getIdByBillType" resultType="java.lang.Long">
+		select id from leave_record where bill_type=#{billType};
+	</select>
+	<delete id="deleteByBillType" parameterType="java.lang.String">
+       delete from leave_record where bill_type=#{billType}
+   </delete>  
+   <delete id="deleteDetailByLeaveRecordId" parameterType="java.lang.Long">
+       delete from leave_record_detail where leave_record_id in
+       <foreach collection="list" item="item" index="index" open="(" close=")" separator=",">
+		  #{item}
+		</foreach>
+   </delete>
+   
+   <select id="getRecordListByYearAndEmployee" resultType="com.ule.oa.base.po.LeaveRecord">
+   
+	  SELECT 
+		  a.type,
+		  a.days,
+		  a.employee_id as employeeId,
+		  a.bill_id as billId,
+		  c.category,
+		  a.create_time as createTime,
+		  a.bill_type as billType,
+		  a.remark,
+		  a.days_unit as daysUnit,
+		  CASE WHEN a.bill_type = 'leave' THEN e.start_time WHEN a.bill_type = 'cancelLeave' THEN f.start_time WHEN a.bill_type = 'registerLeave' THEN d.start_time END startTime,
+          CASE WHEN a.bill_type = 'leave' THEN e.end_time WHEN a.bill_type = 'cancelLeave' THEN f.end_time WHEN a.bill_type = 'registerLeave' THEN d.end_time END endTime
+		FROM
+		  leave_record a 
+		  LEFT JOIN leave_record_detail b 
+		    ON a.id = b.leave_record_id 
+		  LEFT JOIN base_emp_leave c 
+		    ON c.id = b.base_emp_leave_id 
+		  LEFT JOIN leave_apply_register d ON d.id= a.bill_id AND a.bill_type = 'registerLeave'
+  		  LEFT JOIN base_emp_application_leave e ON e.id= a.bill_id AND a.bill_type = 'leave'
+ 	      LEFT JOIN base_emp_application_leave_abolish f ON f.id= a.bill_id AND a.bill_type = 'cancelLeave'
+		WHERE a.del_flag = 0 
+		  AND b.del_flag = 0 
+		  AND a.employee_id=#{employeeId}
+		  AND a.bill_type IN('leave','cancelLeave','registerLeave')
+		  AND c.year &gt;= 2020 AND c.year=#{year} AND a.days&lt;&gt;0 ORDER BY a.create_time DESC
+   		
+   </select>
+</mapper>

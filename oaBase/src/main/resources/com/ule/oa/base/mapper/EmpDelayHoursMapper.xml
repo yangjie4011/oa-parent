@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ule.oa.base.mapper.EmpDelayHoursMapper" >
+  <resultMap id="BaseResultMap" type="com.ule.oa.base.po.EmpDelayHours" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="employee_id" property="employeeId" jdbcType="BIGINT" />
+    <result column="delay_month" property="delayMonth" jdbcType="BIGINT" />
+    <result column="total_delay_hours" property="totalDelayHours" jdbcType="DOUBLE" />
+    <result column="used_delay_hours" property="usedDelayHours" jdbcType="DOUBLE" />
+    <result column="locked_delay_hours" property="lockedDelayHours" jdbcType="DOUBLE" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="del_flag" property="delFlag" jdbcType="INTEGER" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    id, employee_id, delay_month, total_delay_hours, used_delay_hours,locked_delay_hours,
+    status,create_time,update_time, create_user, update_user, del_flag
+  </sql>
+  
+  <!-- 根据员工id与月份查询 -->
+  <select id="getByEmpAndMonth" resultMap="BaseResultMap">
+  	select <include refid="Base_Column_List"/>
+  	from base_emp_delay_hours
+  	where employee_id = #{employeeId}
+  	and delay_month = #{delayMonth}
+	and del_flag = 0
+	limit 1
+  </select>
+  
+  <insert id="insertEmpDelayHours" parameterType="com.ule.oa.base.po.EmpDelayHours" useGeneratedKeys="true" keyProperty="id">
+  	insert into base_emp_delay_hours(employee_id,delay_month,total_delay_hours,
+  	create_time, create_user,del_flag)
+  	values (#{employeeId},#{delayMonth},#{totalDelayHours},
+  	#{createTime},#{createUser},#{delFlag})
+  	<selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">
+        SELECT LAST_INSERT_ID() AS id
+    </selectKey>
+  </insert>
+  
+  <update id="updateEmpDelayHours" parameterType="com.ule.oa.base.po.EmpDelayHours" >
+    update base_emp_delay_hours
+    <set >
+	  <if test="totalDelayHours != null">
+	    total_delay_hours = #{totalDelayHours}, 
+	  </if>
+	  <if test="usedDelayHours != null">
+	  	used_delay_hours = #{usedDelayHours},
+	  </if>
+	  <if test="lockedDelayHours != null">
+	  	locked_delay_hours = #{lockedDelayHours},
+	  </if>
+	  <if test="status != null">
+	  	status = #{status},
+	  </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser},
+      </if>
+    </set>
+    where id = #{id}
+  </update>
+  
+  <select id="getByemployIdListAndMonth" resultType="com.ule.oa.base.po.EmpDelayHours">
+  	select any_value(employee_id) AS employee_id,SUM(total_delay_hours) AS totalDelayHours,SUM(used_delay_hours) AS usedDelayHours,SUM(locked_delay_hours) AS lockedDelayHours
+  	from base_emp_delay_hours
+  	where del_flag = 0 and delay_month &lt;= #{endMonth} and delay_month &gt;= #{startMonth}
+  		  <if test="employIdList != null"> 
+		      and employee_id in 
+		      <foreach collection="employIdList" index="index" item="item" open="(" separator="," close=")">
+	               #{item}
+	          </foreach>
+		   </if>
+		   group by employee_id
+   </select>
+   
+   <select id="getCountByEmpAndMonth" resultType="com.ule.oa.base.po.EmpDelayHours">
+	  	SELECT 
+		  employee_id as employeeId,
+		  sum(total_delay_hours) as totalDelayHours,
+		  sum(used_delay_hours) as usedDelayHours,
+		  sum(locked_delay_hours) as lockedDelayHours
+		FROM
+		  base_emp_delay_hours 
+	    where 	employee_id = #{employeeId} and del_flag = 0
+		  	and delay_month &lt;= #{endMonth}
+			and delay_month &gt;= #{startMonth}
+  </select>
+  
+  <select id="getByEmpAndYear" resultMap="BaseResultMap">
+	  	select <include refid="Base_Column_List"/> from base_emp_delay_hours
+		  	where employee_id = #{employeeId} and del_flag = 0
+		  	and delay_month &lt;= #{endMonth}
+			and delay_month &gt;= #{startMonth} order by delay_month
+  </select>
+  
+  <select id="getLockedList" resultMap="BaseResultMap">
+	  	select <include refid="Base_Column_List"/> from base_emp_delay_hours
+		  	where employee_id = #{employeeId} and del_flag = 0
+		  	and delay_month &lt;= #{endMonth}
+			and delay_month &gt;= #{startMonth} 
+			<if test="sort != null and sort != ''"> 
+			    order by delay_month  ${sort}
+			</if>
+  </select>
+  
+  <select id="getLastMonthTotalHours" resultType="Map">
+  	SELECT  a.code,temp.totalDelayHours,temp.usedDelayHours,temp.lockedDelayHours FROM
+		(SELECT 
+		  any_value (employee_id) AS employeeId,
+		  SUM(total_delay_hours) AS totalDelayHours,
+		  SUM(used_delay_hours) AS usedDelayHours,
+		  SUM(locked_delay_hours) AS lockedDelayHours 
+		FROM
+		  base_emp_delay_hours 
+		WHERE del_flag = 0 
+		  AND delay_month &gt;= #{startMonth} 
+		  AND delay_month &lt; #{endMonth}
+		  GROUP BY employee_id) temp LEFT JOIN base_employee a ON temp.employeeId = a.id LEFT JOIN base_emp_depart b ON a.id = b.employee_id
+	WHERE a.del_flag = 0 and b.del_flag= 0 
+	        <if test="departId != null"> 
+			   and b.depart_id= #{departId}
+			</if>
+  </select>
+  
+</mapper>

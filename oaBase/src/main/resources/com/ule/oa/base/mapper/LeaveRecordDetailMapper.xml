@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ule.oa.base.mapper.LeaveRecordDetailMapper" >
+
+  <resultMap id="BaseResultMap" type="com.ule.oa.base.po.LeaveRecordDetail" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="leave_record_id" property="leaveRecordId" jdbcType="BIGINT" />
+    <result column="base_emp_leave_id" property="baseEmpLeaveId" jdbcType="BIGINT" />
+    <result column="days" property="days" jdbcType="DOUBLE" />
+    <result column="del_flag" property="delFlag" jdbcType="INTEGER" />
+    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+      id, leave_record_id, base_emp_leave_id, days, create_time, create_user, update_time, update_user, del_flag
+  </sql>
+  <select id="selectByCondition" resultMap="BaseResultMap" parameterType="com.ule.oa.base.po.LeaveRecordDetail">
+  	 select <include refid="Base_Column_List"/> from leave_record_detail where leave_record_id = #{leaveRecordId} and base_emp_leave_id= #{baseEmpLeaveId}
+  </select>
+  
+  <insert id="save" parameterType="com.ule.oa.base.po.LeaveRecordDetail" >
+    insert into leave_record_detail (
+        leave_record_id,
+        base_emp_leave_id,
+        days,
+        create_time,
+        create_user,
+        del_flag
+      )
+    values (
+      #{leaveRecordId,jdbcType=BIGINT},
+      #{baseEmpLeaveId,jdbcType=BIGINT},
+      #{days,jdbcType=DOUBLE}, 
+      #{createTime,jdbcType=TIMESTAMP}, 
+      #{createUser,jdbcType=VARCHAR},
+      #{delFlag,jdbcType=INTEGER}
+      )
+  </insert>
+  
+  <insert id="batchSave" parameterType="java.util.List">
+	insert into leave_record_detail (
+	    leave_record_id,
+        base_emp_leave_id,
+        days,
+        create_time,
+        create_user,
+        del_flag
+	)
+	select T.* FROM (
+     	<foreach collection="list" item="item" index="index" separator="UNION">
+		SELECT
+			#{item.leaveRecordId} as leave_record_id,
+			#{item.baseEmpLeaveId} as base_emp_leave_id,
+			#{item.days} as days,
+			#{item.createTime} as create_time,
+			#{item.createUser} as create_user,
+			#{item.delFlag} as del_flag
+		FROM DUAL
+	</foreach>
+       ) T
+  </insert>
+  
+  <update id="updateById" parameterType="com.ule.oa.base.po.LeaveRecordDetail" >
+    update leave_record_detail set days = #{days},update_time=#{updateTime},update_user=#{updateUser}
+      where id = #{id}
+  </update>
+  
+  <delete id="deleteByCondition" parameterType="com.ule.oa.base.po.LeaveRecordDetail">
+       delete from leave_record_detail where leave_record_id = #{leaveRecordId}
+  </delete>
+  
+   <!-- 查询销假调休所有流水对应的假期单id与流水占用的小时数 -->
+  <select id="getByApplicationAbolishLeaveId" resultMap="BaseResultMap" parameterType="long">
+  	 select lrd.base_emp_leave_id as baseEmpLeaveId,lrd.days as days
+  	 from leave_record_detail lrd
+  	 left join leave_record lr on lrd.leave_record_id = lr.id
+  	 left join base_emp_application_leave_abolish eab on eab.leave_id = lr.bill_id
+  	 where eab.id = #{empApplicationleaveId} 
+  	 and lr.type = 5
+  	 AND lr.bill_type = 'leave'
+  	 order by lrd.id desc
+  </select>
+  
+</mapper>

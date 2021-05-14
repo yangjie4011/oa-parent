@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ule.oa.base.mapper.AttnUpdateLogMapper" >
+ <resultMap id="BaseResultMap" type="com.ule.oa.base.po.AttnUpdateLog" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="employee_id" property="employeeId" jdbcType="BIGINT" />
+    <result column="update_attn_date" property="updateAttnDate" jdbcType="DATE" />
+    <result column="update_start_time" property="updateStartTime" jdbcType="TIMESTAMP" />
+    <result column="update_end_time" property="updateEndTime" jdbcType="TIMESTAMP" />
+    <result column="type" property="type" jdbcType="INTEGER" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+  </resultMap>
+
+
+  <select id="selectByCondition" resultType="com.ule.oa.base.po.AttnUpdateLog" parameterType="com.ule.oa.base.po.AttnUpdateLog" >
+	    SELECT 
+	  a.id,a.employee_id as employeeId,a.update_attn_date as updateAttnDate,a.insert_attn_time as insertAttnTime,a.update_start_time as updateStartTime,
+	  a.update_end_time as updateEndTime,a.type,a.remark,a.create_time as createTime,a.create_user as createUser,
+	  b.code,b.cn_name,d.`name`as departName
+	FROM
+	  attn_update_log a 
+	  LEFT JOIN base_employee b 
+	    ON a.employee_id = b.id 
+	  LEFT JOIN base_emp_depart c 
+	    ON c.employee_id = a.employee_id 
+	  LEFT JOIN base_depart d 
+	    ON d.id = c.depart_id 
+     <where>
+      	  <if test="type != null and type !=''" >
+      	   and a.type = #{type,jdbcType=VARCHAR}
+	      </if>
+	      <if test="code != null and code !=''" >
+	      and  b.code = #{code,jdbcType=VARCHAR}
+	      </if>
+	      <if test="cnName != null and cnName !=''" >
+	      and  b.cn_name = #{cnName,jdbcType=VARCHAR}
+	      </if>
+	      <if test="departId != null" >
+	      and  d.id = #{departId,jdbcType=BIGINT}
+	      </if>
+	      <if test="startTime != null" >
+	      and  a.update_attn_date  &gt;= #{startTime,jdbcType=DATE}
+	      </if>
+	      <if test="endTime != null" >
+	      and   a.update_attn_date  &lt;= #{endTime,jdbcType=DATE}
+	      </if>
+	      <if test="currentUserDepart != null and currentUserDepart.size > 0">
+			and b.id in
+			<foreach collection="currentUserDepart" item="ids" open="(" separator="," close=")">
+				#{ids,jdbcType=BIGINT}
+			</foreach>
+		  </if>
+		  <if test="subEmployeeIdList != null and subEmployeeIdList.size > 0">
+			and b.id in
+			<foreach collection="subEmployeeIdList" item="ids" open="(" separator="," close=")">
+				#{ids,jdbcType=BIGINT}
+			</foreach>
+		  </if>
+    </where>
+    ORDER BY a.create_time desc
+     <if test="offset != null and limit != null " >
+	        limit #{offset},#{limit}
+	 </if>
+   
+  </select>
+  
+  <select id="selectCountByCondition" resultType="java.lang.Integer" parameterType="com.ule.oa.base.po.AttnUpdateLog" >
+	    SELECT 
+	   count(*)
+	FROM
+	  attn_update_log a 
+	  LEFT JOIN base_employee b 
+	    ON a.employee_id = b.id 
+	  LEFT JOIN base_emp_depart c 
+	    ON c.employee_id = a.employee_id 
+	  LEFT JOIN base_depart d 
+	    ON d.id = c.depart_id 
+     <where>
+      	  <if test="type != null and type !=''" >
+      	   and a.type = #{type,jdbcType=VARCHAR}
+	      </if>
+	      <if test="code != null and code !=''" >
+	      and  b.code = #{code,jdbcType=VARCHAR}
+	      </if>
+	      <if test="cnName != null and cnName !=''" >
+	      and  b.cn_name = #{cnName,jdbcType=VARCHAR}
+	      </if>
+	      <if test="departId != null" >
+	      and  d.id = #{departId,jdbcType=BIGINT}
+	      </if>
+	      <if test="startTime != null" >
+	      and  a.update_attn_date  &gt;= #{startTime,jdbcType=DATE}
+	      </if>
+	      <if test="endTime != null" >
+	      and   a.update_attn_date  &lt;= #{endTime,jdbcType=DATE}
+	      </if>
+	      <if test="currentUserDepart != null and currentUserDepart.size > 0">
+			and b.id in
+			<foreach collection="currentUserDepart" item="ids" open="(" separator="," close=")">
+				#{ids,jdbcType=BIGINT}
+			</foreach>
+		 </if>
+		 <if test="subEmployeeIdList != null and subEmployeeIdList.size > 0">
+			and b.id in
+			<foreach collection="subEmployeeIdList" item="ids" open="(" separator="," close=")">
+				#{ids,jdbcType=BIGINT}
+			</foreach>
+		  </if>
+    </where>
+  </select>
+ 
+  <insert id="insert" parameterType="com.ule.oa.base.po.AttnUpdateLog" >
+    insert into attn_update_log (id, employee_id, update_attn_date, 
+      update_start_time, update_end_time, type, insert_attn_time,
+      remark, create_time, create_user
+      )
+    values (#{id,jdbcType=BIGINT}, #{employeeId,jdbcType=BIGINT}, #{updateAttnDate,jdbcType=DATE}, 
+      #{updateStartTime,jdbcType=TIMESTAMP}, #{updateEndTime,jdbcType=TIMESTAMP}, #{type,jdbcType=INTEGER}, #{insertAttnTime,jdbcType=TIMESTAMP}, 
+      #{remark,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{createUser,jdbcType=VARCHAR}
+      )
+  </insert>
+  
+</mapper>

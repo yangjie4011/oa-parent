@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="
+     http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.1.xsd
+     http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
+     http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-4.1.xsd
+     http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.1.xsd
+     http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.1.xsd">
+
+	<!-- enable component scanning (beware that this does not enable mapper scanning!) -->
+	<context:component-scan base-package="com.ule.oa">
+		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller" />
+	</context:component-scan>
+	
+	<bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
+		<property name="basenames">
+			<list>
+<!-- 				<value>i18n/common</value> -->
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="propertyConfigurer" class="com.ule.oa.common.spring.config.CustomPropertyPlaceholderConfigurer"
+		lazy-init="false">
+		<property name="locations">
+			<list>
+				<value>classpath:jdbc2.properties</value>
+				<value>classpath:attendanceDb.properties</value>
+				<value>classpath:oa.properties</value>
+			</list>
+		</property>
+		<property name="ignoreResourceNotFound" value="true" />
+		<property name="ignoreUnresolvablePlaceholders" value="true" />
+	</bean>
+	
+	<import resource="spring-dataSource.xml"/>
+	<!-- 引入工作流 -->
+	<import resource="spring-flowable.xml"/>
+	<!-- 配置SqlSessionFactoryBean -->
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="typeAliasesPackage" value="com.ule.oa.*" />
+		<property name="configLocation" value="classpath:mybatis-config.xml" />
+	</bean>
+	<!--  <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="com.ule.oa" />
+		<property name="markerInterface" value="com.ule.oa.common.persistence.SqlMapper" />
+	</bean>-->
+	
+	<bean class="tk.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="com.ule.oa" />
+		<property name="markerInterface" value="com.ule.oa.common.persistence.SqlMapper" />
+		<!-- 另外一种方案是用annotationClass,会扫描使用Repository注解的interface -->
+<!-- 		<property name="annotationClass" value="org.springframework.stereotype.Repository"/> -->
+	</bean>
+
+	<!-- 配置事务管理器，注意这里的dataSource和SqlSessionFactoryBean的dataSource要一致，不然事务就没有作用了 -->
+	<bean id="transactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	
+	<!-- enable transaction demarcation with annotations -->
+	<tx:annotation-driven transaction-manager="transactionManager" order="2"/>
+
+	<aop:aspectj-autoproxy/>
+	
+	<bean id="threadPoolTaskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+		<property name="corePoolSize" value="${thread.corePoolSize}" />
+		<property name="maxPoolSize" value="${thread.maxPoolSize}" />
+		<property name="queueCapacity" value="${thread.queueCapacity}" />
+	</bean> 
+</beans>

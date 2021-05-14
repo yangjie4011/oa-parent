@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ule.oa.base.mapper.EmpFamilyMemberMapper" >
+  <resultMap id="BaseResultMap" type="com.ule.oa.base.po.EmpFamilyMember" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="employee_id" property="employeeId" jdbcType="BIGINT" />
+    <result column="member_name" property="memberName" jdbcType="VARCHAR" />
+    <result column="member_age" property="memberAge" jdbcType="INTEGER" />
+    <result column="member_sex" property="memberSex" jdbcType="INTEGER" />
+    <result column="relation" property="relation" jdbcType="INTEGER" />
+    <result column="member_company_name" property="memberCompanyName" jdbcType="VARCHAR" />
+    <result column="member_mobile" property="memberMobile" jdbcType="VARCHAR" />
+    <result column="member_telphone" property="memberTelphone" jdbcType="VARCHAR" />
+    <result column="birthday" property="birthday" jdbcType="TIMESTAMP" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="del_flag" property="delFlag" jdbcType="INTEGER" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="version" property="version" jdbcType="BIGINT"/>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, employee_id, member_name, member_age, member_sex, relation, member_company_name, 
+    member_mobile, member_telphone,birthday,create_time, create_user, update_time, 
+    update_user, del_flag, remark,version
+  </sql>
+  
+  <select id="getListByCondition" resultMap="BaseResultMap" parameterType="com.ule.oa.base.po.EmpFamilyMember">
+  	select <include refid="Base_Column_List"/> from base_emp_family_member
+  	where del_flag = 0
+  	<if test="null != id ">
+  		and id = #{id,jdbcType=BIGINT }
+  	</if>
+  	<if test="null !=employeeId ">
+  		and employee_id = #{employeeId,jdbcType=BIGINT }
+  	</if>
+  	<if test="null !=relation ">
+  		and relation = #{relation,jdbcType=BIGINT }
+  	</if>
+  	<if test="null !=startDate ">
+  		and birthday &gt;= #{startDate,jdbcType=TIMESTAMP}
+  	</if>
+  </select>
+  
+ <select id="getListByEmployeeId" resultMap="BaseResultMap">
+  	select <include refid="Base_Column_List"/> from base_emp_family_member
+  		where del_flag = 0 and employee_id = #{employeeId,jdbcType=BIGINT }
+  </select>
+ 
+  <insert id="save" parameterType="com.ule.oa.base.po.EmpFamilyMember" >
+    insert into base_emp_family_member (employee_id, member_name, 
+      member_age, member_sex, relation, 
+      member_company_name, member_mobile, member_telphone, 
+      birthday,create_time, create_user, 
+      update_time, update_user, del_flag, 
+      remark)
+    values (#{employeeId,jdbcType=BIGINT}, #{memberName,jdbcType=VARCHAR}, 
+      #{memberAge,jdbcType=INTEGER}, #{memberSex,jdbcType=INTEGER}, #{relation,jdbcType=INTEGER}, 
+      #{memberCompanyName,jdbcType=VARCHAR}, #{memberMobile,jdbcType=VARCHAR}, #{memberTelphone,jdbcType=VARCHAR}, 
+      #{birthday,jdbcType=TIMESTAMP},#{createTime,jdbcType=TIMESTAMP}, #{createUser,jdbcType=VARCHAR}, 
+      #{updateTime,jdbcType=TIMESTAMP}, #{updateUser,jdbcType=VARCHAR}, #{delFlag,jdbcType=INTEGER}, 
+      #{remark,jdbcType=VARCHAR})
+  </insert>
+  
+  <insert id="saveBatch" parameterType="com.ule.oa.base.po.EmpFamilyMember" >
+      insert into base_emp_family_member (employee_id, member_name, 
+      member_age, member_sex, relation, 
+      member_company_name, member_mobile, member_telphone, 
+      birthday,create_time, create_user, 
+      update_time, update_user, del_flag, 
+      remark)
+      values
+      <foreach collection ="list" item="item" index= "index" separator =",">
+	      (#{item.employeeId,jdbcType=BIGINT}, #{item.memberName,jdbcType=VARCHAR}, 
+	      #{item.memberAge,jdbcType=INTEGER}, #{item.memberSex,jdbcType=INTEGER}, #{item.relation,jdbcType=INTEGER}, 
+	      #{item.memberCompanyName,jdbcType=VARCHAR}, #{item.memberMobile,jdbcType=VARCHAR}, #{item.memberTelphone,jdbcType=VARCHAR}, 
+	      #{item.birthday,jdbcType=TIMESTAMP},#{item.createTime,jdbcType=TIMESTAMP}, #{item.createUser,jdbcType=VARCHAR}, 
+	      #{item.updateTime,jdbcType=TIMESTAMP}, #{item.updateUser,jdbcType=VARCHAR}, #{item.delFlag,jdbcType=INTEGER}, 
+	      #{item.remark,jdbcType=VARCHAR})
+      </foreach >
+  </insert>
+  
+  <update id="deleteBatchNotApply">
+    update base_emp_family_member set del_flag = 1,update_time=#{updateTime,jdbcType=TIMESTAMP}
+    ,update_user = #{updateUser,jdbcType=VARCHAR}
+    where employee_id = #{employeeId,jdbcType=BIGINT} and id not in
+    <foreach collection ="list" item="item" index= "index" open="(" separator="," close=")">
+        #{item.id}
+    </foreach>
+  </update>
+  
+  <update id="deleteByEmployeeId">
+    update base_emp_family_member set del_flag = 1,update_time=#{updateTime,jdbcType=TIMESTAMP}
+    ,update_user = #{updateUser,jdbcType=VARCHAR}
+    where del_flag =0 and employee_id = #{employeeId,jdbcType=BIGINT} and relation = #{relation,jdbcType=INTEGER}
+
+  </update>
+  
+  <update id="updateById" parameterType="com.ule.oa.base.po.EmpFamilyMember" >
+    update base_emp_family_member
+    <set >
+      <if test="employeeId != null" >
+        employee_id = #{employeeId,jdbcType=BIGINT},
+      </if>
+      <if test="memberName != null" >
+        member_name = #{memberName,jdbcType=VARCHAR},
+      </if>
+      <if test="birthday != null" >
+        birthday = #{birthday,jdbcType=TIMESTAMP},
+      </if>
+      <if test="memberAge != null" >
+        member_age = #{memberAge,jdbcType=INTEGER},
+      </if>
+      <if test="memberSex != null" >
+        member_sex = #{memberSex,jdbcType=INTEGER},
+      </if>
+      <if test="relation != null" >
+        relation = #{relation,jdbcType=INTEGER},
+      </if>
+      <if test="memberCompanyName != null" >
+        member_company_name = #{memberCompanyName,jdbcType=VARCHAR},
+      </if>
+      <if test="memberMobile != null" >
+        member_mobile = #{memberMobile,jdbcType=VARCHAR},
+      </if>
+      <if test="memberTelphone != null" >
+        member_telphone = #{memberTelphone,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUser != null" >
+        create_user = #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="delFlag != null" >
+        del_flag = #{delFlag,jdbcType=INTEGER},
+      </if>
+      <if test="remark != null" >
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      version = version + 1
+    </set>
+    where id = #{id,jdbcType=BIGINT} and version = #{version,jdbcType=BIGINT }
+  </update>
+  
+</mapper>

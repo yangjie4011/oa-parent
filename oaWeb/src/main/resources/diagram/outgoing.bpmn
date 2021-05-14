@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/test">
+  <process id="outgoing" name="外出申请" isExecutable="true">
+    <startEvent id="startevent1" name="Start"></startEvent>
+    <userTask id="proposer" name="提出申请">
+      <extensionElements>
+        <activiti:taskListener event="create" delegateExpression="${proposerTaskListener}"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="flow1" sourceRef="startevent1" targetRef="proposer"></sequenceFlow>
+    <userTask id="superior" name="汇报对象">
+      <extensionElements>
+        <activiti:taskListener event="create" delegateExpression="${superiorTaskListener}"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="flow2" sourceRef="proposer" targetRef="superior"></sequenceFlow>
+    <exclusiveGateway id="exclusivegateway1" name="判断部门负责人">
+      <extensionElements>
+        <activiti:executionListener event="start" delegateExpression="${roleCheckListener}"></activiti:executionListener>
+      </extensionElements>
+    </exclusiveGateway>
+    <sequenceFlow id="flow3" sourceRef="superior" targetRef="exclusivegateway1"></sequenceFlow>
+    <userTask id="end_personnel" name="人事部门">
+      <extensionElements>
+        <activiti:taskListener event="create" delegateExpression="${dynamicSelection}"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="flow4" name="非部门负责人" sourceRef="exclusivegateway1" targetRef="end_personnel">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${isHeader==false}]]></conditionExpression>
+    </sequenceFlow>
+    <userTask id="personnelLeader" name="人事总监">
+      <extensionElements>
+        <activiti:taskListener event="create" delegateExpression="${dynamicSelection}"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="flow5" name="部门负责人" sourceRef="exclusivegateway1" targetRef="personnelLeader">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${isHeader==true}]]></conditionExpression>
+    </sequenceFlow>
+    <endEvent id="endevent1" name="End"></endEvent>
+    <sequenceFlow id="flow6" sourceRef="end_personnel" targetRef="endevent1"></sequenceFlow>
+    <sequenceFlow id="flow7" sourceRef="personnelLeader" targetRef="end_personnel"></sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_outgoing">
+    <bpmndi:BPMNPlane bpmnElement="outgoing" id="BPMNPlane_outgoing">
+      <bpmndi:BPMNShape bpmnElement="startevent1" id="BPMNShape_startevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="60.0" y="270.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="proposer" id="BPMNShape_proposer">
+        <omgdc:Bounds height="55.0" width="105.0" x="140.0" y="260.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="superior" id="BPMNShape_superior">
+        <omgdc:Bounds height="55.0" width="105.0" x="290.0" y="260.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway1" id="BPMNShape_exclusivegateway1">
+        <omgdc:Bounds height="40.0" width="40.0" x="440.0" y="268.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="end_personnel" id="BPMNShape_end_personnel">
+        <omgdc:Bounds height="55.0" width="105.0" x="660.0" y="214.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="personnelLeader" id="BPMNShape_personnelLeader">
+        <omgdc:Bounds height="55.0" width="105.0" x="660.0" y="308.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent1" id="BPMNShape_endevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="840.0" y="277.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="flow1" id="BPMNEdge_flow1">
+        <omgdi:waypoint x="95.0" y="287.0"></omgdi:waypoint>
+        <omgdi:waypoint x="140.0" y="287.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow2" id="BPMNEdge_flow2">
+        <omgdi:waypoint x="245.0" y="287.0"></omgdi:waypoint>
+        <omgdi:waypoint x="290.0" y="287.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow3" id="BPMNEdge_flow3">
+        <omgdi:waypoint x="395.0" y="287.0"></omgdi:waypoint>
+        <omgdi:waypoint x="440.0" y="288.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow4" id="BPMNEdge_flow4">
+        <omgdi:waypoint x="480.0" y="288.0"></omgdi:waypoint>
+        <omgdi:waypoint x="712.0" y="269.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="72.0" x="530.0" y="250.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow5" id="BPMNEdge_flow5">
+        <omgdi:waypoint x="480.0" y="288.0"></omgdi:waypoint>
+        <omgdi:waypoint x="712.0" y="308.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="60.0" x="530.0" y="311.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow6" id="BPMNEdge_flow6">
+        <omgdi:waypoint x="765.0" y="241.0"></omgdi:waypoint>
+        <omgdi:waypoint x="857.0" y="277.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow7" id="BPMNEdge_flow7">
+        <omgdi:waypoint x="712.0" y="308.0"></omgdi:waypoint>
+        <omgdi:waypoint x="712.0" y="269.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

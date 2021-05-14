@@ -1,0 +1,358 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ule.oa.base.mapper.EmployeeAppMapper" >
+
+  <resultMap id="BaseResultMap" type="com.ule.oa.base.po.EmployeeApp" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="coop_company_id" property="coopCompanyId" jdbcType="BIGINT" />
+    <result column="company_id" property="companyId" jdbcType="BIGINT" />
+    <result column="code" property="code" jdbcType="VARCHAR" />
+    <result column="emp_type_id" property="empTypeId" jdbcType="INTEGER" />
+    <result column="cn_name" property="cnName" jdbcType="VARCHAR" />
+    <result column="eng_name" property="engName" jdbcType="VARCHAR" />
+    <result column="picture" property="picture" jdbcType="VARCHAR" />
+    <result column="birthday" property="birthday" jdbcType="TIMESTAMP" />
+    <result column="sex" property="sex" jdbcType="INTEGER" />
+    <result column="age" property="age" jdbcType="INTEGER" />
+    <result column="household_register" property="householdRegister" jdbcType="VARCHAR" />
+    <result column="political_status" property="politicalStatus" jdbcType="BIGINT" />
+    <result column="political_status_other" property="politicalStatusOther" jdbcType="VARCHAR" />
+    <result column="degree_of_education" property="degreeOfEducation" jdbcType="BIGINT" />
+    <result column="degree_of_education_other" property="degreeOfEducationOther" jdbcType="VARCHAR" />
+    <result column="contract_renewal" property="contractRenewal" jdbcType="INTEGER" />
+    <result column="email" property="email" jdbcType="VARCHAR" />
+    <result column="marital_status" property="maritalStatus" jdbcType="BIGINT" />
+    <result column="nation" property="nation" jdbcType="BIGINT" />
+    <result column="address" property="address" jdbcType="VARCHAR" />
+    <result column="mobile" property="mobile" jdbcType="VARCHAR" />
+    <result column="telephone" property="telephone" jdbcType="VARCHAR" />
+    <result column="extension_number" property="extensionNumber" jdbcType="VARCHAR" />
+    <result column="industry_relevance" property="industryRelevance" jdbcType="BIGINT" />
+    <result column="industry_relevance_other" property="industryRelevanceOther" jdbcType="VARCHAR" />
+    <result column="working_background" property="workingBackground" jdbcType="VARCHAR" />
+    <result column="ule_account" property="uleAccount" jdbcType="VARCHAR" />
+    <result column="work_type" property="workType" jdbcType="BIGINT" />
+    <result column="whether_scheduling" property="whetherScheduling" jdbcType="BIGINT" />
+    <result column="entry_status" property="entryStatus" jdbcType="INTEGER" />
+    <result column="floor_Code" property="floorCode" jdbcType="VARCHAR" />
+    <result column="seat_code" property="seatCode" jdbcType="VARCHAR" />
+    <result column="first_entry_time" property="firstEntryTime" jdbcType="TIMESTAMP" />
+    <result column="quit_time" property="quitTime" jdbcType="TIMESTAMP" />
+    <result column="salary_balance_date" property="salaryBalanceDate" jdbcType="TIMESTAMP" />
+    <result column="protocol_end_time" property="protocolEndTime" jdbcType="TIMESTAMP" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="del_flag" property="delFlag" jdbcType="INTEGER" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="job_status" property="jobStatus" jdbcType="INTEGER" />
+    <result column="work_age" property="workAge" jdbcType="DOUBLE" />
+    <result column="before_work_age" property="beforeWorkAge" jdbcType="DOUBLE" />
+    <result column="our_age" property="ourAge" jdbcType="DOUBLE" />
+    <result column="country" property="country" jdbcType="BIGINT" />
+    <result column="country_other" property="countryOther" jdbcType="VARCHAR" />
+    <result column="position_title" property="positionTitle" jdbcType="VARCHAR" />
+    <result column="version" property="version" jdbcType="BIGINT"/>
+    <result column="probation_end_time" property="probationEndTime" jdbcType="TIMESTAMP" />
+    <result column="report_to_leader" property="reportToLeader" jdbcType="BIGINT" />
+    <result column="fingerprint_id" property="fingerprintId" jdbcType="BIGINT"/>
+    <result column="auto_calculate_leave" property="autoCalculateLeave" jdbcType="INTEGER"/>
+    <result column="work_province" property="workAddressProvince" jdbcType="VARCHAR" />
+    <result column="work_city" property="workAddressCity" jdbcType="VARCHAR" />
+    <result column="position_seq" property="positionSeq" jdbcType="VARCHAR" />
+    <result column="position_level" property="positionLevel" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    id, company_id,coop_company_id,code, emp_type_id, cn_name, eng_name,picture,birthday, sex, age, household_register, 
+    political_status, degree_of_education, contract_renewal, email, marital_status, nation, 
+    address, mobile,telephone,extension_number,industry_relevance, working_background, ule_account, work_type, 
+    whether_scheduling,create_time, create_user, update_time, update_user, 
+    del_flag, remark,job_status,entry_status,seat_code,floor_Code,our_age,first_entry_time,quit_time,industry_relevance_other,
+    degree_of_education_other,political_status_other,country,country_other,position_title,salary_balance_date,protocol_end_time,
+    version,probation_end_time,report_to_leader,fingerprint_id,work_age,before_work_age,auto_calculate_leave,work_province,work_city,
+    position_seq,position_level
+  </sql>
+  
+  <select id="getListByCondition" resultMap="BaseResultMap" parameterType="com.ule.oa.base.po.EmployeeApp">
+  	select <include refid="Base_Column_List"/> from base_employee where del_flag = 0
+  	<if test="companyId != null">
+  		and company_id  = #{companyId,jdbcType=BIGINT}
+  	</if>
+  	<if test="id != null">
+  		and id  = #{id,jdbcType=BIGINT}
+  	</if>
+  	<if test="jobStatus != null">
+  		and job_status  = #{jobStatus,jdbcType=BIGINT}
+  	</if>
+  	<if test="quitTime != null">
+  		and quit_Time &gt;= #{quitTime,jdbcType=TIMESTAMP}
+  	</if>
+  	<if test="workAddressType != null" >
+         and work_address_type = #{workAddressType,jdbcType=INTEGER}
+    </if>
+  	<if test="empTypeIdList != null and empTypeIdList.size > 0" >
+         and emp_type_id in
+         <foreach collection="empTypeIdList" index="index" item="item" open="(" separator="," close=")">
+          #{item}
+         </foreach>
+    </if>
+  	<if test="offset != null and limit != null">
+  		limit #{offset},#{limit}
+  	</if>
+  </select>
+  <select id="getInitEmpList" resultMap="BaseResultMap">
+  	select <include refid="Base_Column_List"/> from base_employee where 
+  	   del_flag = 0 and job_status != 1 and work_address_type = 0
+  	   <if test="empTypeIdList != null and empTypeIdList.size > 0" >
+           and emp_type_id in
+           <foreach collection="empTypeIdList" index="index" item="item" open="(" separator="," close=")">
+	           #{item}
+	       </foreach>
+        </if>
+  </select>
+  <select id="getById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+  	select <include refid="Base_Column_List"/> from base_employee
+  	where id = #{id,jdbcType=BIGINT}
+  </select>
+  
+  <!-- 分页查询员工信息 -->
+  <select id="getPageList" parameterType="com.ule.oa.base.po.EmployeeApp" resultType="com.ule.oa.base.po.EmployeeApp">
+	  	select be.id,be.cn_name cnName,be.position_title positionTitle,be.job_status jobStatus,be.whether_scheduling whetherScheduling,be.version,be.email email,be.extension_number extensionNumber,
+	  	bd.name as 'depart.name',ed.version as 'empDepart.version',bd.version as 'depart.version',bd.id as 'depart.id',p.id as 'position.id',p.position_name as 'position.positionName'
+	  	from base_employee be
+	  	left join base_emp_depart ed
+	  	on (be.id = ed.employee_id and ed.del_flag = 0)
+	  	left join base_depart bd
+		on (ed.depart_id = bd.id and be.company_id = bd.company_id and bd.del_flag = 0)
+		left join base_emp_position ep 
+		on (ep.employee_id = be.id and ep.del_flag = 0)
+		left join base_position p 
+		on (ep.position_id = p.id and p.del_flag = 0)
+		where be.del_flag = 0
+	  	<if test="companyId != null" >
+		  	and be.company_id = #{companyId,jdbcType=BIGINT}
+		</if>
+		<if test="nameOrCode != null and nameOrCode != ''">
+			and (
+				be.cn_name like CONCAT('%',#{nameOrCode,jdbcType=VARCHAR},'%') or be.code = #{nameOrCode,jdbcType=VARCHAR}
+			)
+		</if>
+		<if test="cnName != null and cnName != ''" >
+		 	 and be.cn_name = #{cnName,jdbcType=VARCHAR}
+		</if>
+		<if test="code != null and code != ''" >
+		  	and be.code = #{code,jdbcType=VARCHAR}
+		</if>
+		<if test="depart.id != null">
+			and bd.id = #{depart.id,jdbcType=BIGINT}
+		</if>
+		<if test="jobStatus != null and jobStatus==1">
+			and be.job_status = 1
+		</if>
+		<if test="jobStatus != null and jobStatus==0">
+			and be.job_status in(0,2)
+		</if>
+  		order by convert(be.cn_name USING gbk) asc limit #{offset},#{limit}
+  </select>
+  
+  <!-- 查询员工总的记录数信息 -->
+  <select id="getCount" parameterType="com.ule.oa.base.po.EmployeeApp" resultType="java.lang.Integer">
+	  	select count(1)	from base_employee be
+	  	left join base_emp_depart ed
+	  	on (be.id = ed.employee_id and ed.del_flag = 0)
+	  	left join base_depart bd
+		on (ed.depart_id = bd.id and be.company_id = bd.company_id and bd.del_flag = 0)
+		where be.del_flag = 0
+	  	<if test="companyId != null" >
+		  	and be.company_id = #{companyId,jdbcType=BIGINT}
+		</if>
+		<if test="nameOrCode != null and nameOrCode != ''">
+			and (
+				be.cn_name like CONCAT('%',#{nameOrCode,jdbcType=VARCHAR},'%') or be.code = #{nameOrCode,jdbcType=VARCHAR}
+			)
+		</if>
+		<if test="cnName != null and cnName != ''" >
+		 	 and be.cn_name = #{cnName,jdbcType=VARCHAR}
+		</if>
+		<if test="code != null and code != ''" >
+		  	and be.code = #{code,jdbcType=VARCHAR}
+		</if>
+		<if test="depart.id != null">
+			and bd.id = #{depart.id,jdbcType=BIGINT}
+		</if>
+		<if test="jobStatus != null and jobStatus==1">
+			and be.job_status = 1
+		</if>
+		<if test="jobStatus != null and jobStatus==0">
+			and be.job_status in(0,2)
+		</if>
+  </select>
+  
+  <update id="updateById" parameterType="com.ule.oa.base.po.EmployeeApp">
+  	update base_employee
+  	<set>
+	    <if test="companyId != null" >
+	        company_id = #{companyId,jdbcType=BIGINT},
+	    </if>
+	    <if test="code != null" >
+	        code = #{code,jdbcType=VARCHAR},
+	    </if>
+	    <if test="companyId != null" >
+	        company_id = #{companyId,jdbcType=INTEGER},
+	    </if>
+	    <if test="empTypeId != null" >
+	        emp_type_id = #{empTypeId,jdbcType=INTEGER},
+	    </if>
+  		<if test="cnName != null">
+  			cn_name = #{cnName,jdbcType=VARCHAR },
+  		</if>
+  		<if test="engName != null">
+  			eng_name = #{engName,jdbcType=VARCHAR },
+  		</if>
+  		<if test="birthday != null">
+  			birthday = #{birthday,jdbcType=TIMESTAMP},
+  		</if>
+  		<if test="workType != null">
+  			work_type = #{workType,jdbcType=INTEGER},
+  		</if>
+  		<if test="sex != null">
+  			sex = #{sex,jdbcType=INTEGER},
+  		</if>
+  		<if test="age != null">
+  			age = #{age,jdbcType=INTEGER},
+  		</if>
+  		<if test="country != null">
+  			country = #{country,jdbcType=BIGINT},
+  		</if>
+  		<if test="countryOther != null">
+  			country_other = #{countryOther,jdbcType=VARCHAR},
+  		</if>
+  		<if test="nation != null">
+  			nation = #{nation,jdbcType=BIGINT},
+  		</if>
+  		<if test="householdRegister != null">
+  			household_register = #{householdRegister,jdbcType=VARCHAR},
+  		</if>
+  		<if test="maritalStatus != null">
+  			marital_status = #{maritalStatus,jdbcType=BIGINT},
+  		</if>
+  		<if test="politicalStatus != null">
+  			political_status = #{politicalStatus,jdbcType=BIGINT},
+  		</if>
+  		<if test="politicalStatusOther != null">
+  			political_status_other = #{politicalStatusOther,jdbcType=VARCHAR},
+  		</if>
+	    <if test="whetherScheduling != null" >
+	        whether_scheduling = #{whetherScheduling,jdbcType=BIGINT},
+	    </if>
+  		<if test="positionTitle != null">
+  			position_title = #{positionTitle,jdbcType=VARCHAR},
+  		</if>
+  		<if test="degreeOfEducation != null">
+  			degree_of_education = #{degreeOfEducation,jdbcType=VARCHAR},
+  		</if>
+  		<if test="degreeOfEducationOther != null">
+  			degree_of_education_other = #{degreeOfEducationOther,jdbcType=VARCHAR},
+  		</if>
+  		<if test="address != null">
+  			address = #{address,jdbcType=VARCHAR},
+  		</if>
+  		<if test="mobile != null">
+  			mobile = #{mobile,jdbcType=VARCHAR},
+  		</if>
+  		<if test="ourAge != null">
+  			our_age = #{ourAge,jdbcType=DOUBLE},
+  		</if>
+  		<if test="workAge != null">
+  			work_age = #{workAge,jdbcType=DOUBLE},
+  		</if>
+  		<if test="beforeWorkAge != null">
+  			before_work_age = #{beforeWorkAge,jdbcType=DOUBLE},
+  		</if>
+  		<if test="updateTime != null">
+  			update_time = #{updateTime,jdbcType=TIMESTAMP},
+  		</if>
+  		<if test="updateUser != null">
+  			update_user = #{updateUser,jdbcType=VARCHAR},
+  		</if>
+  		<if test="picture != null">
+  			picture = #{picture,jdbcType=VARCHAR},
+  		</if>
+  		<if test="probationEndTime != null">
+  			probation_end_time = #{probationEndTime,jdbcType=TIMESTAMP},
+  		</if>
+  		<if test="firstEntryTime != null">
+  			first_entry_time = #{firstEntryTime,jdbcType=TIMESTAMP},
+  		</if>
+  		<if test="quitTime != null">
+  			quit_time = #{quitTime,jdbcType=TIMESTAMP},
+  		</if>
+  		<if test="protocolEndTime != null">
+  			protocol_end_time = #{protocolEndTime,jdbcType=TIMESTAMP},
+  		</if>
+  		<if test="jobStatus != null">
+  			job_status = #{jobStatus,jdbcType=INTEGER},
+  		</if>
+  		<if test="email != null">
+  			email = #{email,jdbcType=VARCHAR},
+  		</if>
+  		<if test="uleAccount != null">
+  			ule_account = #{uleAccount,jdbcType=VARCHAR},
+  		</if>
+  		<if test="reportToLeader != null">
+  			report_to_leader = #{reportToLeader,jdbcType=VARCHAR},
+  		</if>
+  		<if test="floorCode != null">
+  			floor_code = #{floorCode,jdbcType=VARCHAR},
+  		</if>
+  		<if test="seatCode != null">
+  			seat_code = #{seatCode,jdbcType=VARCHAR},
+  		</if>
+	    <if test="fingerprintId != null">
+	     	fingerprint_id = #{fingerprintId,jdbcType=BIGINT},
+	    </if>
+	     <if test="autoCalculateLeave != null">
+	     	auto_calculate_leave = #{autoCalculateLeave,jdbcType=INTEGER},
+	    </if>
+	     <if test="positionLevel != null">
+	     	position_level = #{positionLevel,jdbcType=VARCHAR},
+	    </if>
+	     <if test="positionSeq != null">
+	     	position_seq = #{positionSeq,jdbcType=VARCHAR},
+	    </if>
+  		version = version + 1
+  	</set>
+  	where id = #{id,jdbcType=BIGINT } and version = #{version,jdbcType=BIGINT}
+  </update>
+  
+  <update id="updateAllEmpOurAge" parameterType="java.lang.Integer">
+	UPDATE base_employee 
+		SET 
+		our_age = TIMESTAMPDIFF( YEAR, first_Entry_time, NOW( ) ) + 
+		ROUND((TIMESTAMPDIFF( DAY, date_add( first_Entry_time, INTERVAL TIMESTAMPDIFF( YEAR, first_Entry_time, NOW( ) ) YEAR ), NOW( ))-1)/ #{days},2),
+		work_age = TIMESTAMPDIFF( YEAR, first_Entry_time, NOW( ) ) + 
+		ROUND((TIMESTAMPDIFF( DAY, date_add( first_Entry_time, INTERVAL TIMESTAMPDIFF( YEAR, first_Entry_time, NOW( ) ) YEAR ), NOW( ))-1) / #{days},2) + before_work_age 
+	WHERE
+		del_flag = 0 
+		AND job_status in(0,2);
+  </update>
+  
+   <!-- 将离职时间小于或等于今天的在职员工状态更改为离职 -->
+  <update id="updateEmpJobStatus">
+  	update base_employee emp01,base_employee emp02
+	set emp01.job_status = 1
+	where emp01.id = emp02.id
+	and emp02.job_status = 2
+	and emp02.Quit_time &lt;= now()
+  </update>
+  
+  <!-- 根据循环的员工id 修改员工为离职状态 -->
+  <update id="updateEmpJobStatusById" parameterType="java.lang.Long">
+  	update base_employee emp set emp.job_status = 1 
+  	where emp.id = #{id}	
+  </update>
+  
+  
+</mapper>

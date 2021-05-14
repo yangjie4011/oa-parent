@@ -1,0 +1,532 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ule.oa.base.mapper.EmpApplicationAbnormalAttendanceMapper" >
+
+  <resultMap id="BaseResultMap" type="com.ule.oa.base.po.EmpApplicationAbnormalAttendance" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="EMPLOYEE_ID" property="employeeId" jdbcType="BIGINT" />
+    <result column="CN_NAME" property="cnName" jdbcType="VARCHAR" />
+    <result column="code" property="code" jdbcType="VARCHAR" />
+    <result column="DEPART_ID" property="departId" jdbcType="BIGINT" />
+    <result column="DEPART_NAME" property="departName" jdbcType="VARCHAR" />
+    <result column="POSITION_NAME" property="positionName" jdbcType="VARCHAR" />
+    <result column="POSITION_ID" property="positionId" jdbcType="BIGINT" />
+    <result column="SUBMIT_DATE" property="submitDate" jdbcType="TIMESTAMP" />
+    <result column="WORK_TYPE" property="workType" jdbcType="BIGINT" />
+    <result column="START_TIME" property="startTime" jdbcType="TIMESTAMP" />
+    <result column="END_TIME" property="endTime" jdbcType="TIMESTAMP" />
+    <result column="START_PUNCH_TIME" property="startPunchTime" jdbcType="TIMESTAMP" />
+    <result column="END_PUNCH_TIME" property="endPunchTime" jdbcType="TIMESTAMP" />
+    <result column="ABNORMAL_DATE" property="abnormalDate" jdbcType="DATE" />
+    <result column="REASON" property="reason" jdbcType="VARCHAR" />
+    <result column="Approval_status" property="approvalStatus" jdbcType="BIGINT" />
+    <result column="approval_Reason" property="approvalReason" jdbcType="VARCHAR" />
+    <result column="VERSION" property="version" jdbcType="VARCHAR" />
+    <result column="del_flag" property="delFlag" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="agent_Id" property="agentId" jdbcType="BIGINT" />
+    <result column="agent_Name" property="agentName" jdbcType="VARCHAR" />
+    <result column="apply_Type" property="applyType" jdbcType="BIGINT" />
+    <result column="processInstance_id" property="processInstanceId" jdbcType="VARCHAR" />
+    
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    id, EMPLOYEE_ID,CN_NAME,code,DEPART_ID,DEPART_NAME,POSITION_NAME,POSITION_ID,SUBMIT_DATE,WORK_TYPE,START_TIME,END_TIME,
+    START_PUNCH_TIME,END_PUNCH_TIME,ABNORMAL_DATE,REASON,Approval_status,approval_Reason,VERSION,del_flag,create_time, create_user, update_time, update_user
+    ,agent_Id,agent_Name,apply_Type,processInstance_id
+  </sql>
+  
+  <select id="getById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+  	select <include refid="Base_Column_List"/> from base_emp_application_abnormal_attendance
+  	where id = #{id,jdbcType=BIGINT}
+  </select>
+  
+  <select id="getEaoByEmpAndDateCount" parameterType="com.ule.oa.base.po.EmpApplicationAbnormalAttendance" resultType="java.lang.Integer">
+	  	select count(*) from base_emp_application_abnormal_attendance
+	  	where EMPLOYEE_ID = #{employeeId} and ABNORMAL_DATE = #{abnormalDate}
+	  	<if test="approvalStatus == null">
+		  	and APPROVAL_STATUS in  (100,200,600)
+	  	</if>
+  </select>
+  
+  <select id="getListByMonth" parameterType="com.ule.oa.base.po.EmpApplicationAbnormalAttendance" resultMap="BaseResultMap">
+  	select <include refid="Base_Column_List"/> from base_emp_application_abnormal_attendance
+  	where del_flag = 0
+  	   and Approval_status in (100,200,600)
+  	   and EMPLOYEE_ID = #{employeeId} and apply_Type=0
+  	<if test="monthStart != null" >
+       and ABNORMAL_DATE &gt;= #{monthStart,jdbcType=DATE}
+    </if>
+    <if test="monthEnd != null" >
+       and ABNORMAL_DATE &lt;= #{monthEnd,jdbcType=DATE}
+    </if>
+  </select>
+  
+  <insert id="save" parameterType="com.ule.oa.base.po.EmpApplicationAbnormalAttendance" useGeneratedKeys="true" keyProperty="id">
+    insert into base_emp_application_abnormal_attendance (
+      EMPLOYEE_ID,
+      CN_NAME,
+      code,
+      DEPART_ID,
+      DEPART_NAME,
+      POSITION_ID,
+      POSITION_NAME,
+      SUBMIT_DATE,
+      WORK_TYPE,
+      START_TIME,
+      END_TIME,
+      START_PUNCH_TIME,
+      END_PUNCH_TIME,
+      ABNORMAL_DATE,
+      REASON,
+      Approval_status,
+      VERSION,
+      create_time,
+      create_user,  
+      del_flag,
+      agent_Id,
+      agent_Name,
+      apply_Type,
+      processInstance_id
+      )
+    values (
+      #{employeeId,jdbcType=BIGINT},
+      #{cnName,jdbcType=VARCHAR}, 
+      #{code,jdbcType=VARCHAR}, 
+      #{departId,jdbcType=BIGINT},
+      #{departName,jdbcType=VARCHAR}, 
+      #{positionId,jdbcType=BIGINT},
+      #{positionName,jdbcType=VARCHAR}, 
+      #{submitDate,jdbcType=TIMESTAMP}, 
+      #{workType,jdbcType=BIGINT},
+      #{startTime,jdbcType=TIMESTAMP}, 
+      #{endTime,jdbcType=TIMESTAMP}, 
+      #{startPunchTime,jdbcType=TIMESTAMP}, 
+      #{endPunchTime,jdbcType=TIMESTAMP}, 
+      #{abnormalDate,jdbcType=TIMESTAMP}, 
+      #{reason,jdbcType=VARCHAR}, 
+      #{approvalStatus,jdbcType=BIGINT},
+      #{version,jdbcType=VARCHAR}, 
+      #{createTime,jdbcType=TIMESTAMP}, 
+      #{createUser,jdbcType=VARCHAR},
+      #{delFlag,jdbcType=INTEGER},
+      #{agentId,jdbcType=BIGINT},
+      #{agentName,jdbcType=VARCHAR},
+      #{applyType,jdbcType=INTEGER},
+      #{processInstanceId,jdbcType=VARCHAR}
+      )
+  </insert>
+  
+  <update id="updateById" parameterType="com.ule.oa.base.po.EmpApplicationAbnormalAttendance" >
+    update base_emp_application_abnormal_attendance
+    <set >
+      <if test="approvalStatus != null" >
+        Approval_status = #{approvalStatus,jdbcType=BIGINT},
+      </if>
+      <if test="approvalReason != null and approvalReason !=''" >
+        approval_Reason = #{approvalReason,jdbcType=VARCHAR},
+      </if>
+      <if test="version != null and version !=''" >
+        version = #{version,jdbcType=VARCHAR},
+      </if>
+      <if test="delFlag != null" >
+        del_flag = #{delFlag,jdbcType=INTEGER},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="processInstanceId != null" >
+        processInstance_id = #{processInstanceId,jdbcType=VARCHAR}
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+    <!-- 分页查询报表 -->
+  <select id="getReportPageList" parameterType="com.ule.oa.base.po.EmpApplicationAbnormalAttendance" resultType="com.ule.oa.base.po.EmpApplicationAbnormalAttendance">
+	 SELECT ao.apply_type applyType,ao.agent_name agentName,ao.id,ao.code,ao.cn_name cnName,ao.depart_id departId,ao.depart_name departName,ao.position_id positionId,ao.position_name positionName,ao.ABNORMAL_DATE abnormalDate,
+	 cc.display_name workType1,ao.START_PUNCH_TIME startPunchTime,ao.END_PUNCH_TIME endPunchTime,ao.START_TIME startTime,ao.END_TIME endTime,ao.reason,ao.submit_date submitDate,
+	 ao.APPROVAL_STATUS approvalStatus,ao.employee_id employeeId,ao.processInstance_id processInstanceId FROM base_emp_application_abnormal_attendance ao
+	 LEFT JOIN base_employee be
+	 ON ao.employee_id = be.id
+	 LEFT JOIN sys_company_config cc
+	 ON be.work_type = cc.id
+	 <where>
+  		and ao.del_flag = 0
+	  	<if test="code != null and code != ''">
+	  		and ao.code like concat('%',#{code,jdbcType=VARCHAR},'%')
+	  	</if>
+  		<if test="cnName != null and cnName != ''">
+  			and ao.cn_name like concat('%',#{cnName,jdbcType=VARCHAR},'%')
+  		</if>
+  		<if test="applyName != null and applyName != ''">
+  			and ao.apply_name like concat('%',#{applyName,jdbcType=VARCHAR},'%')
+  		</if>
+  		<if test="departId != null">
+  			and ao.depart_id = #{departId,jdbcType=BIGINT}
+  		</if>
+  		<if test="departList != null">
+  			and ao.depart_id in
+  			<foreach collection="departList" item="departId" open="(" separator="," close=")">
+  				#{departId,jdbcType=BIGINT}
+  			</foreach>
+  		</if>
+  		<if test="workType != null and workType != ''">
+  			and be.work_type = #{workType,jdbcType=BIGINT}
+  		</if>
+  		<if test="empTypeId != null">
+  			and be.emp_type_id = #{empTypeId,jdbcType=BIGINT}
+  		</if>
+  		<if test="whetherScheduling != null">
+  			and be.whether_scheduling = #{whetherScheduling,jdbcType=BIGINT}
+  		</if>
+  		<if test="applyStartDate != null">
+  			and ao.ABNORMAL_DATE &gt;= #{applyStartDate,jdbcType=DATE}
+  		</if>
+  		<if test="applyEndDate != null">
+  			and ao.ABNORMAL_DATE &lt;= #{applyEndDate,jdbcType=DATE}
+  		</if>
+  		<if test="approvalStatus != null" >
+	        and approval_status = #{approvalStatus,jdbcType=BIGINT}
+        </if>
+        <if test="applyType != null" >
+	        and apply_type = #{applyType,jdbcType=BIGINT}
+        </if>
+         <if test="agentName != null and agentName != ''" >
+	        and ao.agent_name = #{agentName,jdbcType=VARCHAR}
+        </if>
+        <if test="assignee != null and assignee != ''" >
+	        and PROCESSINSTANCE_ID in (select DISTINCT
+				* 
+			FROM
+				(
+			SELECT
+				rt.PROC_INST_ID_ 
+			FROM
+				ACT_RU_IDENTITYLINK ri
+				LEFT JOIN ACT_RU_TASK rt ON ri.TASK_ID_ = rt.ID_ 
+			WHERE
+				ri.TYPE_ = 'candidate' 
+				AND ri.USER_ID_ = #{assignee,jdbcType=VARCHAR}
+				
+				UNION ALL
+				
+			SELECT
+				PROC_INST_ID_ 
+			FROM
+				ACT_RU_TASK 
+			WHERE
+				ASSIGNEE_ = #{assignee,jdbcType=VARCHAR}
+				) instance_id
+				)
+        </if>
+        <if test="currentUserDepart != null and currentUserDepart.size > 0">
+			and be.id in
+			<foreach collection="currentUserDepart" item="ids" open="(" separator="," close=")">
+				#{ids,jdbcType=BIGINT}
+			</foreach>
+		</if>
+		<if test="subEmployeeIdList != null and subEmployeeIdList.size > 0">
+			and be.id in
+			<foreach collection="subEmployeeIdList" item="ids" open="(" separator="," close=")">
+				#{ids,jdbcType=BIGINT}
+			</foreach>
+		</if>
+	</where>
+	order by ao.ABNORMAL_DATE desc,convert(ao.cn_name using gbk) collate gbk_chinese_ci asc 
+	<if test="offset != null and limit != null">
+		limit #{offset},#{limit}
+	</if>
+  </select>
+  
+    <!-- 导出查询 -->
+  <select id="getExportReportList" parameterType="com.ule.oa.base.po.EmpApplicationAbnormalAttendance" resultType="com.ule.oa.base.po.EmpApplicationAbnormalAttendance">
+	 SELECT ao.id,ao.code,ao.cn_name cnName,ao.depart_id departId,ao.depart_name departName,ao.position_id positionId,ao.position_name positionName,ao.ABNORMAL_DATE abnormalDate,
+	 cc.display_name workType1,ao.START_PUNCH_TIME startPunchTime,ao.END_PUNCH_TIME endPunchTime,ao.START_TIME startTime,ao.END_TIME endTime,ao.reason,ao.submit_date submitDate,
+	 ao.APPROVAL_STATUS approvalStatus,ao.employee_id employeeId,ao.processInstance_id processInstanceId FROM base_emp_application_abnormal_attendance ao
+	 LEFT JOIN base_employee be
+	 ON ao.employee_id = be.id
+	 LEFT JOIN sys_company_config cc
+	 ON be.work_type = cc.id
+	 <where>
+  		and ao.del_flag = 0
+	  	<if test="code != null and code != ''">
+	  		and ao.code like concat('%',#{code,jdbcType=VARCHAR},'%')
+	  	</if>
+  		<if test="cnName != null and cnName != ''">
+  			and ao.cn_name like concat('%',#{cnName,jdbcType=VARCHAR},'%')
+  		</if>
+  		<if test="applyName != null and applyName != ''">
+  			and ao.apply_name like concat('%',#{applyName,jdbcType=VARCHAR},'%')
+  		</if>
+  		<if test="departId != null">
+  			and ao.depart_id = #{departId,jdbcType=BIGINT}
+  		</if>
+  		<if test="departList != null">
+  			and ao.depart_id in
+  			<foreach collection="departList" item="departId" open="(" separator="," close=")">
+  				#{departId,jdbcType=BIGINT}
+  			</foreach>
+  		</if>
+  		<if test="workType != null and workType != ''">
+  			and be.work_type = #{workType,jdbcType=BIGINT}
+  		</if>
+  		<if test="empTypeId != null">
+  			and be.emp_type_id = #{empTypeId,jdbcType=BIGINT}
+  		</if>
+  		<if test="whetherScheduling != null">
+  			and be.whether_scheduling = #{whetherScheduling,jdbcType=BIGINT}
+  		</if>
+  		<if test="applyStartDate != null">
+  			and ao.ABNORMAL_DATE &gt;= #{applyStartDate,jdbcType=DATE}
+  		</if>
+  		<if test="applyEndDate != null">
+  			and ao.ABNORMAL_DATE &lt;= #{applyEndDate,jdbcType=DATE}
+  		</if>
+  		<if test="approvalStatus != null" >
+	        and approval_status = #{approvalStatus,jdbcType=BIGINT}
+        </if>
+	</where>
+	order by ao.ABNORMAL_DATE desc,convert(ao.cn_name using gbk) collate gbk_chinese_ci asc
+  </select>
+  
+  <!-- 查询报表总记录数 -->
+  <select id="getReportCount" parameterType="com.ule.oa.base.po.EmpApplicationAbnormalAttendance" resultType="java.lang.Integer">
+  	select count(1) from base_emp_application_abnormal_attendance ao
+	 LEFT JOIN base_employee be
+	 ON ao.employee_id = be.id
+	 LEFT JOIN sys_company_config cc
+	 ON be.work_type = cc.id
+	 <where>
+  		and ao.del_flag = 0
+	  	<if test="code != null and code != ''">
+	  		and ao.code like concat('%',#{code,jdbcType=VARCHAR},'%')
+	  	</if>
+  		<if test="cnName != null and cnName != ''">
+  			and ao.cn_name like concat('%',#{cnName,jdbcType=VARCHAR},'%')
+  		</if>
+  		<if test="applyName != null and applyName != ''">
+  			and ao.apply_name like concat('%',#{applyName,jdbcType=VARCHAR},'%')
+  		</if>
+  		<if test="departId != null">
+  			and ao.depart_id = #{departId,jdbcType=BIGINT}
+  		</if>
+  		<if test="departList != null">
+  			and ao.depart_id in
+  			<foreach collection="departList" item="departId" open="(" separator="," close=")">
+  				#{departId,jdbcType=BIGINT}
+  			</foreach>
+  		</if>
+  		<if test="workType != null and workType != ''">
+  			and be.work_type = #{workType,jdbcType=BIGINT}
+  		</if>
+  		<if test="empTypeId != null">
+  			and be.emp_type_id = #{empTypeId,jdbcType=BIGINT}
+  		</if>
+  		<if test="whetherScheduling != null">
+  			and be.whether_scheduling = #{whetherScheduling,jdbcType=BIGINT}
+  		</if>
+  		<if test="applyStartDate != null">
+  			and ao.ABNORMAL_DATE &gt;= #{applyStartDate,jdbcType=DATE}
+  		</if>
+  		<if test="applyEndDate != null">
+  			and ao.ABNORMAL_DATE &lt;= #{applyEndDate,jdbcType=DATE}
+  		</if>
+  		<if test="approvalStatus != null" >
+	        and approval_status = #{approvalStatus,jdbcType=BIGINT}
+        </if>
+        <if test="applyType != null" >
+	        and apply_type = #{applyType,jdbcType=BIGINT}
+        </if>
+         <if test="agentName != null and agentName != ''" >
+	        and ao.agent_name = #{agentName,jdbcType=VARCHAR}
+        </if>
+        <if test="assignee != null and assignee != ''" >
+	        and PROCESSINSTANCE_ID in (select DISTINCT
+				* 
+			FROM
+				(
+			SELECT
+				rt.PROC_INST_ID_ 
+			FROM
+				ACT_RU_IDENTITYLINK ri
+				LEFT JOIN ACT_RU_TASK rt ON ri.TASK_ID_ = rt.ID_ 
+			WHERE
+				ri.TYPE_ = 'candidate' 
+				AND ri.USER_ID_ = #{assignee,jdbcType=VARCHAR}
+				
+				UNION ALL
+				
+			SELECT
+				PROC_INST_ID_ 
+			FROM
+				ACT_RU_TASK 
+			WHERE
+				ASSIGNEE_ = #{assignee,jdbcType=VARCHAR}
+				) instance_id
+				)
+        </if>
+        <if test="currentUserDepart != null and currentUserDepart.size > 0">
+			and be.id in
+			<foreach collection="currentUserDepart" item="ids" open="(" separator="," close=")">
+				#{ids,jdbcType=BIGINT}
+			</foreach>
+		</if>
+		<if test="subEmployeeIdList != null and subEmployeeIdList.size > 0">
+			and be.id in
+			<foreach collection="subEmployeeIdList" item="ids" open="(" separator="," close=")">
+				#{ids,jdbcType=BIGINT}
+			</foreach>
+		</if>
+	</where>
+  </select>
+	  <select id="queryByProcessId" resultMap="BaseResultMap">
+	  	select <include refid="Base_Column_List"/> from base_emp_application_abnormal_attendance
+	  	where PROCESSINSTANCE_ID = #{processId,jdbcType=BIGINT}
+	  </select>
+	
+ <!-- 考勤已办列表 -->
+  <select id="myAttnTaskList" parameterType="com.ule.oa.base.po.EmpApplicationAbnormalAttendance" resultType="com.ule.oa.base.po.EmpApplicationAbnormalAttendance">
+	 SELECT ao.apply_type applyType,ao.agent_name agentName,ao.id,ao.code,ao.cn_name cnName,ao.depart_id departId,ao.depart_name departName,ao.position_id positionId,ao.position_name positionName,ao.ABNORMAL_DATE abnormalDate,
+	 cc.display_name workType1,ao.START_PUNCH_TIME startPunchTime,ao.END_PUNCH_TIME endPunchTime,ao.START_TIME startTime,ao.END_TIME endTime,ao.reason,ao.submit_date submitDate,
+	 ao.APPROVAL_STATUS approvalStatus,ao.employee_id employeeId,ao.processInstance_id processInstanceId 
+	 FROM
+	base_emp_application_abnormal_attendance ao
+	LEFT JOIN base_employee be ON ao.employee_id = be.id
+	LEFT JOIN sys_company_config cc ON be.work_type = cc.id
+	left JOIN ACT_HI_TASKINST t ON ao.processInstance_id = t.PROC_INST_ID_
+	 <where>
+	   <if test="applyStartDate != null">
+  		  ( date_format(ao.START_TIME,'%Y-%m-%d') BETWEEN #{applyStartDate,jdbcType=DATE} AND #{applyEndDate,jdbcType=DATE}
+  		   or #{applyStartDate,jdbcType=DATE} BETWEEN date_format(ao.START_TIME,'%Y-%m-%d') and date_format(ao.END_TIME,'%Y-%m-%d')
+  		   or date_format(ao.END_TIME,'%Y-%m-%d') BETWEEN #{applyStartDate,jdbcType=DATE} AND #{applyEndDate,jdbcType=DATE}
+  		   or #{applyEndDate,jdbcType=DATE} BETWEEN date_format(ao.START_TIME,'%Y-%m-%d') and date_format(ao.END_TIME,'%Y-%m-%d'))
+  		</if>
+  		and ao.del_flag = 0  
+  		and t.ASSIGNEE_ = #{assignee,jdbcType=VARCHAR}
+    	AND t.TASK_DEF_KEY_ != 'proposer' 
+    	AND t.TASK_DEF_KEY_ != 'usertask1' 
+    	AND t.END_TIME_ IS NOT NULL 
+    	AND t.PROC_DEF_ID_ LIKE '%abnormalAttendance%'
+    	AND ao.APPROVAL_STATUS not in (100,500)
+	  	<if test="code != null and code != ''">
+	  		and ao.code like concat('%',#{code,jdbcType=VARCHAR},'%')
+	  	</if>
+  		<if test="cnName != null and cnName != ''">
+  			and ao.cn_name like concat('%',#{cnName,jdbcType=VARCHAR},'%')
+  		</if>
+  		<if test="applyName != null and applyName != ''">
+  			and ao.apply_name like concat('%',#{applyName,jdbcType=VARCHAR},'%')
+  		</if>
+  		<if test="departId != null">
+  			and ao.depart_id = #{departId,jdbcType=BIGINT}
+  		</if>
+  		<if test="departList != null">
+  			and ao.depart_id in
+  			<foreach collection="departList" item="departId" open="(" separator="," close=")">
+  				#{departId,jdbcType=BIGINT}
+  			</foreach>
+  		</if>
+  		<if test="workType != null and workType != ''">
+  			and be.work_type = #{workType,jdbcType=BIGINT}
+  		</if>
+  		<if test="empTypeId != null">
+  			and be.emp_type_id = #{empTypeId,jdbcType=BIGINT}
+  		</if>
+  		<if test="whetherScheduling != null">
+  			and be.whether_scheduling = #{whetherScheduling,jdbcType=BIGINT}
+  		</if>
+  		<if test="applyStartDate != null">
+  			and ao.ABNORMAL_DATE &gt;= #{applyStartDate,jdbcType=DATE}
+  		</if>
+  		<if test="applyEndDate != null">
+  			and ao.ABNORMAL_DATE &lt;= #{applyEndDate,jdbcType=DATE}
+  		</if>
+  		<if test="approvalStatus != null" >
+	        and approval_status = #{approvalStatus,jdbcType=BIGINT}
+        </if>
+        <if test="applyType != null" >
+	        and apply_type = #{applyType,jdbcType=BIGINT}
+        </if>
+        <if test="agentName != null and agentName != ''" >
+	        and ao.agent_name = #{agentName,jdbcType=VARCHAR}
+        </if>
+        
+	</where>
+    ORDER BY ao.ABNORMAL_DATE DESC limit #{offset},#{limit}
+  </select>	  
+  
+   <!-- 考勤已办列表 总计-->
+  <select id="myAttnTaskListCount" parameterType="com.ule.oa.base.po.EmpApplicationAbnormalAttendance" resultType="java.lang.Integer">
+	 SELECT  count(*)  FROM
+	base_emp_application_abnormal_attendance ao
+	LEFT JOIN base_employee be ON ao.employee_id = be.id
+	LEFT JOIN sys_company_config cc ON be.work_type = cc.id
+	left JOIN ACT_HI_TASKINST t ON ao.processInstance_id = t.PROC_INST_ID_
+	 <where>
+	   <if test="applyStartDate != null">
+  		  ( date_format(ao.START_TIME,'%Y-%m-%d') BETWEEN #{applyStartDate,jdbcType=DATE} AND #{applyEndDate,jdbcType=DATE}
+  		   or #{applyStartDate,jdbcType=DATE} BETWEEN date_format(ao.START_TIME,'%Y-%m-%d') and date_format(ao.END_TIME,'%Y-%m-%d')
+  		   or date_format(ao.END_TIME,'%Y-%m-%d') BETWEEN #{applyStartDate,jdbcType=DATE} AND #{applyEndDate,jdbcType=DATE}
+  		   or #{applyEndDate,jdbcType=DATE} BETWEEN date_format(ao.START_TIME,'%Y-%m-%d') and date_format(ao.END_TIME,'%Y-%m-%d'))
+  		</if>
+  		and ao.del_flag = 0  
+  		and t.ASSIGNEE_ = #{assignee,jdbcType=VARCHAR}
+    	AND t.TASK_DEF_KEY_ != 'proposer' 
+    	AND t.TASK_DEF_KEY_ != 'usertask1' 
+    	AND t.END_TIME_ IS NOT NULL 
+    	AND t.PROC_DEF_ID_ LIKE '%abnormalAttendance%'
+    	AND ao.APPROVAL_STATUS not in (100,500)
+	  	<if test="code != null and code != ''">
+	  		and ao.code like concat('%',#{code,jdbcType=VARCHAR},'%')
+	  	</if>
+  		<if test="cnName != null and cnName != ''">
+  			and ao.cn_name like concat('%',#{cnName,jdbcType=VARCHAR},'%')
+  		</if>
+  		<if test="applyName != null and applyName != ''">
+  			and ao.apply_name like concat('%',#{applyName,jdbcType=VARCHAR},'%')
+  		</if>
+  		<if test="departId != null">
+  			and ao.depart_id = #{departId,jdbcType=BIGINT}
+  		</if>
+  		<if test="departList != null">
+  			and ao.depart_id in
+  			<foreach collection="departList" item="departId" open="(" separator="," close=")">
+  				#{departId,jdbcType=BIGINT}
+  			</foreach>
+  		</if>
+  		<if test="workType != null and workType != ''">
+  			and be.work_type = #{workType,jdbcType=BIGINT}
+  		</if>
+  		<if test="empTypeId != null">
+  			and be.emp_type_id = #{empTypeId,jdbcType=BIGINT}
+  		</if>
+  		<if test="whetherScheduling != null">
+  			and be.whether_scheduling = #{whetherScheduling,jdbcType=BIGINT}
+  		</if>
+  		<if test="applyStartDate != null">
+  			and ao.ABNORMAL_DATE &gt;= #{applyStartDate,jdbcType=DATE}
+  		</if>
+  		<if test="applyEndDate != null">
+  			and ao.ABNORMAL_DATE &lt;= #{applyEndDate,jdbcType=DATE}
+  		</if>
+  		<if test="approvalStatus != null" >
+	        and approval_status = #{approvalStatus,jdbcType=BIGINT}
+        </if>
+        <if test="applyType != null" >
+	        and apply_type = #{applyType,jdbcType=BIGINT}
+        </if>
+        <if test="agentName != null and agentName != ''" >
+	        and ao.agent_name = #{agentName,jdbcType=VARCHAR}
+        </if>
+	</where>
+  </select>	 
+	  
+</mapper>

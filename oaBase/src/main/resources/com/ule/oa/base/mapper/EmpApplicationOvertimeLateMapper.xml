@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ule.oa.base.mapper.EmpApplicationOvertimeLateMapper" >
+
+  <resultMap id="BaseResultMap" type="com.ule.oa.base.po.EmpApplicationOvertimeLate" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="EMPLOYEE_ID" property="employeeId" jdbcType="BIGINT" />
+    <result column="CN_NAME" property="cnName" jdbcType="VARCHAR" />
+    <result column="code" property="code" jdbcType="VARCHAR" />
+    <result column="DEPART_ID" property="departId" jdbcType="BIGINT" />
+    <result column="DEPART_NAME" property="departName" jdbcType="VARCHAR" />
+    <result column="POSITION_NAME" property="positionName" jdbcType="VARCHAR" />
+    <result column="POSITION_ID" property="positionId" jdbcType="BIGINT" />
+    <result column="SUBMIT_DATE" property="submitDate" jdbcType="TIMESTAMP" />
+    <result column="OVERTIME_DATE" property="overTimeDate" jdbcType="TIMESTAMP" />
+    <result column="OVERTIME_START_TIME" property="overTimeStartTime" jdbcType="TIMESTAMP" />
+    <result column="OVERTIME_END_TIME" property="overTimeEndTime" jdbcType="TIMESTAMP" />
+    <result column="start_work_time" property="startWorkTime" jdbcType="TIMESTAMP" />
+    <result column="end_work_time" property="endWorkTime" jdbcType="TIMESTAMP" />
+    <result column="ALLOW_TIME" property="allowTime" jdbcType="VARCHAR" />
+    <result column="ACTUAL_TIME" property="actualTime" jdbcType="VARCHAR" />
+    <result column="REASON" property="reason" jdbcType="VARCHAR" />
+    <result column="Approval_status" property="approvalStatus" jdbcType="BIGINT" />
+    <result column="approval_Reason" property="approvalReason" jdbcType="VARCHAR" />
+    <result column="VERSION" property="version" jdbcType="VARCHAR" />
+    <result column="del_flag" property="delFlag" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    id, EMPLOYEE_ID,CN_NAME,code,DEPART_ID,DEPART_NAME,POSITION_NAME,POSITION_ID,SUBMIT_DATE,OVERTIME_DATE,OVERTIME_START_TIME,OVERTIME_END_TIME,start_work_time,
+    end_work_time,ALLOW_TIME,ACTUAL_TIME,REASON,Approval_status,approval_Reason,VERSION,del_flag,create_time, create_user, update_time, update_user
+  </sql>
+  
+  <select id="getById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+  	select <include refid="Base_Column_List"/> from base_emp_application_overtime_late
+  	where id = #{id,jdbcType=BIGINT}
+  </select>
+  
+  <select id="getEaoByEmpAndDateCount" parameterType="com.ule.oa.base.po.EmpApplicationOvertimeLate" resultType="java.lang.Integer">
+	  	select count(*) from base_emp_application_overtime_late
+	  	where EMPLOYEE_ID = #{employeeId} and OVERTIME_DATE = #{overTimeDate}
+	  	<if test="approvalStatus == null">
+		  	and APPROVAL_STATUS in  (100,200)
+	  	</if>
+  </select>
+  
+  <insert id="save" parameterType="com.ule.oa.base.po.EmpApplicationOvertimeLate" useGeneratedKeys="true" keyProperty="id">
+    insert into base_emp_application_overtime_late (
+      EMPLOYEE_ID,
+      CN_NAME,
+      code,
+      DEPART_ID,
+      DEPART_NAME,
+      POSITION_ID,
+      POSITION_NAME,
+      SUBMIT_DATE,
+      OVERTIME_DATE,
+      OVERTIME_START_TIME,
+      OVERTIME_END_TIME,
+      start_work_time,
+      end_work_time,
+      ALLOW_TIME,
+      ACTUAL_TIME,
+      REASON,
+      Approval_status,
+      VERSION,
+      create_time,
+      create_user,  
+      del_flag
+      )
+    values (
+      #{employeeId,jdbcType=BIGINT},
+      #{cnName,jdbcType=VARCHAR}, 
+      #{code,jdbcType=VARCHAR}, 
+      #{departId,jdbcType=BIGINT},
+      #{departName,jdbcType=VARCHAR}, 
+      #{positionId,jdbcType=BIGINT},
+      #{positionName,jdbcType=VARCHAR}, 
+      #{submitDate,jdbcType=TIMESTAMP}, 
+      #{overTimeDate,jdbcType=TIMESTAMP}, 
+      #{overTimeStartTime,jdbcType=TIMESTAMP}, 
+      #{overTimeEndTime,jdbcType=TIMESTAMP}, 
+      #{startWorkTime,jdbcType=TIMESTAMP},
+      #{endWorkTime,jdbcType=TIMESTAMP}, 
+      #{allowTime,jdbcType=VARCHAR}, 
+      #{actualTime,jdbcType=VARCHAR},
+      #{reason,jdbcType=VARCHAR}, 
+      #{approvalStatus,jdbcType=BIGINT},
+      #{version,jdbcType=VARCHAR}, 
+      #{createTime,jdbcType=TIMESTAMP}, 
+      #{createUser,jdbcType=VARCHAR},
+      #{delFlag,jdbcType=INTEGER}
+      )
+  </insert>
+  
+  <update id="updateById" parameterType="com.ule.oa.base.po.EmpApplicationOvertimeLate" >
+    update base_emp_application_overtime_late
+    <set >
+      <if test="approvalStatus != null" >
+        Approval_status = #{approvalStatus,jdbcType=BIGINT},
+      </if>
+      <if test="approvalReason != null and approvalReason !=''" >
+        approval_Reason = #{approvalReason,jdbcType=VARCHAR},
+      </if>
+      <if test="version != null and version !=''" >
+        version = #{version,jdbcType=VARCHAR},
+      </if>
+      <if test="delFlag != null" >
+        del_flag = #{delFlag,jdbcType=INTEGER},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR}
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

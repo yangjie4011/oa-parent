@@ -1,0 +1,1126 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ule.oa.base.mapper.EmpLeaveMapper" >
+  <resultMap id="BaseResultMap" type="com.ule.oa.base.po.EmpLeave" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="company_id" property="companyId" jdbcType="BIGINT" />
+    <result column="employee_id" property="employeeId" jdbcType="BIGINT" />
+    <result column="year" property="year" jdbcType="INTEGER" />
+    <result column="type" property="type" jdbcType="INTEGER" />
+    <result column="raduix" property="raduix" jdbcType="DOUBLE" />
+    <result column="allow_days" property="allowDays" jdbcType="DOUBLE" />
+    <result column="actual_days" property="actualDays" jdbcType="DOUBLE" />
+    <result column="used_days" property="usedDays" jdbcType="DOUBLE" />
+    <result column="blocked_days" property="blockedDays" jdbcType="DOUBLE" />
+    <result column="allow_remain_days" property="allowRemainDays" jdbcType="DOUBLE" />
+    <result column="category" property="category" jdbcType="INTEGER" />
+    <result column="parend_id" property="parendId" jdbcType="BIGINT" />
+    <result column="start_time" property="startTime" jdbcType="TIMESTAMP" />
+    <result column="end_time" property="endTime" jdbcType="TIMESTAMP" />
+    <result column="is_active" property="isActive" jdbcType="INTEGER" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="del_flag" property="delFlag" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="version" property="version" jdbcType="BIGINT" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    id, company_id, employee_id, year, type,raduix,allow_days, actual_days, used_days, 
+    blocked_days, allow_remain_days,category, parend_id, 
+    start_time, end_time, is_active, del_flag, create_time, update_time, create_user, 
+    update_user, version,remark
+  </sql>
+  
+  <select id="checkLeaveIsValidate" parameterType="com.ule.oa.base.po.EmpLeave" resultType="Map">
+  	select allow_remain_days,blocked_days from base_emp_leave 
+	where employee_id = #{employeeId,jdbcType=BIGINT} 
+	and type = #{type,jdbcType=INTEGER}
+	and year = #{year,jdbcType=INTEGER}
+	and start_time &lt;= #{planStartTime,jdbcType=VARCHAR} 
+	and end_time &gt;= #{planStartTime,jdbcType=VARCHAR}
+	and start_time &lt;= #{planEndTime,jdbcType=VARCHAR}
+	and end_time &gt;= #{planEndTime,jdbcType=VARCHAR}
+	and parend_id = 0
+  </select>
+  
+  <select id="getByPid" parameterType="java.lang.Long" resultMap="BaseResultMap">
+  	select <include refid="Base_Column_List"/> from base_emp_leave 
+	where parend_id = #{parendId,jdbcType=BIGINT}
+	and is_active = 0 
+	and del_flag = 0
+	order by year
+  </select>
+  
+  <select id="getByPidDesc" parameterType="java.lang.Long" resultMap="BaseResultMap">
+  	select <include refid="Base_Column_List"/> from base_emp_leave 
+	where parend_id = #{parendId,jdbcType=BIGINT}
+	and is_active = 0 
+	and del_flag = 0
+	order by year desc
+  </select>
+  
+  <!-- 查询未过期的调休假期：type为13或 5 -->
+  <select id="getUnexpiredRestLeaveDays" parameterType="com.ule.oa.base.po.EmpLeave" resultMap="BaseResultMap">
+  	select <include refid="Base_Column_List"/> from base_emp_leave 
+	where (type = 13 or type = 5)
+	and employee_id = #{employeeId,jdbcType=BIGINT}
+	and is_active = 0 
+	and parend_id = 0
+	and del_flag = 0
+	and start_time &lt;= #{planStartTime,jdbcType=VARCHAR}
+	and end_time &gt;= #{planEndTime,jdbcType=VARCHAR}
+	and allow_remain_days > 0
+	<!-- order by YEAR -->
+	<!--按类型倒序，先排13 ， 按过期时间排序，有效期快过期的在前 -->
+	order by type desc, end_time
+  </select>
+  
+  <!-- 获取所有锁定的类型为13的假期 -->
+  <select id="getBlockedRestLeaveDays" parameterType="com.ule.oa.base.po.EmpLeave" resultMap="BaseResultMap">
+  	select <include refid="Base_Column_List"/> from base_emp_leave 
+	where (type = 13 or type = 5) 
+	and employee_id = #{employeeId,jdbcType=BIGINT}
+	and parend_id = 0
+	and del_flag = 0
+	and start_time &lt;= #{planStartTime,jdbcType=VARCHAR}
+	and end_time &gt;= #{planEndTime,jdbcType=VARCHAR}
+	and blocked_days > 0
+	<!--按类型倒序，先排13 ， 按过期时间排序，有效期快过期的在前 -->
+	order by type desc, end_time
+  </select>
+  
+   <select id="getAllowedRestLeaveDays" parameterType="com.ule.oa.base.po.EmpLeave" resultMap="BaseResultMap">
+  	select <include refid="Base_Column_List"/> from base_emp_leave 
+	where del_flag = 0 
+	and employee_id = #{employeeId,jdbcType=BIGINT}
+	and parend_id = 0
+	and start_time &lt;= #{planStartTime,jdbcType=VARCHAR}
+	and end_time &gt;= #{planEndTime,jdbcType=VARCHAR}
+	and ((allow_remain_days-blocked_days > 0 AND TYPE = 5) OR (allow_remain_days > 0 AND TYPE = 13))
+	<!--按类型倒序，先排13 ， 按过期时间排序，有效期快过期的在前 -->
+	order by type desc, end_time
+  </select>
+  
+  <!-- 获得总的可用调休小时 -->
+  <select id="getTotalAllowDays" parameterType="com.ule.oa.base.po.EmpLeave" resultMap="BaseResultMap">
+  	select <include refid="Base_Column_List"/> from base_emp_leave 
+	where type = #{type,jdbcType=BIGINT} 
+	and employee_id = #{employeeId,jdbcType=BIGINT}
+	and is_active = 0 
+	and parend_id = 0
+	and del_flag = 0
+	and start_time &lt;= #{planStartTime,jdbcType=VARCHAR}
+	and end_time &gt;= #{planEndTime,jdbcType=VARCHAR}
+	and allow_remain_days - blocked_days > 0
+	order by YEAR
+  </select>
+  <select id="getTotalBlockedDays" parameterType="com.ule.oa.base.po.EmpLeave" resultMap="BaseResultMap">
+  	select <include refid="Base_Column_List"/> from base_emp_leave 
+	where type = #{type,jdbcType=BIGINT} 
+	and employee_id = #{employeeId,jdbcType=BIGINT}
+	and is_active = 0 
+	and parend_id = 0
+	and del_flag = 0
+	and start_time &lt;= #{planStartTime,jdbcType=VARCHAR}
+	and end_time &gt;= #{planEndTime,jdbcType=VARCHAR}
+	and blocked_days > 0
+	order by YEAR
+  </select>
+  
+  <!-- 获得总的可用调休小时 -->
+  <select id="getTotalBlockDays" parameterType="com.ule.oa.base.po.EmpLeave" resultMap="BaseResultMap">
+  	select <include refid="Base_Column_List"/> from base_emp_leave 
+	where type = #{type,jdbcType=BIGINT} 
+	and employee_id = #{employeeId,jdbcType=BIGINT}
+	and is_active = 0 
+	and parend_id = 0
+	and del_flag = 0
+	and start_time &lt;= #{planStartTime,jdbcType=VARCHAR}
+	and end_time &gt;= #{planEndTime,jdbcType=VARCHAR}
+	and blocked_days > 0
+	order by YEAR
+  </select>
+  
+   <select id="getBlockedRestLeaveDaysDesc" parameterType="com.ule.oa.base.po.EmpLeave" resultMap="BaseResultMap">
+  	select <include refid="Base_Column_List"/> from base_emp_leave 
+	where (type = 13 or type = 5)
+	and employee_id = #{employeeId,jdbcType=BIGINT}
+	and parend_id = 0
+	and del_flag = 0
+	and start_time &lt;= #{planStartTime,jdbcType=VARCHAR}
+	and end_time &gt;= #{planEndTime,jdbcType=VARCHAR}
+	and blocked_days > 0
+	<!--按类型，先排5， 按过期时间倒序，有效期快过期的在后 -->
+	order by type,end_time desc
+  </select>
+  
+   <!-- 获得总的已用调休小时 -->
+  <select id="getTotalUsedDays" parameterType="com.ule.oa.base.po.EmpLeave" resultMap="BaseResultMap">
+  	select <include refid="Base_Column_List"/> from base_emp_leave 
+	where type = #{type,jdbcType=BIGINT} 
+	and employee_id = #{employeeId,jdbcType=BIGINT}
+	and is_active = 0 
+	and parend_id = 0
+	and del_flag = 0
+	and start_time &lt;= #{planStartTime,jdbcType=VARCHAR}
+	and end_time &gt;= #{planEndTime,jdbcType=VARCHAR}
+	and used_days > 0
+	order by year desc
+  </select>
+  
+  <!-- 获得总的允许休假天数和总的占用天数 -->
+  <select id="getMaxAllowDays" parameterType="com.ule.oa.base.po.EmpLeave" resultType="Map">
+  	select IFNULL(sum(allow_remain_days),0) allowRemainDays,IFNULL(sum(blocked_days),0) blockedDays from base_emp_leave 
+	where type = #{type,jdbcType=BIGINT} 
+	and employee_id = #{employeeId,jdbcType=BIGINT}
+	and is_active = 0 
+	and parend_id = 0
+	and del_flag = 0
+	and start_time &lt;= #{planStartTime,jdbcType=VARCHAR}
+	and end_time &gt;= #{planEndTime,jdbcType=VARCHAR}
+  </select>
+  
+  <!-- 获得总的允许休假天数和总的占用天数 -->
+  <select id="getMaxUsedDays" parameterType="com.ule.oa.base.po.EmpLeave" resultType="Map">
+  	select IFNULL(sum(used_days),0) usedDays from base_emp_leave 
+	where type = #{type,jdbcType=BIGINT} 
+	and employee_id = #{employeeId,jdbcType=BIGINT}
+	and is_active = 0 
+	and parend_id = 0
+	and del_flag = 0
+	and start_time &lt;= #{planStartTime,jdbcType=VARCHAR}
+	and end_time &gt;= #{planEndTime,jdbcType=VARCHAR}
+  </select>
+  
+  <!-- 获得符合休假时间范围内的有效假期明细 -->
+  <select id="getAllowDays" parameterType="com.ule.oa.base.po.EmpLeave" resultMap="BaseResultMap">
+  	select <include refid="Base_Column_List"/> from base_emp_leave where del_flag = 0  and parend_id in(
+		select id from base_emp_leave 
+		where type = #{type,jdbcType=BIGINT} 
+		and employee_id = #{employeeId,jdbcType=BIGINT} 
+		and is_active = 0 
+		and del_flag = 0
+		and start_time &lt;= #{planStartTime,jdbcType=VARCHAR}
+		and end_time &gt;= #{planEndTime,jdbcType=VARCHAR}
+		and parend_id = 0
+		and allow_remain_days - blocked_days > 0
+	)
+	or id in(
+		select id from base_emp_leave 
+		where type = #{type,jdbcType=BIGINT} 
+		and employee_id = #{employeeId,jdbcType=BIGINT} 
+		and is_active = 0 
+		and del_flag = 0
+		and start_time &lt;= #{planStartTime,jdbcType=VARCHAR}
+		and end_time &gt;= #{planEndTime,jdbcType=VARCHAR}
+		and parend_id = 0
+		and allow_remain_days - blocked_days > 0
+	)
+	order by year,type,category,start_time asc
+  </select>
+  
+  <!-- 获得符合休假时间范围内的有效假期明细 -->
+  <select id="getAllowBlockDays" parameterType="com.ule.oa.base.po.EmpLeave" resultMap="BaseResultMap">
+  	select <include refid="Base_Column_List"/> from base_emp_leave where parend_id in(
+		select id from base_emp_leave 
+		where type = #{type,jdbcType=BIGINT} 
+		and employee_id = #{employeeId,jdbcType=BIGINT} 
+		and is_active = 0 
+		and del_flag = 0
+		and start_time &lt;= #{planStartTime,jdbcType=VARCHAR}
+		and end_time &gt;= #{planEndTime,jdbcType=VARCHAR}
+		and parend_id = 0
+		and blocked_days > 0
+	)
+	or id in(
+		select id from base_emp_leave 
+		where type = #{type,jdbcType=BIGINT} 
+		and employee_id = #{employeeId,jdbcType=BIGINT} 
+		and is_active = 0 
+		and del_flag = 0
+		and start_time &lt;= #{planStartTime,jdbcType=VARCHAR}
+		and end_time &gt;= #{planEndTime,jdbcType=VARCHAR}
+		and parend_id = 0
+		and blocked_days > 0
+	)
+	order by year,type,category,start_time asc
+  </select>
+  
+    <!-- 获得符合休假时间范围内的有效假期明细 倒叙-->
+  <select id="getAllowBlockDaysDesc" parameterType="com.ule.oa.base.po.EmpLeave" resultMap="BaseResultMap">
+  	select <include refid="Base_Column_List"/> from base_emp_leave where parend_id in(
+		select id from base_emp_leave 
+		where type = #{type,jdbcType=BIGINT} 
+		and employee_id = #{employeeId,jdbcType=BIGINT} 
+		and is_active = 0 
+		and del_flag = 0
+		and start_time &lt;= #{planStartTime,jdbcType=VARCHAR}
+		and end_time &gt;= #{planEndTime,jdbcType=VARCHAR}
+		and parend_id = 0
+		and blocked_days > 0
+	)
+	or id in(
+		select id from base_emp_leave 
+		where type = #{type,jdbcType=BIGINT} 
+		and employee_id = #{employeeId,jdbcType=BIGINT} 
+		and is_active = 0 
+		and del_flag = 0
+		and start_time &lt;= #{planStartTime,jdbcType=VARCHAR}
+		and end_time &gt;= #{planEndTime,jdbcType=VARCHAR}
+		and parend_id = 0
+		and blocked_days > 0
+	)
+	order by year DESC,category DESC,start_time DESC
+  </select>
+  
+  <!-- 获得符合休假时间范围内的有效假期明细 -->
+  <select id="getAllowUsedDays" parameterType="com.ule.oa.base.po.EmpLeave" resultMap="BaseResultMap">
+  	select <include refid="Base_Column_List"/> from base_emp_leave where parend_id in(
+		select id from base_emp_leave 
+		where type = #{type,jdbcType=BIGINT} 
+		and employee_id = #{employeeId,jdbcType=BIGINT} 
+		and is_active = 0 
+		and del_flag = 0
+		and start_time &lt;= #{planStartTime,jdbcType=VARCHAR}
+		and end_time &gt;= #{planEndTime,jdbcType=VARCHAR}
+		and parend_id = 0
+		and used_days > 0
+	)
+	or id in(
+		select id from base_emp_leave 
+		where type = #{type,jdbcType=BIGINT} 
+		and employee_id = #{employeeId,jdbcType=BIGINT} 
+		and is_active = 0 
+		and del_flag = 0
+		and start_time &lt;= #{planStartTime,jdbcType=VARCHAR}
+		and end_time &gt;= #{planEndTime,jdbcType=VARCHAR}
+		and parend_id = 0
+		and used_days > 0
+	)
+	order by year DESC,category DESC,start_time DESC
+  </select>
+  
+  <select id="getListByCondition" parameterType="com.ule.oa.base.po.EmpLeave" resultMap="BaseResultMap">
+  	select <include refid="Base_Column_List"/> from base_emp_leave
+  	where del_flag = 0
+  	<if test="companyId != null">
+  		and company_id = #{companyId,jdbcType=BIGINT}
+  	</if>
+  	<if test="employeeId != null">
+  		and employee_id = #{employeeId,jdbcType=BIGINT}
+  	</if>
+  	<if test="year != null">
+  		and year = #{year,jdbcType=BIGINT}
+  	</if>
+  	<if test="type != null">
+  		and type = #{type,jdbcType=BIGINT}
+  	</if>
+    <if test="parendId != null">
+  		and parend_id = #{parendId,jdbcType=BIGINT}
+  	</if>
+  	<if test="category != null">
+  		and category = #{category,jdbcType=BIGINT}
+  	</if>
+  	<if test="yearList != null and yearList.size > 0">
+		and year in
+		<foreach collection="yearList" item="year" open="(" separator="," close=")">
+			#{year,jdbcType=BIGINT}
+		</foreach>
+	</if>
+  	order by year,type,category,start_time asc
+  </select>
+  
+  <select id="getAllowRemainDays" resultMap="BaseResultMap">
+  	select <include refid="Base_Column_List"/> from base_emp_leave
+  	where del_flag = 0 and parend_id = 0 and is_active = 0  and year &gt;= #{year,jdbcType=INTEGER}
+  		  and employee_id = #{employeeId,jdbcType=BIGINT}
+  	<if test="typeList != null and typeList.size > 0">
+		and type in
+		<foreach collection="typeList" item="type" open="(" separator="," close=")">
+			#{type,jdbcType=BIGINT}
+		</foreach>
+	</if>
+  	order by year,type,category,start_time asc
+  </select>
+  
+  <select id="getPageList" parameterType="com.ule.oa.base.po.EmpLeave" resultType="com.ule.oa.base.po.EmpLeave">
+  	select be.cn_name As cnName,be.code,be.quit_time As quitTime,bd.name As departName,be.job_status As jobStatus,
+		el.id, el.company_id As companyId, el.employee_id As employeeId, el.year, el.type,el.raduix,el.allow_days As allowDays, el.actual_days As actualDays, el.used_days As usedDays, 
+	    el.blocked_days As blockedDays, el.allow_remain_days As allowRemainDays,el.category, el.parend_id As parendId , el.remark,
+	    el.start_time as startTime, el.end_time as endTime, el.is_active as isActive , el.del_flag as delFlag, el.create_time as createTime, el.update_time as updateTime, el.create_user as createUser, 
+	    el.update_user as updateUser, el.version
+	 from base_emp_leave el
+	left join base_employee be on el.employee_id= be.id
+	left join base_emp_depart ed
+			on (be.id = ed.employee_id and ed.del_flag = 0)
+			left join base_depart bd
+			on (ed.depart_id = bd.id and be.company_id = bd.company_id and bd.del_flag = 0)
+	  	where el.del_flag = 0
+	<if test="id != null and id !=0">
+  		and el.id = #{id,jdbcType=BIGINT}
+  	</if>
+  	<if test="companyId != null">
+  		and el.company_id = #{companyId,jdbcType=BIGINT}
+  	</if>
+  	<if test="employeeId != null">
+  		and el.employee_id = #{employeeId,jdbcType=BIGINT}
+  	</if>
+  	<if test="year != null">
+  		and el.year = #{year,jdbcType=BIGINT}
+  	</if>
+  	<if test="type != null">
+  		and el.type = #{type,jdbcType=BIGINT}
+  	</if>
+    <if test="parendId != null">
+  		and el.parend_id = #{parendId,jdbcType=BIGINT}
+  	</if>
+  	<if test="category != null">
+  		and el.category = #{category,jdbcType=BIGINT}
+  	</if>
+  	<if test="yearList != null and yearList.size > 0">
+		and el.year in
+		<foreach collection="yearList" item="year" open="(" separator="," close=")">
+			#{year,jdbcType=BIGINT}
+		</foreach>
+	</if>
+	<if test="cnName != null and cnName != ''" >
+		  and be.cn_name like concat('%',#{cnName,jdbcType=VARCHAR},'%')
+	</if>
+	<if test="code != null and code != ''" >
+	  and be.code  like concat('%',#{code,jdbcType=VARCHAR},'%')
+	</if>
+	 <if test="departId != null and departId!=''" >
+	        and  bd.id = #{departId,jdbcType=BIGINT}
+	    </if>
+  		
+  	order by el.year,el.type,el.category,el.start_time asc
+  	
+  	<if test="offset != null and limit != null">
+		limit #{offset},#{limit}
+	</if>
+  	
+  </select>
+  
+  <select id="getEmpPageList" parameterType="com.ule.oa.base.po.EmpLeave" resultType="com.ule.oa.base.po.EmpLeave">
+	SELECT
+	be.id AS employeeId,be.cn_name AS cnName,be.CODE AS CODE,be.quit_time AS quitTime,bd.NAME AS departName,be.job_status AS jobStatus	  
+	FROM base_employee be
+	LEFT JOIN base_emp_depart ed On be.id = ed.employee_id
+	LEFT JOIN base_depart bd ON ed.depart_id = bd.id
+	WHERE
+		be.del_flag = 0 AND ed.del_flag = 0 AND bd.del_flag = 0
+	<if test="employeeId != null" ><!-- 查询员工id -->
+		  and be.id  = #{employeeId,jdbcType=BIGINT}
+	</if>
+	<if test="cnName != null and cnName != ''" >
+		  and be.cn_name like concat('%',#{cnName,jdbcType=VARCHAR},'%')
+	</if>
+	<if test="code != null and code != ''" >
+	  and be.code  like concat('%',#{code,jdbcType=VARCHAR},'%')
+	</if>
+	<if test="currentUserDepart != null and currentUserDepart.size > 0">
+		and be.id in
+		<foreach collection="currentUserDepart" item="ids" open="(" separator="," close=")">
+			#{ids,jdbcType=BIGINT}
+		</foreach>
+	</if>
+	<if test="subEmployeeIdList != null and subEmployeeIdList.size > 0">
+		and be.id in
+		<foreach collection="subEmployeeIdList" item="ids" open="(" separator="," close=")">
+			#{ids,jdbcType=BIGINT}
+		</foreach>
+	</if>
+	<if test="jobStatusList != null and jobStatusList.size > 0"> 
+	        and be.job_status in 
+	    <foreach collection="jobStatusList" index="index" item="item" open="(" separator="," close=")">
+           #{item}
+        </foreach>
+    </if>
+	<if test="departId != null and departId!=''" >
+	        and  bd.id = #{departId,jdbcType=BIGINT}
+	</if>
+	<if test="empTypeIdList != null and empTypeIdList.size > 0" >
+        and be.emp_type_id in
+           <foreach collection="empTypeIdList" index="index" item="item" open="(" separator="," close=")">
+	           #{item}
+	       </foreach>
+    </if>
+	ORDER BY CAST(SUBSTRING(be.CODE, 3) AS SIGNED),be.id
+  	<if test="offset != null and limit != null">
+		limit #{offset},#{limit}
+	</if>
+  </select>
+  
+  <select id="getEmpPageCount" parameterType="com.ule.oa.base.po.EmpLeave" resultType="java.lang.Integer">
+	select count(1) from (
+	select count(1)
+	  from base_employee be
+		left join base_emp_depart ed
+				on (be.id = ed.employee_id and ed.del_flag = 0)
+				left join base_depart bd
+				on (ed.depart_id = bd.id and be.company_id = bd.company_id and bd.del_flag = 0)
+		  	where be.del_flag = 0 
+	<if test="cnName != null and cnName != ''" >
+		  and be.cn_name like concat('%',#{cnName,jdbcType=VARCHAR},'%')
+	</if>
+	<if test="code != null and code != ''" >
+	  and be.code  like concat('%',#{code,jdbcType=VARCHAR},'%')
+	</if>
+	<if test="currentUserDepart != null and currentUserDepart.size > 0">
+		and be.id in
+		<foreach collection="currentUserDepart" item="ids" open="(" separator="," close=")">
+			#{ids,jdbcType=BIGINT}
+		</foreach>
+	</if>
+	<if test="subEmployeeIdList != null and subEmployeeIdList.size > 0">
+		and be.id in
+		<foreach collection="subEmployeeIdList" item="ids" open="(" separator="," close=")">
+			#{ids,jdbcType=BIGINT}
+		</foreach>
+	</if>
+	<if test="jobStatusList != null and jobStatusList.size > 0"> 
+	        and be.job_status in 
+	    <foreach collection="jobStatusList" index="index" item="item" open="(" separator="," close=")">
+           #{item}
+        </foreach>
+    </if>
+	<if test="departId != null and departId!=''" >
+	        and  bd.id = #{departId,jdbcType=BIGINT}
+	</if>
+	<if test="empTypeIdList != null and empTypeIdList.size > 0" >
+        and be.emp_type_id in
+           <foreach collection="empTypeIdList" index="index" item="item" open="(" separator="," close=")">
+	           #{item}
+	       </foreach>
+    </if>
+	GROUP BY be.id
+	)temps
+  </select>
+  
+  
+  
+  
+  
+  <select id="getCount" parameterType="com.ule.oa.base.po.EmpLeave" resultType="java.lang.Integer">
+  	select count(1)  from base_emp_leave el
+	left join base_employee be on el.employee_id= be.id
+	left join base_emp_depart ed
+			on (be.id = ed.employee_id and ed.del_flag = 0)
+			left join base_depart bd
+			on (ed.depart_id = bd.id and be.company_id = bd.company_id and bd.del_flag = 0)
+	  	where el.del_flag = 0
+  	<if test="companyId != null">
+  		and el.company_id = #{companyId,jdbcType=BIGINT}
+  	</if>
+  	<if test="employeeId != null">
+  		and el.employee_id = #{employeeId,jdbcType=BIGINT}
+  	</if>
+  	<if test="year != null">
+  		and el.year = #{year,jdbcType=BIGINT}
+  	</if>
+  	<if test="type != null">
+  		and el.type = #{type,jdbcType=BIGINT}
+  	</if>
+    <if test="parendId != null">
+  		and el.parend_id = #{parendId,jdbcType=BIGINT}
+  	</if>
+  	<if test="category != null">
+  		and el.category = #{category,jdbcType=BIGINT}
+  	</if>
+  	<if test="yearList != null and yearList.size > 0">
+		and el.year in
+		<foreach collection="yearList" item="year" open="(" separator="," close=")">
+			#{year,jdbcType=BIGINT}
+		</foreach>
+	</if>
+	<if test="cnName != null and cnName != ''" >
+		  and be.cn_name like concat('%',#{cnName,jdbcType=VARCHAR},'%')
+	</if>
+	<if test="code != null and code != ''" >
+	  and be.code  like concat('%',#{code,jdbcType=VARCHAR},'%')
+	</if>
+ 	<if test="departId != null and departId!=''" >
+ 	     and  bd.id = #{departId,jdbcType=BIGINT}
+    </if>
+  	  	order by el.year,el.type,el.category,el.start_time asc
+  </select>
+  
+  
+  <select id="getCountOvertime" parameterType="com.ule.oa.base.po.EmpLeave" resultType="java.lang.Integer">
+select count(1) from (
+  select count(el.employee_id)   from base_emp_leave el
+	left join base_employee be on el.employee_id= be.id
+	left join base_emp_depart ed
+			on (be.id = ed.employee_id and ed.del_flag = 0)
+			left join base_depart bd
+			on (ed.depart_id = bd.id and be.company_id = bd.company_id and bd.del_flag = 0)
+	  	where el.del_flag = 0
+  	<if test="companyId != null">
+  		and el.company_id = #{companyId,jdbcType=BIGINT}
+  	</if>
+  	<if test="employeeId != null">
+  		and el.employee_id = #{employeeId,jdbcType=BIGINT}
+  	</if>
+  	<if test="year != null">
+  		and el.year = #{year,jdbcType=BIGINT}
+  	</if>
+  	<if test="type != null">
+  		and el.type = #{type,jdbcType=BIGINT}
+  	</if>
+    <if test="parendId != null">
+  		and el.parend_id = #{parendId,jdbcType=BIGINT}
+  	</if>
+  	<if test="category != null">
+  		and el.category = #{category,jdbcType=BIGINT}
+  	</if>
+  	<if test="yearList != null and yearList.size > 0">
+		and el.year in
+		<foreach collection="yearList" item="year" open="(" separator="," close=")">
+			#{year,jdbcType=BIGINT}
+		</foreach>
+	</if>
+	<if test="cnName != null and cnName != ''" >
+		  and be.cn_name like concat('%',#{cnName,jdbcType=VARCHAR},'%')
+	</if>
+	<if test="code != null and code != ''" >
+	  and be.code  like concat('%',#{code,jdbcType=VARCHAR},'%')
+	</if>
+	<if test="currentUserDepart != null and currentUserDepart.size > 0">
+		and be.id in
+		<foreach collection="currentUserDepart" item="ids" open="(" separator="," close=")">
+			#{ids,jdbcType=BIGINT}
+		</foreach>
+	</if>
+	<if test="subEmployeeIdList != null and subEmployeeIdList.size > 0">
+		and be.id in
+		<foreach collection="subEmployeeIdList" item="ids" open="(" separator="," close=")">
+			#{ids,jdbcType=BIGINT}
+		</foreach>
+	</if>
+ 	<if test="departId != null and departId!=''" >
+ 	     and  bd.id = #{departId,jdbcType=BIGINT}
+    </if>
+   GROUP BY el.employee_id
+)temps
+    
+  </select>
+  
+  
+  
+  
+  
+  <select id="getById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+  	select <include refid="Base_Column_List"/> from base_emp_leave
+  	where id = #{id,jdbcType=BIGINT}
+  	and del_flag = 0
+  </select>
+  
+  <!-- 获取总的剩余假期(事假和其它假，对外接口专用，请勿轻易改动) -->
+  <select id="getTotalReaminLeaveOther" parameterType="com.ule.oa.base.po.EmpLeave" resultMap="BaseResultMap">
+  	select id,used_days,allow_remain_days,version from base_emp_leave
+	  where is_active = 0 and del_flag = 0
+      and employee_id = #{employeeId,jdbcType=BIGINT}
+   	  and type = #{type,jdbcType=INTEGER}
+      and year = #{year,jdbcType=INTEGER}
+      and parend_id = 0
+  </select>
+  
+  <!-- 获得总的剩余假期(对外接口专用sql，请勿轻易改动) -->
+  <select id="getTotalReaminLeave" parameterType="com.ule.oa.base.po.EmpLeave" resultType="com.ule.oa.base.po.EmpLeave">
+	  select sum(allow_days) allowDays,sum(actual_days) actualDays,sum(used_days) usedDays,sum(blocked_days) blockedDays,
+	  sum(allow_remain_days) allowRemainDays
+	  from base_emp_leave
+	  where is_active = 0 and del_flag = 0
+      and employee_id = #{employeeId,jdbcType=BIGINT}
+   	  and type = #{type,jdbcType=INTEGER}
+      and start_time &lt;= #{planStartTime,jdbcType=TIMESTAMP}
+      and end_time &gt;= #{planStartTime,jdbcType=TIMESTAMP}
+      and parend_id = 0
+  </select>
+  
+  <!-- 获得剩余假期明细(对外接口专用sql，请勿轻易改动) -->
+  <select id="getReaminLeaveList" parameterType="com.ule.oa.base.po.EmpLeave" resultMap="BaseResultMap">
+	  select <include refid="Base_Column_List"/> from base_emp_leave
+	  where is_active = 0 and del_flag = 0
+      and employee_id = #{employeeId,jdbcType=BIGINT}
+   	  and type = #{type,jdbcType=INTEGER}
+   	  and year = #{year,jdbcType=INTEGER}
+      and parend_id > 0
+      order by year,type,category,start_time asc
+  </select>
+  
+  <!-- 我的请假页面汇总信息 （定制sql,请勿轻易改动）-->
+  <select id="getMyViewLeave" resultType="com.ule.oa.base.po.EmpLeave">
+  	SELECT company_id companyId,employee_id employeeId,type,category,year,start_time startTime,end_time endTime, sum(allow_days) allowDays,
+	sum(actual_days) actualDays,sum(used_days) usedDays,sum(blocked_days) blockedDays,
+	sum(allow_remain_days) allowRemainDays,
+    (SELECT IFNULL(allow_days,0) FROM base_emp_leave where year=bel.year AND employee_id=bel.employee_id AND type=bel.type AND is_active=0 AND del_flag=0 AND category=1 limit 1) lawDays
+	from base_emp_leave bel
+	where bel.is_active=0 AND bel.del_flag=0
+    and bel.employee_id = #{employeeId,jdbcType=BIGINT} 
+	AND bel.year IN
+	<foreach collection="dateList" item="date" open="(" separator="," close=")"> 
+	   YEAR(#{date,jdbcType=DATE})
+	</foreach>
+	AND 
+	<foreach collection="typeList" item="type" open="(" separator=" or " close=")"> 
+	  	<if test="type == 1"><!-- 正对年假做特殊处理 -->
+	  		(bel.type = #{type,jdbcType=INTEGER} AND bel.category = 0) 
+	  	</if>
+	  	<if test="type == 2"><!-- 正对bing假做特殊处理 -->
+	  		(bel.type = #{type,jdbcType=INTEGER} AND bel.category in(0,2)) 
+	  	</if>
+	  	<if test="type != 1 and type != 2">
+	  		bel.type = #{type,jdbcType=INTEGER} 
+	  	</if>
+	</foreach>
+	GROUP BY companyId,type,employeeId,year,startTime,endTime,category
+  </select>
+  
+  <insert id="save" parameterType="com.ule.oa.base.po.EmpLeave" >
+    insert into base_emp_leave
+    <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">
+		SELECT LAST_INSERT_ID() AS id
+	</selectKey>
+		
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="companyId != null" >
+        company_id,
+      </if>
+      <if test="employeeId != null" >
+        employee_id,
+      </if>
+      <if test="year != null" >
+        year,
+      </if>
+      <if test="type != null" >
+        type,
+      </if>
+      <if test="raduix != null">
+      	raduix,
+      </if>
+      <if test="allowDays != null" >
+        allow_days,
+      </if>
+      <if test="actualDays != null" >
+        actual_days,
+      </if>
+      <if test="usedDays != null" >
+        used_days,
+      </if>
+      <if test="blockedDays != null" >
+        blocked_days,
+      </if>
+      <if test="allowRemainDays != null" >
+        allow_remain_days,
+      </if>
+      <if test="category != null" >
+        category,
+      </if>
+      <if test="parendId != null" >
+        parend_id,
+      </if>
+      <if test="startTime != null" >
+        start_time,
+      </if>
+      <if test="endTime != null" >
+        end_time,
+      </if>
+      <if test="isActive != null" >
+        is_active,
+      </if>
+      <if test="delFlag != null" >
+        del_flag,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+      <if test="createUser != null" >
+        create_user,
+      </if>
+      <if test="updateUser != null" >
+        update_user,
+      </if>
+      <if test="remark != null" >
+        remark,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="companyId != null" >
+        #{companyId,jdbcType=BIGINT},
+      </if>
+      <if test="employeeId != null" >
+        #{employeeId,jdbcType=BIGINT},
+      </if>
+      <if test="year != null" >
+        #{year,jdbcType=INTEGER},
+      </if>
+      <if test="type != null" >
+        #{type,jdbcType=INTEGER},
+      </if>
+      <if test="raduix != null">
+      	#{raduix,jdbcType=DOUBLE },
+      </if>
+      <if test="allowDays != null" >
+        #{allowDays,jdbcType=DOUBLE},
+      </if>
+      <if test="actualDays != null" >
+        #{actualDays,jdbcType=DOUBLE},
+      </if>
+      <if test="usedDays != null" >
+        #{usedDays,jdbcType=DOUBLE},
+      </if>
+      <if test="blockedDays != null" >
+        #{blockedDays,jdbcType=DOUBLE},
+      </if>
+      <if test="allowRemainDays != null" >
+        #{allowRemainDays,jdbcType=DOUBLE},
+      </if>
+      <if test="category != null" >
+        #{category,jdbcType=INTEGER},
+      </if>
+      <if test="parendId != null" >
+        #{parendId,jdbcType=BIGINT},
+      </if>
+      <if test="startTime != null" >
+        #{startTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endTime != null" >
+        #{endTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isActive != null" >
+        #{isActive,jdbcType=INTEGER},
+      </if>
+      <if test="delFlag != null" >
+        #{delFlag,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUser != null" >
+        #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUser != null" >
+        #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  <update id="updateById" parameterType="com.ule.oa.base.po.EmpLeave" >
+    update base_emp_leave
+    <set >
+      <if test="companyId != null" >
+        company_id = #{companyId,jdbcType=BIGINT},
+      </if>
+      <if test="employeeId != null" >
+        employee_id = #{employeeId,jdbcType=BIGINT},
+      </if>
+      <if test="year != null" >
+        year = #{year,jdbcType=INTEGER},
+      </if>
+      <if test="type != null" >
+        type = #{type,jdbcType=INTEGER},
+      </if>
+      <if test="raduix != null">
+      	raduix = #{raduix,jdbcType=DOUBLE},
+      </if>
+      <if test="allowDays != null" >
+        allow_days = #{allowDays,jdbcType=DOUBLE},
+      </if>
+      <if test="actualDays != null" >
+        actual_days = #{actualDays,jdbcType=DOUBLE},
+      </if>
+      <if test="usedDays != null" >
+        used_days = #{usedDays,jdbcType=DOUBLE},
+      </if>
+      <if test="blockedDays != null" >
+        blocked_days = #{blockedDays,jdbcType=DOUBLE},
+      </if>
+      <if test="allowRemainDays != null" >
+        allow_remain_days = #{allowRemainDays,jdbcType=DOUBLE},
+      </if>
+      <if test="category != null" >
+        category = #{category,jdbcType=INTEGER},
+      </if>
+      <if test="parendId != null" >
+        parend_id = #{parendId,jdbcType=BIGINT},
+      </if>
+      <if test="startTime != null" >
+        start_time = #{startTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endTime != null" >
+        end_time = #{endTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isActive != null" >
+        is_active = #{isActive,jdbcType=INTEGER},
+      </if>
+      <if test="delFlag != null" >
+        del_flag = #{delFlag,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUser != null" >
+        create_user = #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      version = version + 1,
+      update_time = now(),
+    </set>
+    where id = #{id,jdbcType=BIGINT} and version = #{version,jdbcType=BIGINT}
+  </update>
+
+	<!-- 生成下一年度的年假数据 -->
+	<insert id="saveNextLeaveByCondition" parameterType="java.util.List">
+		insert into base_emp_leave(
+			company_id,employee_id,year,type,
+			raduix,allow_days,allow_remain_days,actual_days,
+			category,start_time,end_time,is_active,create_time,create_user,
+			update_time,update_user,del_flag,version
+		)values
+		<foreach collection="list" item="leave" separator=",">
+			(
+				#{leave.companyId,jdbcType=BIGINT},#{leave.employeeId,jdbcType=BIGINT},#{leave.year,jdbcType=INTEGER},#{leave.type,jdbcType=INTEGER},
+				#{leave.raduix,jdbcType=DOUBLE},#{leave.allowDays,jdbcType=DOUBLE},#{leave.allowRemainDays,jdbcType=DOUBLE},#{leave.actualDays,jdbcType=DOUBLE},
+				#{leave.category,jdbcType=INTEGER},#{leave.startTime,jdbcType=TIMESTAMP},#{leave.endTime,jdbcType=TIMESTAMP},#{leave.isActive,jdbcType=INTEGER},#{leave.createTime,jdbcType=TIMESTAMP},#{leave.createUser,jdbcType=VARCHAR},
+				#{leave.updateTime,jdbcType=TIMESTAMP},#{leave.updateUser,jdbcType=VARCHAR},#{leave.delFlag,jdbcType=INTEGER},#{leave.version,jdbcType=BIGINT}
+			)
+		</foreach>
+	</insert>
+	
+	<!-- 删除下一年度的假期数据 -->
+	<update id="delNextLeaveByCondition" parameterType="com.ule.oa.base.po.EmpLeave">
+		update base_emp_leave set del_flag = 1 where type = #{type,jdbcType=INTEGER} and year = #{year,jdbcType=INTEGER}
+	</update>
+	
+	<!-- 获取员工最新的假期信息 -->
+	<select id="getNewLeaveByCondition" parameterType="com.ule.oa.base.po.EmpLeave" resultMap="BaseResultMap">
+		select <include refid="Base_Column_List"/> from base_emp_leave
+		where del_flag = 0 and is_active = 0
+		and employee_id = #{employeeId,jdbcType=BIGINT}
+  		and year = #{year,jdbcType=BIGINT} and type = #{type,jdbcType=BIGINT}
+	  	and category = #{category,jdbcType=BIGINT}
+	  	and id = (
+	  		select max(id) from base_emp_leave
+	  		where del_flag = 0 and is_active = 0
+	  		and employee_id = #{employeeId,jdbcType=BIGINT}
+	  		and year = #{year,jdbcType=BIGINT} and type = #{type,jdbcType=BIGINT}
+		  	and category = #{category,jdbcType=BIGINT}
+	  	)
+	</select>
+	
+	<!-- 刷数据，后续会删掉 -->
+	<update id="updateTimeByIds" parameterType="com.ule.oa.base.po.EmpLeave">
+		update base_emp_leave
+		<set>
+			<if test="startTime != null">
+				start_time = #{startTime},
+			</if>
+			<if test="endTime != null">
+				end_time = #{endTime},
+			</if>
+			update_time = now()
+		</set>
+		where id in
+		<foreach collection="ids" item="item" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</update>
+	
+	<select id="getRepairLeaveDatas" parameterType="com.ule.oa.base.po.EmpLeave" resultMap="BaseResultMap">
+	    select <include refid="Base_Column_List"/> from base_emp_leave
+		where del_flag = 0 and is_active = 0
+        <if test="employeeId != null" >
+           and employee_id = #{employeeId,jdbcType=BIGINT}
+        </if>
+	  	and type = 1
+		and year = 2017
+		and category = 2
+		order by id
+	</select>
+	
+	<!-- 获得无效的年假或者调休 -->
+	<select id="getInvalidLeaveList" resultMap="BaseResultMap">
+		select * from base_emp_leave 
+		where id in (
+			select id from base_emp_leave
+			where type in(1,5)
+			and parend_id = 0 
+			and is_active = 0
+			and end_time &lt; NOW()
+		)
+		OR
+		parend_id in(
+			select id from base_emp_leave
+			where type in(1,5)
+			and parend_id = 0 
+			and is_active = 0
+			and end_time &lt; NOW()
+		)
+		ORDER BY employee_id,year,category
+	</select>
+	
+	<select id="getRemainRest" parameterType="com.ule.oa.base.po.EmpLeave" resultMap="BaseResultMap">
+		select <include refid="Base_Column_List"/> from base_emp_leave
+		where del_flag = 0 and is_active = 0
+		<choose>
+             <when test="month == null">
+               and year = #{year}  and type = 5 and employee_id = #{employeeId}
+             </when>
+             <otherwise>
+             	and year = #{month}
+                and parend_id = (
+ 					select id from base_emp_leave where type = 5 and year = #{year} and employee_id = #{employeeId}
+				)
+             </otherwise>
+         </choose>
+	</select>
+	<select id="getSickBlockDaysByEmpId" parameterType="java.lang.Long" resultType="java.util.Map">
+		SELECT
+			IFNULL(sum(duration) ,0) sickBlockDays
+		FROM
+			base_emp_application_leave l
+			LEFT JOIN base_emp_application_leave_detail d ON l.id = d.leave_id 
+		WHERE
+			l.APPROVAL_STATUS = 100	
+			AND d.leave_type = 2 
+			AND l.employee_id = #{employeeId} 
+			AND l.DEL_FLAG = 0 
+			AND SUBMIT_DATE >= DATE_SUB( SYSDATE( ), INTERVAL 2 MONTH ) 
+	</select>
+	
+	<delete id="deleteOtherLeaveAfter2018">
+       delete from base_emp_leave where type not in (1,2,5)
+    </delete>
+    
+    <select id="getEmployeeId" resultType="java.lang.Long">
+    	SELECT id FROM base_employee where code = #{code} and del_flag = 0;
+    </select>
+    <select id="getEntryTime" resultType="java.util.Date">
+    	SELECT first_Entry_time FROM base_employee where id = #{empId} and del_flag = 0;
+    </select>
+    <select id="getCountEmployee" resultType="int">
+    	SELECT count(1) FROM base_emp_leave where employee_id = #{empId} and year=#{year} and type in(1,2,5) and del_flag = 0;
+    </select>
+    
+    <select id="getHistoryTotalReaminLeave" parameterType="com.ule.oa.base.po.EmpLeave" resultMap="BaseResultMap">
+	   select <include refid="Base_Column_List"/> from base_emp_leave
+		 where is_active = 0 and del_flag = 0
+	 	 and type = #{type,jdbcType=INTEGER}
+	     and parend_id = 0
+	     order by year,type,category,start_time asc
+    </select>
+  
+  <select id="getHistoryReaminLeaveList" parameterType="com.ule.oa.base.po.EmpLeave" resultMap="BaseResultMap">
+     select <include refid="Base_Column_List"/> from base_emp_leave
+		  where is_active = 0 and del_flag = 0
+	   	  and type = #{type,jdbcType=INTEGER}
+	      and parend_id > 0
+	      order by year,type,category,start_time asc
+  </select>
+  
+  <select id="getOtherHistoryUsedList" resultMap="BaseResultMap">
+	   select <include refid="Base_Column_List"/> from base_emp_leave
+		 where is_active = 0 and del_flag = 0
+	 	 and type NOT IN (1,2,5)
+	     and parend_id = 0
+	     order by year,type,category,start_time asc
+   </select>
+   
+   <!-- 获取历史使用记录 -->
+  <select id="getHistoryUsedList" parameterType="com.ule.oa.base.po.EmpLeave" resultMap="BaseResultMap">
+	  SELECT <include refid="Base_Column_List"/> FROM base_emp_leave
+	  WHERE is_active = 0 AND del_flag = 0
+      AND employee_id = #{employeeId,jdbcType=BIGINT}
+      AND TYPE = #{type,jdbcType=INTEGER}
+      AND parend_id > 0
+      AND used_days>0
+      ORDER BY end_time DESC,YEAR DESC
+  </select>
+   <select id="getBenefitAllowRemainDays" resultType="java.lang.Double">
+   		SELECT allow_remain_days FROM base_emp_leave WHERE year = #{year} AND employee_id = #{employeeId} AND type = 1 AND category = 2 AND del_flag = 0
+   </select>
+   <select id="getYearLeaveList" resultMap="BaseResultMap">
+   	 SELECT <include refid="Base_Column_List"/> FROM base_emp_leave
+   	 WHERE is_active = 0 AND del_flag = 0
+   	 AND type = 1 AND (category = 1 or category = 2)
+   	 AND used_days > 0
+   </select>
+   <select id="getOffLeaveList" resultMap="BaseResultMap">
+   	 SELECT <include refid="Base_Column_List"/> FROM base_emp_leave
+   	 WHERE is_active = 0 AND del_flag = 0
+   	 AND type = 5 AND category = 0
+   	 AND used_days > 0
+   </select>
+   <select id="getOtherLeaveList" resultMap="BaseResultMap">
+   	 SELECT <include refid="Base_Column_List"/> FROM base_emp_leave
+   	 WHERE is_active = 0 AND del_flag = 0
+   	 AND type != 1 AND type != 5
+   	 AND used_days > 0
+   </select>
+   
+   <select id="getOtherRestLeaveCount" resultType="java.lang.Double">
+   		SELECT 
+			  SUM(allow_remain_days)
+		FROM
+			  base_emp_leave 
+		WHERE employee_id = #{employeeId} AND type = 13  AND del_flag = 0 and category = 0 and is_active = 0
+   </select>
+  
+  <select id="getOtherRestLeaveList" resultType="com.ule.oa.base.po.EmpLeave">
+	  	SELECT bel.year,bel.allow_remain_days as allowRemainDays,bel.start_time as startTime,bel.end_time as endTime
+		from base_emp_leave bel
+		where bel.is_active=0 AND bel.del_flag=0 AND type=13
+	    and bel.employee_id = #{employeeId,jdbcType=BIGINT} 
+		AND bel.year IN
+		<foreach collection="yearList" item="year" open="(" separator="," close=")"> 
+		     #{year,jdbcType=INTEGER}
+		</foreach>
+  </select>
+  
+  <select id="getInvalidOtherRestLeaveList" resultMap="BaseResultMap">
+   	 SELECT <include refid="Base_Column_List"/> FROM base_emp_leave
+   	 WHERE is_active = 0 AND del_flag = 0 AND type = 13
+   	 AND end_time &lt; #{endTime,jdbcType=TIMESTAMP}
+   </select>
+  
+  	 
+   	 <select id="getSumOvertimeDay" resultType="com.ule.oa.base.po.EmpLeave">
+  	SELECT any_value(el.employee_id) as employeeId,SUM(el.used_days) as usedDays,sum(el.blocked_days) as blockedDays,
+		SUM(IF (el.is_active = 0, el.allow_remain_days, 0))as allowRemainDays,
+		any_value(be.cn_name) As cnName,any_value(be.code) As code,any_value(be.quit_time) As quitTime,any_value(bd.name) As departName,any_value(be.job_status) As jobStatus
+	FROM base_emp_leave el
+		left join base_employee be  on be.id=el.employee_id
+		left join base_emp_depart ed
+			on (be.id = ed.employee_id and ed.del_flag = 0) left join base_depart bd
+			on (ed.depart_id = bd.id and be.company_id = bd.company_id and bd.del_flag = 0)
+		where el.type=13	
+	<if test="employeeIdList != null and employeeIdList.size>0" ><!-- 查询员工id -->
+		  and el.employee_id in
+		  <foreach collection="employeeIdList" item="employeeId" open="(" separator="," close=")"> 
+		     #{employeeId,jdbcType=BIGINT}
+		  </foreach>
+	</if>
+	<if test="year != null" >
+		  and el.year  = #{year,jdbcType=BIGINT}
+	</if>
+	GROUP BY el.employee_id
+  </select>
+</mapper>

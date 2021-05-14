@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ule.oa.base.mapper.ApplicationEmployeeDutyDetailMapper" >
+  <resultMap id="BaseResultMap" type="com.ule.oa.base.po.ApplicationEmployeeDutyDetail" >
+    <id column="ID" property="id" jdbcType="BIGINT" />
+    <result column="attn_application_employ_duty_id" property="attnApplicationEmployDutyId" jdbcType="BIGINT" />
+    <result column="vacation_date" property="vacationDate" jdbcType="DATE" />
+    <result column="duty_item" property="dutyItem" jdbcType="VARCHAR" />
+    <result column="EMPLOYEE_IDS" property="employeeIds" jdbcType="VARCHAR" />
+    <result column="start_time" property="startTime" jdbcType="TIMESTAMP" />
+    <result column="end_time" property="endTime" jdbcType="TIMESTAMP" />
+    <result column="work_hours" property="workHours" jdbcType="DOUBLE" />
+    <result column="del_flag" property="delFlag" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="remarks" property="remarks" jdbcType="VARCHAR" />
+    <result column="is_move" property="isMove" jdbcType="INTEGER" />
+    
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    ID, attn_application_employ_duty_id,vacation_date, duty_item, EMPLOYEE_IDS, start_time, end_time, work_hours,
+    del_flag, create_time, create_user, update_user, update_time,remarks,is_move
+  </sql>
+  
+  <select id="selectByCondition" resultType="com.ule.oa.base.po.ApplicationEmployeeDutyDetail" parameterType="com.ule.oa.base.po.ApplicationEmployeeDutyDetail" >
+   select 
+   		ed.vacation_name,ed.year,ed.depart_id,
+		edd.ID, edd.attn_application_employ_duty_id,edd.vacation_date, edd.duty_item, edd.EMPLOYEE_IDS, edd.start_time, edd.end_time, edd.work_hours,
+    	edd.del_flag, edd.create_time, edd.create_user, edd.update_user, edd.update_time,edd.is_move,ed.depart_name,ed.approval_status,edd.remarks,
+		GROUP_CONCAT(be.cn_name) AS names,GROUP_CONCAT(be.code) AS codes
+    from attn_application_employ_duty_detail edd 
+		left join attn_application_employ_duty ed on ed.id=edd.attn_application_employ_duty_id
+    left join base_employee be on   INSTR(edd.employee_ids,be.id)>0 
+	where edd.del_flag=0 
+
+    <if test="attnApplicationEmployDutyId != null" >
+      and edd.attn_application_employ_duty_id = #{attnApplicationEmployDutyId,jdbcType=BIGINT}
+    </if>
+   	group by edd.id 
+	 ORDER BY edd.vacation_date ASC,edd.create_time ASC
+  </select>
+  
+  <insert id="batchSave" parameterType="java.util.List">
+  	insert into attn_application_employ_duty_detail (
+  	  attn_application_employ_duty_id,vacation_date,duty_item,EMPLOYEE_IDS,start_time,end_time,work_hours,create_time,create_user,del_flag,remarks,is_move
+      )
+    select tmp.* from (
+    	<foreach collection="list" item="item" separator="UNION">
+    		select 
+    		#{item.attnApplicationEmployDutyId,jdbcType=BIGINT} as attn_application_employ_duty_id,
+    		#{item.vacationDate,jdbcType=DATE} as vacation_date,
+    		#{item.dutyItem,jdbcType=VARCHAR} as duty_item,
+    		#{item.employeeIds,jdbcType=VARCHAR} as EMPLOYEE_IDS,
+    		#{item.startTime,jdbcType=TIMESTAMP} as start_time,
+    		#{item.endTime,jdbcType=TIMESTAMP} as end_time,
+    		#{item.workHours,jdbcType=DOUBLE} as work_hours,
+    		#{item.createTime,jdbcType=TIMESTAMP} as create_time,
+    		#{item.createUser,jdbcType=VARCHAR} as create_user,
+    		#{item.delFlag,jdbcType=INTEGER} as del_flag,
+    		#{item.remarks,jdbcType=VARCHAR} as remarks,
+    		#{item.isMove,jdbcType=INTEGER} as is_move
+    		from dual
+    	</foreach>
+    )tmp
+  </insert>
+
+  <update id="updateById" parameterType="com.ule.oa.base.po.ApplicationEmployeeDutyDetail" >
+    update attn_application_employ_duty_detail
+    <set >
+      <if test="dutyItem != null" >
+        duty_item = #{dutyItem,jdbcType=VARCHAR},
+      </if>
+      <if test="employeeIds != null" >
+        EMPLOYEE_IDS = #{employeeIds,jdbcType=VARCHAR},
+      </if>
+      <if test="startTime != null" >
+        start_time = #{startTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endTime != null" >
+        end_time = #{endTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="workHours != null" >
+        work_hours = #{workHours,jdbcType=DOUBLE},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="delFlag != null" >
+        del_flag = #{delFlag,jdbcType=INTEGER},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP}
+      </if>
+    </set>
+    where ID = #{id,jdbcType=BIGINT}
+  </update>
+  
+  <update id="deleteByDutyId" parameterType="com.ule.oa.base.po.ApplicationEmployeeDutyDetail" >
+    update attn_application_employ_duty_detail 
+    <set >
+      del_flag = 1,
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP}
+      </if>
+    </set>
+    where attn_application_employ_duty_id = #{attnApplicationEmployDutyId,jdbcType=BIGINT}
+  </update>
+</mapper>

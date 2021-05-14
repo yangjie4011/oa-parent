@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ule.oa.base.mapper.EmpTrainingMapper" >
+ 
+  <resultMap id="BaseResultMap" type="com.ule.oa.base.po.EmpTraining" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="employee_id" property="employeeId" jdbcType="BIGINT" />
+    <result column="is_company_training" property="isCompanyTraining" jdbcType="INTEGER" />
+    <result column="start_time" property="startTime" jdbcType="TIMESTAMP" />
+    <result column="end_time" property="endTime" jdbcType="TIMESTAMP" />
+    <result column="training_institutions" property="trainingInstitutions" jdbcType="VARCHAR" />
+    <result column="training_pro_name" property="trainingProName" jdbcType="VARCHAR" />
+    <result column="content" property="content" jdbcType="VARCHAR" />
+    <result column="obtain_certificate" property="obtainCertificate" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="del_flag" property="delFlag" jdbcType="INTEGER" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="version" property="version" jdbcType="BIGINT" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    id, employee_id, is_company_training, start_time, end_time, training_institutions, 
+    content, obtain_certificate, create_time, create_user, update_time, update_user, 
+    del_flag, remark,training_pro_name,version
+  </sql>
+	
+	<insert id="save" parameterType="com.ule.oa.base.po.EmpTraining">
+		insert into base_emp_training(
+			employee_id,is_company_training,start_time,end_time,
+			training_institutions,content,obtain_certificate,create_time,
+			create_user,update_time,update_user,del_flag,
+			remark,training_pro_name
+		)values (
+			#{employeeId,jdbcType=BIGINT}, #{isCompanyTraining,jdbcType=INTEGER},#{startTime,jdbcType=TIMESTAMP}, #{endTime,jdbcType=TIMESTAMP}, 
+			#{trainingInstitutions,jdbcType=VARCHAR},#{content,jdbcType=VARCHAR}, #{obtainCertificate,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, 
+			#{createUser,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP},#{updateUser,jdbcType=VARCHAR}, #{delFlag,jdbcType=INTEGER}, 
+			#{remark,jdbcType=VARCHAR},#{trainingProName,jdbcType=VARCHAR}
+	     	)
+	</insert>
+  
+	  <insert id="saveBatch" parameterType="com.ule.oa.base.po.EmpTraining" >
+		    insert into base_emp_training(
+			employee_id,is_company_training,start_time,end_time,
+			training_institutions,content,obtain_certificate,create_time,
+			create_user,update_time,update_user,del_flag,
+			remark,training_pro_name)
+	        values
+	      <foreach collection ="list" item="item" index= "index" separator =",">
+		    (
+			#{item.employeeId,jdbcType=BIGINT}, #{item.isCompanyTraining,jdbcType=INTEGER},#{item.startTime,jdbcType=TIMESTAMP}, #{item.endTime,jdbcType=TIMESTAMP}, 
+			#{item.trainingInstitutions,jdbcType=VARCHAR},#{item.content,jdbcType=VARCHAR}, #{item.obtainCertificate,jdbcType=VARCHAR}, #{item.createTime,jdbcType=TIMESTAMP}, 
+			#{item.createUser,jdbcType=VARCHAR}, #{item.updateTime,jdbcType=TIMESTAMP},#{item.updateUser,jdbcType=VARCHAR}, #{item.delFlag,jdbcType=INTEGER}, 
+			#{item.remark,jdbcType=VARCHAR},#{item.trainingProName,jdbcType=VARCHAR}
+			)
+	      </foreach >
+	  </insert>
+	  
+   <update id="deleteBatchNotApply">
+	    update base_emp_training set del_flag = 1,update_time=#{updateTime,jdbcType=TIMESTAMP}
+	    ,update_user = #{updateUser,jdbcType=VARCHAR}
+	    where employee_id = #{employeeId,jdbcType=BIGINT} and id not in
+	    <foreach collection ="list" item="item" index= "index" open="(" separator="," close=")">
+	        #{item.id}
+	    </foreach>
+	</update>
+	
+	<update id="deleteByEmployeeId">
+	    update base_emp_training set del_flag = 1,update_time=#{updateTime,jdbcType=TIMESTAMP},update_user = #{updateUser,jdbcType=VARCHAR}
+	    	where del_flag=0 and employee_id = #{employeeId,jdbcType=BIGINT} and is_company_training = #{isCompanyTraining,jdbcType=INTEGER}
+	</update>
+	  
+	<update id="updateById" parameterType="com.ule.oa.base.po.EmpTraining">
+		update base_emp_training
+		<set>
+			<if test="employeeId != null">employee_id = #{employeeId,jdbcType=BIGINT},</if>
+			<if test="isCompanyTraining != null">is_company_training = #{isCompanyTraining,jdbcType=INTEGER},</if>
+			<if test="startTime != null">start_time = #{startTime,jdbcType=TIMESTAMP},</if>
+			<if test="endTime != null">end_time = #{endTime,jdbcType=TIMESTAMP},</if>
+			<if test="trainingInstitutions != null">training_institutions = #{trainingInstitutions,jdbcType=VARCHAR},</if>
+			<if test="content != null">content = #{content,jdbcType=VARCHAR},</if>
+			<if test="obtainCertificate != null">obtain_certificate = #{obtainCertificate,jdbcType=VARCHAR},</if>
+			<if test="updateTime != null">update_time = #{updateTime,jdbcType=TIMESTAMP},</if>
+			<if test="updateUser != null ">update_user = #{updateUser,jdbcType=VARCHAR},</if>
+			<if test="delFlag != null">del_flag = #{delFlag,jdbcType=INTEGER},</if>
+			<if test="remark != null">remark = #{remark,jdbcType=VARCHAR},</if>
+			<if test="trainingProName != null">training_pro_name = #{trainingProName,jdbcType=VARCHAR},</if>
+			version = version + 1
+	    </set>
+	    where id = #{id,jdbcType=BIGINT} and version = #{version,jdbcType=BIGINT}
+	</update>
+	
+	<select id="getListByCondition" resultMap="BaseResultMap" parameterType="com.ule.oa.base.po.EmpTraining">
+		select <include refid="Base_Column_List"/> from base_emp_training
+		where del_flag = 0
+		<if test="employeeId != null">and employee_id = #{employeeId,jdbcType=BIGINT}</if>
+		<if test="isCompanyTraining != null">and is_company_training = #{isCompanyTraining,jdbcType=INTEGER}</if>
+		<if test="startTime != null">and start_time = #{startTime,jdbcType=TIMESTAMP}</if>
+		<if test="endTime != null">and end_time = #{endTime,jdbcType=TIMESTAMP}</if>
+		<if test="trainingInstitutions != null and trainingInstitutions != ''">and training_institutions = #{trainingInstitutions,jdbcType=VARCHAR}</if>
+		<if test="content != null and content != ''">and content = #{content,jdbcType=VARCHAR}</if>
+		<if test="obtainCertificate != null and obtainCertificate != ''">and obtain_certificate = #{obtainCertificate,jdbcType=VARCHAR}</if>
+		<if test="updateTime != null">and update_time = #{updateTime,jdbcType=TIMESTAMP}</if>
+		<if test="updateUser != null and updateUser !='' ">and update_user = #{updateUser,jdbcType=VARCHAR}</if>
+		<if test="remark != null and remark != ''">and remark = #{remark,jdbcType=VARCHAR}</if>
+		<if test="version != null">and version = #{version,jdbcType=BIGINT}</if>
+	</select>
+	
+	<select id="getListByEmployeeId" resultMap="BaseResultMap">
+		select <include refid="Base_Column_List"/> from base_emp_training
+		where del_flag = 0 and employee_id = #{employeeId,jdbcType=BIGINT} order by start_time
+	</select>
+	
+	
+</mapper>

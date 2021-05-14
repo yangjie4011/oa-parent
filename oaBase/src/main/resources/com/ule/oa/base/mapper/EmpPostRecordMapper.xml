@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ule.oa.base.mapper.EmpPostRecordMapper" >
+  
+  <resultMap id="BaseResultMap" type="com.ule.oa.base.po.EmpPostRecord" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="employee_id" property="employeeId" jdbcType="BIGINT" />
+    <result column="effective_date" property="effectiveDate" jdbcType="TIMESTAMP" />
+    <result column="adjust_date" property="adjustDate" jdbcType="TIMESTAMP" />
+    <result column="pre_depart_id" property="preDepartId" jdbcType="BIGINT" />
+    <result column="pre_position_id" property="prePositionId" jdbcType="BIGINT" />
+    <result column="depart_id" property="departId" jdbcType="BIGINT" />
+    <result column="position_id" property="positionId" jdbcType="BIGINT" />
+    <result column="is_current_position" property="isCurrentPosition" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="del_flag" property="delFlag" jdbcType="INTEGER" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="version" property="version" jdbcType="BIGINT" />
+  </resultMap>
+ 
+  <sql id="Base_Column_List" >
+    id, employee_id, effective_date, adjust_date, pre_depart_id,pre_position_id,depart_id, position_id, is_current_position, 
+    create_time, create_user, update_time, update_user, del_flag, remark, version
+  </sql>
+  
+  <select id="getListByCondition" parameterType="com.ule.oa.base.po.EmpPostRecord" resultType="com.ule.oa.base.po.EmpPostRecord">
+  	select pr.id,pr.effective_date effectiveDate,pr.adjust_date adjustDate,bd.name as 'depart.name',bp.position_name as 'position.positionName',pre_depart_id as preDepartId,pre_position_id as prePositionId,pr.version from base_emp_post_record pr
+  	left join base_depart bd
+  	on(pr.depart_id = bd.id)
+  	left join base_position bp
+  	on(pr.position_id = bp.id)
+  	where pr.del_flag = 0
+  	<if test="employeeId != null">
+  		and pr.employee_id = #{employeeId,jdbcType=BIGINT}
+  	</if>
+  </select>
+  
+  <select id="getListByEmployeeId" resultType="com.ule.oa.base.po.EmpPostRecord">
+  	   select <include refid="Base_Column_List"/> from base_emp_post_record where 
+         del_flag = 0 and employee_id = #{employeeId,jdbcType=BIGINT} 
+  </select>
+  
+  <insert id="save" parameterType="com.ule.oa.base.po.EmpPostRecord" >
+    insert into base_emp_post_record (employee_id, pre_depart_id, 
+      pre_position_id, depart_id, position_id, 
+      effective_date, adjust_date, is_current_position, 
+      create_time, create_user, update_time, 
+      update_user, del_flag, remark)
+    values (#{employeeId,jdbcType=BIGINT}, #{preDepartId,jdbcType=BIGINT}, 
+      #{prePositionId,jdbcType=BIGINT}, #{departId,jdbcType=BIGINT}, #{positionId,jdbcType=BIGINT}, 
+      #{effectiveDate,jdbcType=TIMESTAMP}, #{adjustDate,jdbcType=TIMESTAMP}, #{isCurrentPosition,jdbcType=INTEGER}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{createUser,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP}, 
+      #{updateUser,jdbcType=VARCHAR}, #{delFlag,jdbcType=INTEGER}, #{remark,jdbcType=VARCHAR})
+  </insert>
+  
+  <update id="updateById" parameterType="com.ule.oa.base.po.EmpPostRecord" >
+    update base_emp_post_record
+    <set >
+      <if test="employeeId != null" >
+        employee_id = #{employeeId,jdbcType=BIGINT},
+      </if>
+      <if test="preDepartId != null" >
+        pre_depart_id = #{preDepartId,jdbcType=BIGINT},
+      </if>
+      <if test="prePositionId != null" >
+        pre_position_id = #{prePositionId,jdbcType=BIGINT},
+      </if>
+      <if test="departId != null" >
+        depart_id = #{departId,jdbcType=BIGINT},
+      </if>
+      <if test="positionId != null" >
+        position_id = #{positionId,jdbcType=BIGINT},
+      </if>
+      <if test="effectiveDate != null" >
+        effective_date = #{effectiveDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="adjustDate != null" >
+        adjust_date = #{adjustDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isCurrentPosition != null" >
+        is_current_position = #{isCurrentPosition,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUser != null" >
+        create_user = #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="delFlag != null" >
+        del_flag = #{delFlag,jdbcType=INTEGER},
+      </if>
+      <if test="remark != null" >
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+	  version = version + 1
+    </set>
+    where id = #{id,jdbcType=BIGINT} and version = #{version,jdbcType=BIGINT}
+  </update>
+  
+  <insert id="saveBatch" parameterType="com.ule.oa.base.po.EmpSchool" >
+      insert into base_emp_post_record (employee_id, pre_depart_id, 
+      pre_position_id, depart_id, position_id, 
+      effective_date, adjust_date, is_current_position, 
+      create_time, create_user, update_time, 
+      update_user, del_flag, remark)
+      values
+      <foreach collection ="list" item="item" index= "index" separator =",">
+	      (#{item.employeeId,jdbcType=BIGINT}, #{item.preDepartId,jdbcType=BIGINT}, 
+	       #{item.prePositionId,jdbcType=BIGINT}, #{item.departId,jdbcType=BIGINT}, #{item.positionId,jdbcType=BIGINT}, 
+	       #{item.effectiveDate,jdbcType=TIMESTAMP}, #{item.adjustDate,jdbcType=TIMESTAMP}, #{item.isCurrentPosition,jdbcType=INTEGER}, 
+	       #{item.createTime,jdbcType=TIMESTAMP}, #{item.createUser,jdbcType=VARCHAR}, #{item.updateTime,jdbcType=TIMESTAMP}, 
+	       #{item.updateUser,jdbcType=VARCHAR}, #{item.delFlag,jdbcType=INTEGER}, #{item.remark,jdbcType=VARCHAR})
+      </foreach >
+  </insert>
+  
+  <update id="deleteByEmployeeId">
+	    update base_emp_post_record set del_flag = 1,update_time=#{updateTime,jdbcType=TIMESTAMP}
+	    ,update_user = #{updateUser,jdbcType=VARCHAR}
+	    where del_flag=0 and employee_id = #{employeeId,jdbcType=BIGINT} 
+  </update>
+  
+</mapper>

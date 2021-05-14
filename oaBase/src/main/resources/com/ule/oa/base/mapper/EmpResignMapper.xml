@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ule.oa.base.mapper.EmpResignMapper" >
+
+  <resultMap id="BaseResultMap" type="com.ule.oa.base.po.EmpResign" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="company_id" property="companyId" jdbcType="BIGINT" />
+    <result column="employee_id" property="employeeId" jdbcType="BIGINT" />
+    <result column="contract_code" property="contractCode" jdbcType="VARCHAR" />
+    <result column="depart_id" property="departId" jdbcType="BIGINT" />
+    <result column="depart_name" property="departName" jdbcType="VARCHAR" />
+    <result column="ENTRY_DATE" property="entryDate" jdbcType="TIMESTAMP" />
+    <result column="RESIGNATION_date" property="resignationDate" jdbcType="TIMESTAMP" />
+    <result column="last_date" property="lastDate" jdbcType="TIMESTAMP" />
+    <result column="IMPORTANCE" property="importance" jdbcType="BIGINT" />
+    <result column="REASON_LEAVING" property="reasonLeaving" jdbcType="CLOB" />
+    <result column="LEADER_OPINION" property="leaderOpinion" jdbcType="CLOB" />
+    <result column="LEADER_date" property="leaderDate" jdbcType="TIMESTAMP" />
+    <result column="LEADER" property="leader" jdbcType="BIGINT" />
+    <result column="leader_name" property="leaderName" jdbcType="VARCHAR" />
+    <result column="HR_OPINION" property="hrOpinion" jdbcType="CLOB" />
+    <result column="HR_DATE" property="hrDate" jdbcType="TIMESTAMP" />
+    <result column="HR_ID" property="hrId" jdbcType="BIGINT" />
+    <result column="HR_NAME" property="hrName" jdbcType="VARCHAR" />
+    <result column="PAYROLL_DATE" property="payrollDate" jdbcType="TIMESTAMP" />
+    <result column="TURNOVER_STATUS" property="turnoverStatus" jdbcType="BIGINT" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="del_flag" property="delFlag" jdbcType="INTEGER" />
+    <result column="VERSION" property="version" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    id, company_id, employee_id, contract_code, depart_id, depart_name, ENTRY_DATE,RESIGNATION_date, last_date, IMPORTANCE, REASON_LEAVING, LEADER_OPINION, 
+    LEADER_date, LEADER, leader_name, HR_OPINION, HR_DATE, HR_ID, HR_NAME,PAYROLL_DATE,TURNOVER_STATUS,VERSION,del_flag,create_time,create_user,
+    update_time, update_user
+  </sql>
+  
+  <select id="getById" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+	   SELECT <include refid="Base_Column_List" /> FROM hr_emp_resign
+	    where del_flag = 0
+     <if test="id != null and id !=''">
+    	and id = #{id,jdbcType=BIGINT}
+     </if>
+  </select>
+  
+  <select id="getByEmployeeId" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+	   SELECT <include refid="Base_Column_List" /> FROM hr_emp_resign
+	    where del_flag = 0
+     <if test="employeeId != null and employeeId !=''">
+    	and employee_id = #{employeeId,jdbcType=BIGINT}
+     </if>
+  </select>
+  
+  <insert id="save" parameterType="com.ule.oa.base.po.EmpResign" useGeneratedKeys="true" keyProperty="id">
+    insert into hr_emp_resign (
+        company_id,
+        employee_id,
+        contract_code,
+        depart_id,
+        depart_name,
+        ENTRY_DATE,
+        RESIGNATION_date,
+        IMPORTANCE,
+        last_date,
+        REASON_LEAVING,
+        create_time,
+        create_user,
+        del_flag,
+        VERSION,
+        TURNOVER_STATUS
+      )
+    values (
+      #{companyId,jdbcType=BIGINT},
+      #{employeeId,jdbcType=INTEGER}, 
+      #{contractCode,jdbcType=VARCHAR}, 
+      #{departId,jdbcType=BIGINT}, 
+      #{departName,jdbcType=VARCHAR}, 
+      #{entryDate,jdbcType=TIMESTAMP}, 
+      #{resignationDate,jdbcType=TIMESTAMP}, 
+      #{importance,jdbcType=INTEGER}, 
+      #{lastDate,jdbcType=TIMESTAMP}, 
+      #{reasonLeaving,jdbcType=CLOB}, 
+      #{createTime,jdbcType=TIMESTAMP}, 
+      #{createUser,jdbcType=VARCHAR},
+      #{delFlag,jdbcType=INTEGER}, 
+      #{version,jdbcType=VARCHAR},
+      #{turnoverStatus,jdbcType=INTEGER}      
+      )
+  </insert>
+  
+  <update id="updateById" parameterType="com.ule.oa.base.po.EmpResign" >
+    update hr_emp_resign
+    <set >
+      <if test="companyId != null" >
+        company_id = #{companyId,jdbcType=BIGINT},
+      </if>
+      <if test="employeeId != null" >
+        employee_id = #{employeeId,jdbcType=BIGINT},
+      </if>
+      <if test="contractCode != null" >
+        contract_code = #{contractCode,jdbcType=VARCHAR},
+      </if>
+      <if test="departId != null" >
+        depart_id = #{departId,jdbcType=BIGINT},
+      </if>
+      <if test="departName != null" >
+        depart_name = #{departName,jdbcType=VARCHAR},
+      </if>
+      <if test="entryDate != null" >
+        ENTRY_DATE = #{entryDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="resignationDate != null" >
+        RESIGNATION_date = #{resignationDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="lastDate != null" >
+        last_date = #{lastDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="importance != null" >
+        IMPORTANCE = #{importance,jdbcType=BIGINT},
+      </if>
+      <if test="reasonLeaving != null" >
+        REASON_LEAVING = #{reasonLeaving,jdbcType=CLOB},
+      </if>
+      <if test="leaderOpinion != null" >
+        LEADER_OPINION = #{leaderOpinion,jdbcType=CLOB},
+      </if>
+      <if test="leaderDate != null" >
+        LEADER_date = #{leaderDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="leader != null" >
+        LEADER = #{leader,jdbcType=BIGINT},
+      </if>
+      <if test="leaderName != null" >
+        leader_name = #{leaderName,jdbcType=VARCHAR},
+      </if>
+      <if test="hrOpinion != null" >
+        HR_OPINION = #{hrOpinion,jdbcType=CLOB},
+      </if>
+      <if test="hrDate != null" >
+        HR_DATE = #{hrDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="hrId != null" >
+        HR_ID = #{hrId,jdbcType=BIGINT},
+      </if>
+      <if test="hrName != null" >
+        HR_NAME = #{hrName,jdbcType=VARCHAR},
+      </if>
+      <if test="payrollDate != null" >
+        PAYROLL_DATE = #{payrollDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="turnoverStatus != null" >
+        TURNOVER_STATUS = #{turnoverStatus,jdbcType=BIGINT},
+      </if>
+      <if test="version != null" >
+        VERSION = #{version,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR}
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+</mapper>

@@ -1,0 +1,372 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ule.oa.base.mapper.RuProcdefMapper">
+
+	<resultMap id="BaseResultMap" type="com.ule.oa.base.po.RuProcdef">
+		<result column="ID" property="id" jdbcType="BIGINT" />
+		<result column="RU_TASK_ID" property="ruTaskId" jdbcType="BIGINT" />
+		<result column="PROCESS_TYPE" property="processType" jdbcType="BIGINT" />
+		<result column="PROCESS_NAME" property="processName" jdbcType="VARCHAR" />
+		<result column="LAST_UPDATE_DATE" property="lastUpdateDate" jdbcType="TIMESTAMP" />
+		<result column="PROCESS_STATUS" property="processStatus" jdbcType="BIGINT" />
+		<result column="START_TIME" property="startTime" jdbcType="TIMESTAMP" />
+		<result column="END_TIME" property="endTime" jdbcType="TIMESTAMP" />
+		<result column="DURATION" property="duration" jdbcType="BIGINT" />
+		<result column="RE_PROCDEF_CODE" property="reProcdefCode" jdbcType="VARCHAR" />
+		<result column="NODE_MODULE" property="nodeModule" jdbcType="VARCHAR" />
+		<result column="NODE_MODULE_NAME" property="nodeModuleName" jdbcType="VARCHAR"/>
+		<result column="NODE_MODULE_TYPE" property="nodeModuleType" jdbcType="BIGINT" />
+		<result column="NODE_TYPE" property="nodeType" jdbcType="BIGINT" />
+		<result column="NODE_NAME" property="nodeName" jdbcType="VARCHAR" />
+		<result column="NODE_CODE" property="nodeCode" jdbcType="VARCHAR" />
+		<result column="ASSIGNEE_ID" property="assigneeId" jdbcType="BIGINT" />
+		<result column="ASSIGNEE" property="assignee" jdbcType="VARCHAR" />
+		<result column="REDIRECT_URL" property="redirectUrl" jdbcType="VARCHAR" />
+		<result column="ENTITY_ID" property="entityId" jdbcType="VARCHAR" />
+		<result column="VERSION" property="version" jdbcType="BIGINT" />
+		<result column="DEL_FLAG" property="delFlag" jdbcType="BIGINT" />
+		<result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="UPDATE_TIME" property="updateTime" jdbcType="TIMESTAMP" />
+		<result column="CREATE_USER" property="createUser" jdbcType="VARCHAR" />
+		<result column="UPDATE_USER" property="updateUser" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<resultMap id="CreatorResultMap" type="com.ule.oa.base.po.RuProcdef">
+		<result column="creatorId" property="creatorId" jdbcType="BIGINT" />
+		<result column="creator" property="creator" jdbcType="VARCHAR" />
+		<result column="ID" property="id" jdbcType="BIGINT" />
+		<result column="RU_TASK_ID" property="ruTaskId" jdbcType="BIGINT" />
+		<result column="PROCESS_TYPE" property="processType" jdbcType="BIGINT" />
+		<result column="PROCESS_NAME" property="processName" jdbcType="VARCHAR" />
+		<result column="LAST_UPDATE_DATE" property="lastUpdateDate" jdbcType="TIMESTAMP" />
+		<result column="PROCESS_STATUS" property="processStatus" jdbcType="BIGINT" />
+		<result column="START_TIME" property="startTime" jdbcType="TIMESTAMP" />
+		<result column="END_TIME" property="endTime" jdbcType="TIMESTAMP" />
+		<result column="DURATION" property="duration" jdbcType="BIGINT" />
+		<result column="RE_PROCDEF_CODE" property="reProcdefCode" jdbcType="VARCHAR" />
+		<result column="NODE_MODULE" property="nodeModule" jdbcType="VARCHAR" />
+		<result column="NODE_MODULE_NAME" property="nodeModuleName" jdbcType="VARCHAR"/>
+		<result column="NODE_MODULE_TYPE" property="nodeModuleType" jdbcType="BIGINT" />
+		<result column="NODE_TYPE" property="nodeType" jdbcType="BIGINT" />
+		<result column="NODE_NAME" property="nodeName" jdbcType="VARCHAR" />
+		<result column="NODE_CODE" property="nodeCode" jdbcType="VARCHAR" />
+		<result column="ASSIGNEE_ID" property="assigneeId" jdbcType="BIGINT" />
+		<result column="ASSIGNEE" property="assignee" jdbcType="VARCHAR" />
+		<result column="REDIRECT_URL" property="redirectUrl" jdbcType="VARCHAR" />
+		<result column="ENTITY_ID" property="entityId" jdbcType="VARCHAR" />
+		<result column="VERSION" property="version" jdbcType="BIGINT" />
+		<result column="DEL_FLAG" property="delFlag" jdbcType="BIGINT" />
+		<result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="UPDATE_TIME" property="updateTime" jdbcType="TIMESTAMP" />
+		<result column="CREATE_USER" property="createUser" jdbcType="VARCHAR" />
+		<result column="UPDATE_USER" property="updateUser" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		ID,RU_TASK_ID,PROCESS_TYPE,PROCESS_NAME,LAST_UPDATE_DATE,PROCESS_STATUS,
+		START_TIME,END_TIME,DURATION,RE_PROCDEF_CODE,NODE_MODULE,NODE_MODULE_TYPE,
+		NODE_TYPE,NODE_NAME,NODE_CODE,ASSIGNEE_ID,ASSIGNEE,REDIRECT_URL,ENTITY_ID,
+		VERSION,DEL_FLAG,CREATE_TIME,UPDATE_TIME,CREATE_USER,UPDATE_USER,NODE_MODULE_NAME
+	</sql>
+
+	<select id="getById" parameterType="java.lang.Long" resultType="com.ule.oa.base.po.RuProcdef">
+		select
+		<include refid="Base_Column_List" />
+		from bpm_ru_procdef
+		where id = #{id,jdbcType=BIGINT}
+	</select>
+	
+	<select id="getUrlByRuTaskId" parameterType="java.lang.Long" resultType="com.ule.oa.base.po.RuProcdef">
+		select
+		<include refid="Base_Column_List" />
+		from bpm_ru_procdef
+		where RU_TASK_ID = #{ruTaskId,jdbcType=BIGINT} 
+		ORDER BY id DESC LIMIT 0,1
+	</select>
+	
+	<!-- 查询我的待办事项 -->
+	<select id="getList" parameterType="com.ule.oa.base.po.RuProcdef" resultType="com.ule.oa.base.po.RuProcdef">
+		select * from bpm_ru_procdef r
+		where r.del_flag != ${@com.ule.oa.common.po.CommonPo@STATUS_DELETE}
+		<if test="ruTaskId != null"> and RU_TASK_ID = #{ruTaskId}</if>
+		<if test="assigneeId != null"> and r.ASSIGNEE_ID = #{assigneeId} </if>
+		<if test="nodeModule != null"> and r.NODE_MODULE = #{nodeModule ,jdbcType=VARCHAR} </if>
+		<if test="nodeCode != null"> and r.NODE_CODE = #{nodeCode ,jdbcType=VARCHAR} </if>
+		<if test="processStatus != null"> and r.PROCESS_STATUS = #{processStatus ,jdbcType=BIGINT} </if>
+		order by r.id desc
+	</select>
+
+	<!-- 查询运行流程节点未完成待办数 -->
+	<select id="getNodeCodeCount" parameterType="com.ule.oa.base.po.RuProcdef" resultType="java.lang.Integer">
+		select count(*) from bpm_ru_procdef r
+		where r.del_flag != ${@com.ule.oa.common.po.CommonPo@STATUS_DELETE}
+		<if test="ruTaskId != null"> and RU_TASK_ID = #{ruTaskId}</if>
+		<if test="nodeCode != null"> and r.NODE_CODE = #{nodeCode ,jdbcType=VARCHAR} </if>
+		<if test="processStatus != null"> and r.PROCESS_STATUS = #{processStatus ,jdbcType=BIGINT} </if>
+	</select>
+	
+	<!-- 更新普通节点其他人员状态为已删除 -->
+	<update id="updateByNodeCode" parameterType="com.ule.oa.base.po.RuProcdef">
+		update bpm_ru_procdef
+		<set>
+		    <if test="delFlag != null"> DEL_FLAG = #{delFlag ,jdbcType=BIGINT}, </if>
+		    <if test="updateUser != null"> UPDATE_USER = #{updateUser ,jdbcType=VARCHAR}, </if>
+		    UPDATE_TIME = now()
+		</set>
+		where 1 = 1 
+		<if test="ruTaskId != null">
+			and RU_TASK_ID = #{ruTaskId ,jdbcType=BIGINT}
+		</if>
+		<if test="id != null">
+			and id != #{id,jdbcType=BIGINT}
+		</if>
+		<if test="nodeCode != null">
+			and NODE_CODE = #{nodeCode ,jdbcType=VARCHAR}
+		</if>
+	</update>
+	
+	<!-- 查询运行流程模块未完成待办数 -->
+	<select id="getNodeModuleCount" parameterType="com.ule.oa.base.po.RuProcdef" resultType="java.lang.Integer">
+		select count(*) from bpm_ru_procdef r
+		where r.del_flag != ${@com.ule.oa.common.po.CommonPo@STATUS_DELETE}
+		<if test="ruTaskId != null"> and RU_TASK_ID = #{ruTaskId}</if>
+		<if test="nodeModule != null"> and r.NODE_MODULE = #{nodeModule ,jdbcType=VARCHAR} </if>
+		<if test="processStatus != null"> and r.PROCESS_STATUS = #{processStatus ,jdbcType=BIGINT} </if>
+	</select>
+	
+	<select id="getMsgList" parameterType="com.ule.oa.base.po.RuProcdef" resultMap="CreatorResultMap">
+		SELECT t.CREATOR_ID as 'creatorId',t.CREATOR as 'creator',p.* 
+		FROM bpm_ru_procdef  p LEFT JOIN bpm_run_task t on t.id = p.RU_TASK_ID
+		where p.DEL_FLAG = 0
+		and p.PROCESS_STATUS = 100 
+		and p.NODE_CODE = #{nodeCode ,jdbcType=VARCHAR}
+		and t.RE_PROCDEF_CODE in 
+	 	<foreach collection="reProcdefCodes" index="index" item="item" open="(" separator="," close=")">
+               #{item}
+        </foreach>
+        <if test="ltCreateTime != null">
+			and p.CREATE_TIME &lt; #{ltCreateTime}
+        </if>
+        <if test="createTime != null">
+        	and DATE_FORMAT(p.CREATE_TIME,'%Y-%m-%d') = DATE_FORMAT(#{createTime},'%Y-%m-%d')  
+        </if>
+	</select>
+
+	<!-- 分页查询我的待办事项 -->
+	<select id="getPageList" parameterType="com.ule.oa.base.po.RuProcdef" resultType="com.ule.oa.base.po.RuProcdef">
+		select t.SUBJECT as 'taskSubject', t.CREATOR as 'creator', d.name as 'creatorDepart', r.* from bpm_ru_procdef r
+		LEFT JOIN bpm_run_task t on r.RU_TASK_ID = t.ID
+		LEFT JOIN base_emp_depart ed on t.CREATOR_ID = ed.employee_id
+		LEFT JOIN base_depart d on ed.depart_id = d.id
+		where r.del_flag != ${@com.ule.oa.common.po.CommonPo@STATUS_DELETE}
+		and t.del_flag != ${@com.ule.oa.common.po.CommonPo@STATUS_DELETE}
+		and r.PROCESS_STATUS = ${@com.ule.oa.base.po.RuProcdef@PROCESS_STATUS_100}
+		<if test="ruTaskId != null"> and r.RU_TASK_ID = #{ruTaskId}</if>
+		<if test="processType != null"> and r.PROCESS_TYPE = #{processType}</if>
+		<if test="assigneeId != null"> and r.ASSIGNEE_ID = #{assigneeId} </if>
+		order by r.id desc  
+		<if test="offset != null and limit != null"> limit #{offset},#{limit} </if>
+	</select>
+
+	<!-- 查询我的待办总记录数 -->
+	<select id="getCount" parameterType="com.ule.oa.base.po.RuProcdef" resultType="java.lang.Integer">
+		select count(1) from bpm_ru_procdef r
+		LEFT JOIN bpm_run_task t on r.RU_TASK_ID = t.ID
+		LEFT JOIN base_emp_depart ed on t.CREATOR_ID = ed.employee_id
+		LEFT JOIN base_depart d on ed.depart_id = d.id
+		where r.del_flag != ${@com.ule.oa.common.po.CommonPo@STATUS_DELETE}
+		and t.del_flag != ${@com.ule.oa.common.po.CommonPo@STATUS_DELETE}
+		and r.PROCESS_STATUS = ${@com.ule.oa.base.po.RuProcdef@PROCESS_STATUS_100}
+		<if test="ruTaskId != null"> and r.RU_TASK_ID = #{ruTaskId}</if>
+		<if test="processType != null"> and r.PROCESS_TYPE = #{processType}</if>
+		<if test="assigneeId != null"> and r.ASSIGNEE_ID = #{assigneeId} </if>
+	</select>
+
+	<!-- 保存待办事项信息 -->
+	<insert id="save" parameterType="com.ule.oa.base.po.RuProcdef" useGeneratedKeys="true" keyProperty="id">
+		insert into bpm_ru_procdef
+		(   RU_TASK_ID,
+			PROCESS_TYPE,
+			PROCESS_NAME,
+			LAST_UPDATE_DATE,
+			PROCESS_STATUS,
+			START_TIME,
+			END_TIME,
+			DURATION,
+			RE_PROCDEF_CODE,
+			NODE_MODULE,
+			NODE_MODULE_NAME,
+			NODE_MODULE_TYPE,
+			NODE_TYPE,
+			NODE_NAME,
+			NODE_CODE,
+			ASSIGNEE_ID,
+			ASSIGNEE,
+			REDIRECT_URL,
+			ENTITY_ID,
+			VERSION,
+			DEL_FLAG,
+			CREATE_TIME,
+			UPDATE_TIME,
+			CREATE_USER,
+			UPDATE_USER
+		)
+		values  ( 
+			#{ruTaskId,jdbcType=BIGINT},
+			#{processType,jdbcType=BIGINT},
+			#{processName,jdbcType=BIGINT},
+			#{lastUpdateDate,jdbcType=BIGINT},
+			#{processStatus,jdbcType=BIGINT},
+			#{startTime,jdbcType=BIGINT},
+			#{endTime,jdbcType=BIGINT},
+			#{duration,jdbcType=BIGINT},
+			#{reProcdefCode,jdbcType=VARCHAR},
+			#{nodeModule,jdbcType=VARCHAR},
+			#{nodeModuleName,jdbcType=VARCHAR},
+			#{nodeModuleType,jdbcType=BIGINT},
+			#{nodeType,jdbcType=BIGINT},
+			#{nodeName,jdbcType=VARCHAR},
+			#{nodeCode,jdbcType=VARCHAR},
+			#{assigneeId,jdbcType=BIGINT},
+			#{assignee,jdbcType=VARCHAR},
+			#{redirectUrl,jdbcType=VARCHAR},
+			#{entityId,jdbcType=VARCHAR},
+			1,
+			#{delFlag,jdbcType=BIGINT},
+			#{createTime,jdbcType=TIMESTAMP},
+			#{updateTime,jdbcType=TIMESTAMP},
+			#{createUser,jdbcType=VARCHAR},
+			#{updateUser,jdbcType=VARCHAR}
+		)
+	</insert>
+	<!-- 批量保存待办事项信息 -->
+	<insert id="batchSave" parameterType="java.util.List" >
+   		insert into bpm_ru_procdef 
+   		(       RU_TASK_ID,
+				PROCESS_TYPE,
+				PROCESS_NAME,
+				LAST_UPDATE_DATE,
+				PROCESS_STATUS,
+				START_TIME,
+				END_TIME,
+				DURATION,
+				RE_PROCDEF_CODE,
+				NODE_MODULE,
+				NODE_MODULE_NAME,
+				NODE_MODULE_TYPE,
+				NODE_TYPE,
+				NODE_NAME,
+				NODE_CODE,
+				ASSIGNEE_ID,
+				ASSIGNEE,
+				REDIRECT_URL,
+				ENTITY_ID,
+				VERSION,
+				DEL_FLAG,
+				CREATE_TIME,
+				UPDATE_TIME,
+				CREATE_USER,
+				UPDATE_USER
+	    )
+        select T.* FROM (
+      	<foreach collection="list" item="item" index="index" separator="UNION">
+			SELECT
+				#{item.ruTaskId,jdbcType=BIGINT} AS RU_TASK_ID,
+				#{item.processType,jdbcType=BIGINT} AS PROCESS_TYPE,
+				#{item.processName,jdbcType=BIGINT} AS PROCESS_NAME,
+				#{item.lastUpdateDate,jdbcType=TIMESTAMP} AS LAST_UPDATE_DATE,
+				#{item.processStatus,jdbcType=BIGINT} AS PROCESS_STATUS,
+				#{item.startTime,jdbcType=TIMESTAMP} AS START_TIME,
+				#{item.endTime,jdbcType=TIMESTAMP} AS END_TIME,
+				#{item.duration,jdbcType=BIGINT} AS DURATION,
+				#{item.reProcdefCode,jdbcType=VARCHAR} AS RE_PROCDEF_CODE,
+				#{item.nodeModule,jdbcType=VARCHAR} AS NODE_MODULE,
+				#{item.nodeModuleName,jdbcType=VARCHAR} AS NODE_MODULE_NAME,
+				#{item.nodeModuleType,jdbcType=BIGINT} AS NODE_MODULE_TYPE,
+				#{item.nodeType,jdbcType=BIGINT} AS NODE_TYPE,
+				#{item.nodeName,jdbcType=VARCHAR} AS NODE_NAME,
+				#{item.nodeCode,jdbcType=VARCHAR} AS NODE_CODE,
+				#{item.assigneeId,jdbcType=BIGINT} AS ASSIGNEE_ID,
+				#{item.assignee,jdbcType=VARCHAR} AS ASSIGNEE,
+				#{item.redirectUrl,jdbcType=VARCHAR} AS REDIRECT_URL,
+				#{item.entityId,jdbcType=VARCHAR} AS ENTITY_ID,
+				1 AS VERSION,
+				#{item.delFlag,jdbcType=BIGINT} AS DEL_FLAG,
+				#{item.createTime,jdbcType=TIMESTAMP} AS CREATE_TIME,
+				#{item.updateTime,jdbcType=TIMESTAMP} AS UPDATE_TIME,
+				#{item.createUser,jdbcType=VARCHAR} AS CREATE_USER,
+				#{item.updateUser,jdbcType=VARCHAR} AS UPDATE_USER
+			FROM DUAL
+		</foreach>
+      ) T
+    </insert>
+
+	<!-- 根据主键更新位置信息 -->
+	<update id="updateById" parameterType="com.ule.oa.base.po.RuProcdef">
+		update bpm_ru_procdef
+		<set>
+			<if test="ruTaskId != null"> RU_TASK_ID = #{ruTaskId ,jdbcType=BIGINT}, </if>
+		    <if test="processType != null"> PROCESS_TYPE = #{processType ,jdbcType=BIGINT}, </if>
+		    <if test="processName != null"> PROCESS_NAME = #{processName ,jdbcType=BIGINT}, </if>
+		    <if test="lastUpdateDate != null"> LAST_UPDATE_DATE = #{lastUpdateDate ,jdbcType=TIMESTAMP}, </if>
+		    <if test="processStatus != null"> PROCESS_STATUS = #{processStatus ,jdbcType=BIGINT}, </if>
+		    <if test="startTime != null"> START_TIME = #{startTime ,jdbcType=TIMESTAMP}, </if>
+		    <if test="endTime != null"> END_TIME = #{endTime ,jdbcType=TIMESTAMP}, </if>
+		    <if test="duration != null"> DURATION = #{duration ,jdbcType=BIGINT}, </if>
+		    <if test="reProcdefCode != null"> RE_PROCDEF_CODE = #{reProcdefCode ,jdbcType=VARCHAR}, </if>
+		    <if test="nodeModule != null"> NODE_MODULE = #{nodeModule ,jdbcType=VARCHAR}, </if>
+		    <if test="nodeModuleName != null"> NODE_MODULE_NAME = #{nodeModuleName ,jdbcType=VARCHAR}, </if>
+		    <if test="nodeModuleType   != null"> NODE_MODULE_TYPE = #{nodeModuleType ,jdbcType=BIGINT}, </if>
+		    <if test="nodeType != null"> NODE_TYPE = #{nodeType ,jdbcType=BIGINT}, </if>
+		    <if test="nodeName != null"> NODE_NAME = #{nodeName ,jdbcType=VARCHAR}, </if>
+		    <if test="nodeCode != null"> NODE_CODE = #{nodeCode ,jdbcType=VARCHAR}, </if>
+		    <if test="assigneeId != null"> ASSIGNEE_ID = #{assigneeId ,jdbcType=BIGINT}, </if>
+		    <if test="assignee != null"> ASSIGNEE = #{assignee ,jdbcType=VARCHAR}, </if>
+		    <if test="redirectUrl != null"> REDIRECT_URL = #{redirectUrl ,jdbcType=VARCHAR}, </if>
+		    <if test="entityId != null">ENTITY_ID = #{entityId,jdbcType=VARCHAR},</if>
+		    <if test="version != null"> VERSION = #{version ,jdbcType=BIGINT}, </if>
+		    <if test="delFlag != null"> DEL_FLAG = #{delFlag ,jdbcType=BIGINT}, </if>
+		    <if test="createTime != null"> CREATE_TIME = #{createTime ,jdbcType=TIMESTAMP}, </if>
+		    <if test="createUser != null"> CREATE_USER = #{createUser ,jdbcType=VARCHAR}, </if>
+		    <if test="updateUser != null"> UPDATE_USER = #{updateUser ,jdbcType=VARCHAR}, </if>
+		    UPDATE_TIME = now()
+		</set>
+		where id = #{id,jdbcType=BIGINT}
+	</update>
+	
+  <select id="getListById" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+   SELECT <include refid="Base_Column_List" /> FROM bpm_ru_procdef 
+     WHERE RU_TASK_ID IN (SELECT RU_TASK_ID FROM bpm_ru_procdef WHERE id=#{id,jdbcType=BIGINT}) order by create_time asc
+  </select>
+  
+	 <select id="getRunTaskByCodeAndEntry" parameterType="com.ule.oa.base.po.RuProcdef" resultType="com.ule.oa.base.po.RuProcdef">
+		select
+		<include refid="Base_Column_List" />
+		from bpm_ru_procdef where del_flag = 0
+	    <if test="entityId != null and entityId !=''">
+	    	and ENTITY_ID = #{entityId,jdbcType=VARCHAR}
+	    </if>
+	    <if test="reProcdefCode != null and reProcdefCode !=''">
+	    	and RE_PROCDEF_CODE = #{reProcdefCode,jdbcType=VARCHAR}
+	    </if>
+	    <if test="nodeModule != null and nodeModule != ''">
+	    	and NODE_MODULE = #{nodeModule,jdbcType=VARCHAR}
+	    </if>
+	</select>
+	
+	<select id="getRunTaskListByCodeAndEntry" parameterType="com.ule.oa.base.po.RuProcdef" resultType="com.ule.oa.base.po.RuProcdef">
+		select
+		<include refid="Base_Column_List" />
+		from bpm_ru_procdef where del_flag = 0
+	    <if test="entityId != null and entityId !=''">
+	    	and ENTITY_ID = #{entityId,jdbcType=VARCHAR}
+	    </if>
+	    <if test="reProcdefCode != null and reProcdefCode !=''">
+	    	and RE_PROCDEF_CODE = #{reProcdefCode,jdbcType=VARCHAR}
+	    </if>
+	    <if test="nodeModule != null and nodeModule != ''">
+	    	and NODE_MODULE = #{nodeModule,jdbcType=VARCHAR}
+	    </if>
+	    ORDER BY create_time DESC
+	</select>
+</mapper>

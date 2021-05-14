@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ule.oa.base.mapper.ViewTaskInfoMapper" >
+
+   <update id="updateStatusById" parameterType="com.ule.oa.base.po.tbl.ViewTaskInfoTbl" >
+       update act_task_info set statu = #{statu,jdbcType=INTEGER} where id=#{id,jdbcType=BIGINT}
+  </update>
+  
+  <select id="queryTasksByProcessIdList" resultType="com.ule.oa.base.po.tbl.ViewTaskInfoTbl">
+       select * from act_task_info where process_id in 
+		    <foreach collection="processIdList" index="index" item="item" open="(" separator="," close=")">
+	           #{item}
+	        </foreach>
+	        order by id
+  </select>
+  
+  
+  
+</mapper>

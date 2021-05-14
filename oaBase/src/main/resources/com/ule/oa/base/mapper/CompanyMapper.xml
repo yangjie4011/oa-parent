@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ule.oa.base.mapper.CompanyMapper">
+
+  <resultMap id="BaseResultMap" type="com.ule.oa.base.po.Company">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="code" jdbcType="VARCHAR" property="code" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="isUle" jdbcType="INTEGER" property="is_ule" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="create_user" jdbcType="VARCHAR" property="createUser" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="update_user" jdbcType="VARCHAR" property="updateUser" />
+    <result column="del_flag" jdbcType="INTEGER" property="delFlag" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+  </resultMap>
+  
+  <sql id="Base_Column_List">
+    id, code, name,is_ule,create_time, create_user, update_time, update_user, del_flag, remark
+  </sql>
+  
+  <insert id="save" parameterType="com.ule.oa.base.po.Company" >
+    insert into base_company (code, name,is_ule,create_time, create_user, update_time, update_user, del_flag, remark)
+    values (#{code,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR},#{isUle,jdbcType=INTEGER},#{createTime,jdbcType=TIMESTAMP}, #{createUser,jdbcType=VARCHAR}, 
+    	#{updateTime,jdbcType=TIMESTAMP}, #{updateUser,jdbcType=VARCHAR}, #{delFlag,jdbcType=INTEGER}, #{remark,jdbcType=VARCHAR}
+      )
+  </insert>
+  
+  <select id="getById" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from base_company
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  
+  <update id="updateById" parameterType="com.ule.oa.base.po.Company" >
+    update base_company
+    <set >
+      <if test="code != null and code !='' " >
+        code = #{code,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null and name != '' " >
+        code = #{code,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUser != null and updateUser != '' " >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="delFlag != null" >
+        del_flag = #{delFlag,jdbcType=INTEGER},
+      </if>
+      <if test="remark != null and remark != '' " >
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+  <select id="getListByCondition" resultMap="BaseResultMap" parameterType="com.ule.oa.base.po.Company" >
+	  	select <include refid="Base_Column_List"/> from base_company
+	  	where del_flag = 0
+	  	<if test="id !=null">
+	  		and id = #{id,jdbcType=BIGINT}
+	  	</if>
+		<if test="code != null and code !='' " >
+		    and code = #{code,jdbcType=VARCHAR}
+		</if>
+		<if test="name != null and name != '' " >
+		  and name like concat(concat('%',#{name,jdbcType=VARCHAR}),'%')
+		</if>
+		<if test="updateTime != null" >
+		  and update_time = #{updateTime,jdbcType=TIMESTAMP}
+		</if>
+		<if test="updateUser != null and updateUser != '' " >
+		  and update_user = #{updateUser,jdbcType=VARCHAR}
+		</if>
+		<if test="remark != null and remark != '' " >
+		  and remark = #{remark,jdbcType=VARCHAR}
+		</if>
+		<if test="isUle != null" >
+		  and is_ule = #{isUle,jdbcType=INTEGER}
+		</if>
+  </select>
+</mapper>

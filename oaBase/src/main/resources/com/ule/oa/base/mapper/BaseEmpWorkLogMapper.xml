@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ule.oa.base.mapper.BaseEmpWorkLogMapper" >
+  <resultMap id="BaseResultMap" type="com.ule.oa.base.po.BaseEmpWorkLog" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="employee_id" property="employeeId" jdbcType="BIGINT" />
+    <result column="work_date" property="workDate" jdbcType="DATE" />
+    <result column="work_content" property="workContent" jdbcType="VARCHAR" />
+    <result column="next_day_work_plan" property="nextDayWorkPlan" jdbcType="VARCHAR" />
+    <result column="work_problem" property="workProblem" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="approval_status" property="approvalStatus" jdbcType="INTEGER"/>
+    <result column="del_flag" property="delFlag" jdbcType="INTEGER" />
+    <result column="process_id" property="processId" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    id, employee_id,work_date, work_content, next_day_work_plan, work_problem, 
+    create_time, create_user, update_user, update_time,approval_status,del_flag,process_id
+  </sql>
+  
+  <insert id="save" parameterType="com.ule.oa.base.po.BaseEmpWorkLog" useGeneratedKeys="true" keyProperty="id">
+    insert into base_emp_work_log (
+      employee_id,work_date,work_content,next_day_work_plan,work_problem,
+      create_time,create_user, approval_status ,del_flag,process_id
+      )
+    values (
+      #{employeeId,jdbcType=BIGINT},#{workDate,jdbcType=DATE}, #{workContent,jdbcType=VARCHAR}, 
+      #{nextDayWorkPlan,jdbcType=VARCHAR},#{workProblem,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{createUser,jdbcType=VARCHAR},#{approvalStatus,jdbcType=INTEGER},#{delFlag,jdbcType=INTEGER},#{processId,jdbcType=VARCHAR}
+      )
+  </insert>
+  
+  <update id="updateById" parameterType="com.ule.oa.base.po.BaseEmpWorkLog" >
+    update base_emp_work_log
+    <set>
+      <if test="approvalStatus != null" >
+        approval_status = #{approvalStatus,jdbcType=INTEGER},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP}
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+  <select id="selectEffectiveApplyByCondition"  resultMap="BaseResultMap">
+  	select <include refid="Base_Column_List"/> from base_emp_work_log
+  	where del_flag = 0 
+  	      and employee_id = #{employeeId,jdbcType=BIGINT}
+  		  and work_date = #{workDate,jdbcType=DATE}
+  		  and approval_status in(100,200,500,600)
+  </select>
+  
+  <select id="selectByCondition" parameterType="com.ule.oa.base.po.BaseEmpWorkLog" resultMap="BaseResultMap">
+  	select <include refid="Base_Column_List"/> from base_emp_work_log
+  	where del_flag = 0
+  	<if test="employeeId != null">
+  		and employee_id = #{employeeId,jdbcType=BIGINT}
+  	</if>
+  	<if test="workDate != null">
+  		and work_date = #{workDate,jdbcType=DATE}
+  	</if>
+  	<if test="startWorkDate != null">
+  		and work_date &gt;= #{startWorkDate,jdbcType=DATE}
+  	</if>
+  	<if test="endWorkDate != null">
+  		and work_date &lt;= #{endWorkDate,jdbcType=DATE}
+  	</if>
+  	<if test="employeeIdList != null and employeeIdList.size > 0" >
+        and employee_id in
+           <foreach collection="employeeIdList" index="index" item="item" open="(" separator="," close=")">
+	           #{item}
+	       </foreach>
+    </if>
+  </select>
+  
+  <select id="getById" resultType="com.ule.oa.base.po.BaseEmpWorkLog">
+  	SELECT 
+		  a.id id,
+		  b.cn_name cnName,
+		  d.name departName,
+		  a.employee_id employeeId,
+		  a.work_date workDate,
+		  a.work_content workContent,
+		  a.next_day_work_plan nextDayWorkPlan,
+		  a.work_problem workProblem,
+		  a.create_user createUser ,
+		  a.create_time createTime,
+		  a.approval_status approvalStatus,
+		  a.del_flag delFlag,
+		  a.process_id processId
+		FROM
+		  base_emp_work_log a 
+		  LEFT JOIN base_employee b 
+		    ON a.employee_id = b.id 
+		  LEFT JOIN base_emp_depart c 
+		    ON a.employee_id = c.employee_id 
+		    AND c.del_flag = 0 
+		  LEFT JOIN base_depart d 
+		    ON c.depart_id = d.id 
+		    AND d.del_flag = 0 
+		where a.id = #{id,jdbcType=BIGINT} and a.del_flag=0 limit 0,1
+  </select>
+  
+  <select id="getByProcessId" resultMap="BaseResultMap">
+  	select <include refid="Base_Column_List"/> from base_emp_work_log
+  	where del_flag = 0 and process_id=#{processId,jdbcType=VARCHAR} limit 0,1
+  </select>
+  
+  <select id="getByWorkDateAndEmployeeId" resultMap="BaseResultMap">
+  	select <include refid="Base_Column_List"/> from base_emp_work_log
+  	where del_flag = 0 and work_date=#{workDate,jdbcType=DATE} and employee_id=#{employeeId,jdbcType=BIGINT} order by id desc limit 0,1
+  </select>
+  
+  <select id="getListByCondition" parameterType="com.ule.oa.base.po.RequestParamQueryEmpCondition" resultType="com.ule.oa.base.po.Employee">
+  	SELECT e.id as id,e.code as code,e.cn_name as cnName,e.first_entry_time as firstEntryTime,e.quit_time as quitTime,d.name as departName
+  	FROM base_employee e
+  	LEFT JOIN base_emp_depart ed ON e.id = ed.employee_id
+  	LEFT JOIN base_depart d ON d.id = ed.depart_id
+  	<where>
+  		e.del_flag = 0
+	  	AND ed.del_flag = 0
+  		<!-- 登录人是汇报对象则查下属员工 -->
+  		<if test="leaderId != null"> 
+  			AND e.report_to_leader = #{leaderId}
+	  	</if>
+	  	<if test="departId != null"> 
+  			AND ed.depart_id = #{departId}
+	  	</if>
+	  	<!-- 搜索条件查询汇报对象下的员工 -->
+	  	<if test="searchLeader != null and searchLeader != ''"> 
+  			AND (select cn_name from base_employee where id=e.report_to_leader)  like concat('%',#{searchLeader},'%')
+	  	</if>
+	  	<if test="empCode != null and empCode != ''"> 
+	  		AND e.code like concat('%',#{empCode},'%')
+	  	</if>
+	  	<if test="empCnName != null and empCnName != ''"> 
+  			AND e.cn_name like concat('%',#{empCnName},'%')
+	  	</if>
+	  	AND (e.job_status = 0 or e.job_status = 2 or (e.job_status = 1 and e.Quit_time &gt;= #{chooseMonth} ))
+  	</where>
+  	<if test="offset != null and limit != null">
+		limit #{offset},#{limit}
+	</if>
+  </select>
+  
+  <select id="getCountByCondition" parameterType="com.ule.oa.base.po.RequestParamQueryEmpCondition" resultType="int">
+  	SELECT count(1)
+  	FROM base_employee e
+  	LEFT JOIN base_emp_depart ed ON e.id = ed.employee_id
+  	<where>
+  		e.del_flag = 0
+	  	AND ed.del_flag = 0
+  		<!-- 登录人是汇报对象则查下属员工 -->
+  		<if test="leaderId != null"> 
+  			AND e.report_to_leader = #{leaderId}
+	  	</if>
+	  	<if test="departId != null"> 
+  			AND ed.depart_id = #{departId}
+	  	</if>
+	  	<!-- 搜索条件查询汇报对象下的员工 -->
+	  	<if test="searchLeader != null and searchLeader != ''"> 
+  			AND (select cn_name from base_employee where id=e.report_to_leader)  like concat('%',#{searchLeader},'%')
+	  	</if>
+	  	<if test="empCode != null and empCode != ''"> 
+	  		AND e.code like concat('%',#{empCode},'%')
+	  	</if>
+	  	<if test="empCnName != null and empCnName != ''" > 
+  			AND e.cn_name like concat('%',#{empCnName},'%')
+	  	</if>
+	  	AND (e.job_status = 0 or e.job_status = 2 or (e.job_status = 1 and e.Quit_time &gt;= #{chooseMonth} ))
+  	</where>
+  </select>
+  
+</mapper>

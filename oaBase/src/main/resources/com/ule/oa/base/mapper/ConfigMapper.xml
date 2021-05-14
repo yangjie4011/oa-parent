@@ -1,0 +1,296 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ule.oa.base.mapper.ConfigMapper" >
+  <resultMap id="BaseResultMap" type="com.ule.oa.base.po.Config" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="code" property="code" jdbcType="VARCHAR" />
+    <result column="description" property="description" jdbcType="VARCHAR" />
+    <result column="display_name" property="displayName" jdbcType="VARCHAR" />
+    <result column="display_code" property="displayCode" jdbcType="VARCHAR" />
+    <result column="rank" property="rank" jdbcType="INTEGER" />
+    <result column="user_def1" property="userDef1" jdbcType="VARCHAR" />
+    <result column="user_def2" property="userDef2" jdbcType="VARCHAR" />
+    <result column="user_def3" property="userDef3" jdbcType="VARCHAR" />
+    <result column="user_def4" property="userDef4" jdbcType="VARCHAR" />
+    <result column="user_def5" property="userDef5" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="del_flag" property="delFlag" jdbcType="INTEGER" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    id, code, description, display_name, display_code, rank, user_def1, user_def2, user_def3, 
+    user_def4, user_def5, create_time, create_user, update_time, update_user, del_flag, 
+    remark
+  </sql>
+  
+  <select id="getById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+  	select <include refid="Base_Column_List" /> from sys_config where id = #{id,jdbcType=BIGINT}
+  </select>
+  
+  <select id="getListByCondition" resultMap="BaseResultMap" parameterType="com.ule.oa.base.po.Config" >
+    select <include refid="Base_Column_List" /> from sys_config sc
+    where sc.del_flag = 0
+		<if test="id != null">
+			and sc.id = #{id,jdbcType=BIGINT}
+		</if>
+		<if test="description != null" >
+        	and sc.description = #{description,jdbcType=VARCHAR}
+        </if>
+		<if test="code != null" >
+		  and sc.code = #{code,jdbcType=VARCHAR}
+		</if>
+		<if test="displayName != null" >
+		  and sc.display_name = #{displayName,jdbcType=VARCHAR}
+		</if>
+		<if test="displayCode != null" >
+		  and sc.display_code = #{displayCode,jdbcType=VARCHAR}
+		</if>
+		<if test="rank != null" >
+          and sc.rank = #{rank,jdbcType=INTEGER}
+        </if>
+		<if test="userDef1 != null" >
+		  and sc.user_def1 = #{userDef1,jdbcType=VARCHAR}
+		</if>
+		<if test="userDef2 != null" >
+		  and sc.user_def2 = #{userDef2,jdbcType=VARCHAR}
+		</if>
+		<if test="userDef3 != null" >
+		  and sc.user_def3 = #{userDef3,jdbcType=VARCHAR}
+		</if>
+		<if test="userDef4 != null" >
+		  and sc.user_def4 = #{userDef4,jdbcType=VARCHAR}
+		</if>
+		<if test="userDef5 != null" >
+		  and sc.user_def5 = #{userDef5,jdbcType=VARCHAR}
+		</if>
+		<if test="updateTime != null" >
+		  and sc.update_time = #{updateTime,jdbcType=TIMESTAMP}
+		</if>
+		<if test="updateUser != null" >
+		  and sc.update_user = #{updateUser,jdbcType=VARCHAR}
+		</if>
+		<if test="remark != null" >
+		  and sc.remark = #{remark,jdbcType=VARCHAR}
+		</if>
+  </select>
+  
+  <insert id="save" parameterType="com.ule.oa.base.po.Config" >
+    insert into sys_config (code, description, 
+      display_name, display_code, rank, 
+      user_def1, user_def2, user_def3, 
+      user_def4, user_def5, create_time, 
+      create_user, update_time, update_user, 
+      del_flag, remark)
+    values (#{jdbcType=BIGINT}, #{code,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR}, 
+      #{displayName,jdbcType=VARCHAR}, #{displayCode,jdbcType=VARCHAR}, #{rank,jdbcType=INTEGER}, 
+      #{userDef1,jdbcType=VARCHAR}, #{userDef2,jdbcType=VARCHAR}, #{userDef3,jdbcType=VARCHAR}, 
+      #{userDef4,jdbcType=VARCHAR}, #{userDef5,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{createUser,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP}, #{updateUser,jdbcType=VARCHAR}, 
+      #{delFlag,jdbcType=INTEGER}, #{remark,jdbcType=VARCHAR})
+  </insert>
+  
+
+  <update id="updateById" parameterType="com.ule.oa.base.po.Config" >
+    update sys_config
+    <set >
+      <if test="code != null" >
+        code = #{code,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null" >
+        description = #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="displayName != null" >
+        display_name = #{displayName,jdbcType=VARCHAR},
+      </if>
+      <if test="displayCode != null" >
+        display_code = #{displayCode,jdbcType=VARCHAR},
+      </if>
+      <if test="rank != null" >
+        rank = #{rank,jdbcType=INTEGER},
+      </if>
+      <if test="userDef1 != null" >
+        user_def1 = #{userDef1,jdbcType=VARCHAR},
+      </if>
+      <if test="userDef2 != null" >
+        user_def2 = #{userDef2,jdbcType=VARCHAR},
+      </if>
+      <if test="userDef3 != null" >
+        user_def3 = #{userDef3,jdbcType=VARCHAR},
+      </if>
+      <if test="userDef4 != null" >
+        user_def4 = #{userDef4,jdbcType=VARCHAR},
+      </if>
+      <if test="userDef5 != null" >
+        user_def5 = #{userDef5,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUser != null" >
+        create_user = #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="delFlag != null" >
+        del_flag = #{delFlag,jdbcType=INTEGER},
+      </if>
+      <if test="remark != null" >
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+  
+  	<select id="count" resultType="integer" parameterType="com.ule.oa.base.po.Config">
+		select  count(1) from sys_config sc
+		<where>
+			<if test="displayName != null and displayName !=''">and upper(sc.display_name) like upper(CONCAT('%',#{displayName,jdbcType=VARCHAR},'%'))</if>
+			<if test="code != null and code != '' ">and upper(sc.code) like upper(CONCAT('%',#{code,jdbcType=VARCHAR},'%'))</if>
+			<if test="delFlag != null">and sc.del_flag =#{delFlag,jdbcType=NUMERIC}</if>
+		</where>	
+	</select>
+	
+	<select id="getByPagenation"  parameterType="com.ule.oa.base.po.Config" resultMap="BaseResultMap">
+		select <include refid="Base_Column_List"></include>
+	    from sys_config sc
+		<where>
+			<if test="displayName != null and displayName !=''">and upper(sc.display_name) like upper(CONCAT('%',#{displayName,jdbcType=VARCHAR},'%'))</if>
+			<if test="code != null and code != '' ">and upper(sc.code) like upper(CONCAT('%',#{code,jdbcType=VARCHAR},'%'))</if>
+			<if test="delFlag != null">and sc.del_flag =#{delFlag,jdbcType=NUMERIC}</if>
+		</where>	
+		order by sc.create_time desc limit #{offset} , #{limit}
+	</select>
+	
+	<update id="delete" parameterType="com.ule.oa.base.po.Config">
+		update sys_config 
+		    set del_flag=#{delFlag,jdbcType=NUMERIC}
+			<if test="updateUser != null">,UPDATE_USER = #{updateUser,jdbcType=VARCHAR} </if>
+			<if test="updateTime != null">,UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP} </if>
+		where id = #{id}
+	</update>
+  	
+  	<!--系统配置 -->
+  	<!-- 分页查询报表 -->
+  <select id="getReportPageList" parameterType="com.ule.oa.base.po.Config" resultMap="BaseResultMap">
+	select <include refid="Base_Column_List"></include>
+		from sys_config where 1=1
+		<if test="code != null and code !='' " >
+		  and code  like concat('%',#{code,jdbcType=VARCHAR},'%')		 
+		</if>	
+		 and   del_flag=0 order by UpDate_Time DESC limit #{offset},#{limit}		
+ </select>
+ 
+  <!-- 查询报表总记录数 -->
+  <select id="getReportCount" parameterType="com.ule.oa.base.po.Config" resultType="java.lang.Integer">
+  	 SELECT  count(1) FROM 
+ 	   sys_config where 1=1 and   del_flag=0  	
+ 	   <if test="description != null and displayName !=''" >
+        	and description  like concat('%',#{code,jdbcType=VARCHAR},'%')
+        </if>
+		<if test="code != null and code !=''" >
+		  and code  like concat('%',#{code,jdbcType=VARCHAR},'%')		 
+		</if>
+  </select>
+  
+ 
+  <select id="getConfigInfoById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+  	select <include refid="Base_Column_List"></include>
+		from sys_config where 1=1 and   del_flag=0 	and id=${id}
+  </select>
+  <!-- 增 删 改 -->
+  <insert id="saveConfig" parameterType="com.ule.oa.base.po.Config" >
+    insert into sys_config (code, description, 
+      display_name, display_code, rank, 
+      user_def1, user_def2, user_def3, 
+      user_def4, user_def5, create_time, 
+      create_user, update_time, update_user, 
+      del_flag, remark)
+    values (#{code,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR}, 
+      #{displayName,jdbcType=VARCHAR}, #{displayCode,jdbcType=VARCHAR}, #{rank,jdbcType=INTEGER}, 
+      #{userDef1,jdbcType=VARCHAR}, #{userDef2,jdbcType=VARCHAR}, #{userDef3,jdbcType=VARCHAR}, 
+      #{userDef4,jdbcType=VARCHAR}, #{userDef5,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{createUser,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP}, #{updateUser,jdbcType=VARCHAR}, 
+      #{delFlag,jdbcType=INTEGER}, #{remark,jdbcType=VARCHAR})
+  </insert>
+  
+
+  <update id="updateConfig" parameterType="com.ule.oa.base.po.Config" >
+    update sys_config
+    <set >
+      <if test="code != null and code !=''" >
+        code = #{code,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null and description !=''" >
+        description = #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="displayName != null and displayName !=''" >
+        display_name = #{displayName,jdbcType=VARCHAR},
+      </if>
+      <if test="displayCode != null and displayCode !=''" >
+        display_code = #{displayCode,jdbcType=VARCHAR},
+      </if>
+      <if test="rank != null and rank !=''" >
+        rank = #{rank,jdbcType=INTEGER},
+      </if>
+      <if test="userDef1 != null and userDef1 !=''" >
+        user_def1 = #{userDef1,jdbcType=VARCHAR},
+      </if>
+      <if test="userDef2 != null and userDef2 !=''" >
+        user_def2 = #{userDef2,jdbcType=VARCHAR},
+      </if>
+      <if test="userDef3 != null and userDef3 !=''" >
+        user_def3 = #{userDef3,jdbcType=VARCHAR},
+      </if>
+      <if test="userDef4 != null and userDef4 !=''" >
+        user_def4 = #{userDef4,jdbcType=VARCHAR},
+      </if>
+      <if test="userDef5 != null and userDef5 !=''" >
+        user_def5 = #{userDef5,jdbcType=VARCHAR},
+      </if>    
+      <if test="createUser != null and createUser !=''" >
+        create_user = #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null and updateTime !=''" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUser != null and updateUser !=''" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="delFlag != null " >
+        del_flag = #{delFlag,jdbcType=INTEGER},
+      </if>
+      <if test="remark != null and remark !=''" >
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+  <update id="deleteConfig" parameterType="com.ule.oa.base.po.Config">
+		update sys_config 
+		    set del_flag=#{delFlag,jdbcType=NUMERIC}
+			<if test="updateUser != null">,UPDATE_USER = #{updateUser,jdbcType=VARCHAR} </if>
+			<if test="updateTime != null">,UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP} </if>
+		where id = #{id}
+  </update>
+  
+  <select id="getListByCodes" resultMap="BaseResultMap">
+	    select <include refid="Base_Column_List" /> from sys_config where del_flag = 0
+		<if test="codeList != null and codeList.size > 0" >
+           and code in
+           <foreach collection="codeList" index="index" item="item" open="(" separator="," close=")">
+	           #{item}
+	       </foreach>
+        </if>
+  </select>
+  
+</mapper>

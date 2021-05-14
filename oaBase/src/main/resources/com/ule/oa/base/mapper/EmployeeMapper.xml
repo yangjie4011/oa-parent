@@ -1,0 +1,2061 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ule.oa.base.mapper.EmployeeMapper" >
+
+  <resultMap id="BaseResultMap" type="com.ule.oa.base.po.Employee" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="coop_company_id" property="coopCompanyId" jdbcType="BIGINT" />
+    <result column="company_id" property="companyId" jdbcType="BIGINT" />
+    <result column="code" property="code" jdbcType="VARCHAR" />
+    <result column="emp_type_id" property="empTypeId" jdbcType="INTEGER" />
+    <result column="cn_name" property="cnName" jdbcType="VARCHAR" />
+    <result column="eng_name" property="engName" jdbcType="VARCHAR" />
+    <result column="picture" property="picture" jdbcType="VARCHAR" />
+    <result column="birthday" property="birthday" jdbcType="TIMESTAMP" />
+    <result column="sex" property="sex" jdbcType="INTEGER" />
+    <result column="age" property="age" jdbcType="INTEGER" />
+    <result column="household_register" property="householdRegister" jdbcType="VARCHAR" />
+    <result column="political_status" property="politicalStatus" jdbcType="BIGINT" />
+    <result column="political_status_other" property="politicalStatusOther" jdbcType="VARCHAR" />
+    <result column="degree_of_education" property="degreeOfEducation" jdbcType="BIGINT" />
+    <result column="degree_of_education_other" property="degreeOfEducationOther" jdbcType="VARCHAR" />
+    <result column="contract_renewal" property="contractRenewal" jdbcType="INTEGER" />
+    <result column="email" property="email" jdbcType="VARCHAR" />
+    <result column="marital_status" property="maritalStatus" jdbcType="BIGINT" />
+    <result column="nation" property="nation" jdbcType="BIGINT" />
+    <result column="address" property="address" jdbcType="VARCHAR" />
+    <result column="mobile" property="mobile" jdbcType="VARCHAR" />
+    <result column="telephone" property="telephone" jdbcType="VARCHAR" />
+    <result column="extension_number" property="extensionNumber" jdbcType="VARCHAR" />
+    <result column="industry_relevance" property="industryRelevance" jdbcType="BIGINT" />
+    <result column="industry_relevance_other" property="industryRelevanceOther" jdbcType="VARCHAR" />
+    <result column="working_background" property="workingBackground" jdbcType="VARCHAR" />
+    <result column="ule_account" property="uleAccount" jdbcType="VARCHAR" />
+    <result column="work_type" property="workType" jdbcType="BIGINT" />
+    <result column="whether_scheduling" property="whetherScheduling" jdbcType="BIGINT" />
+    <result column="entry_status" property="entryStatus" jdbcType="INTEGER" />
+    <result column="floor_Code" property="floorCode" jdbcType="VARCHAR" />
+    <result column="seat_code" property="seatCode" jdbcType="VARCHAR" />
+    <result column="first_entry_time" property="firstEntryTime" jdbcType="TIMESTAMP" />
+    <result column="quit_time" property="quitTime" jdbcType="TIMESTAMP" />
+    <result column="salary_balance_date" property="salaryBalanceDate" jdbcType="TIMESTAMP" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="del_flag" property="delFlag" jdbcType="INTEGER" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="job_status" property="jobStatus" jdbcType="INTEGER" />
+    <result column="work_age" property="workAge" jdbcType="DOUBLE" />
+    <result column="before_work_age" property="beforeWorkAge" jdbcType="DOUBLE" />
+    <result column="our_age" property="ourAge" jdbcType="DOUBLE" />
+    <result column="country" property="country" jdbcType="BIGINT" />
+    <result column="country_other" property="countryOther" jdbcType="VARCHAR" />
+    <result column="position_title" property="positionTitle" jdbcType="VARCHAR" />
+    <result column="report_to_leader" property="reportToLeader" jdbcType="BIGINT" />
+    <result column="probation_end_time" property="probationEndTime" jdbcType="TIMESTAMP" />
+    <result column="protocol_end_time" property="protocolEndTime" jdbcType="TIMESTAMP" />
+    <result column="version" property="version" jdbcType="BIGINT"/>
+    <result column="fingerprint_id" property="fingerprintId" jdbcType="BIGINT"/>
+    <result column="autoCalculateLeave" property="auto_calculate_leave" jdbcType="INTEGER"/>
+    <result column="identification_num" property="identificationNum" jdbcType="VARCHAR" />
+    <result column="work_province" property="workAddressProvince" jdbcType="VARCHAR" />
+    <result column="work_city" property="workAddressCity" jdbcType="VARCHAR" />
+    <result column="work_address_type" property="workAddressType" jdbcType="INTEGER" />
+    <result column="position_seq" property="positionSeq" jdbcType="VARCHAR" />
+    <result column="position_level" property="positionLevel" jdbcType="VARCHAR" />
+    <result column="photo" property="photo" jdbcType="VARCHAR" />
+    
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    id, company_id,coop_company_id,code, emp_type_id, cn_name, eng_name,picture,birthday, sex, age, household_register, 
+    political_status, degree_of_education, contract_renewal, email, marital_status, nation, address, mobile,telephone,
+    extension_number,industry_relevance, working_background, ule_account, work_type,whether_scheduling,create_time, create_user, 
+    update_time, update_user, del_flag, remark,job_status,entry_status,floor_Code,seat_code,our_age,first_entry_time,quit_time,industry_relevance_other,
+    degree_of_education_other,political_status_other,country,country_other,position_title,salary_balance_date,report_to_leader,
+    probation_end_time,protocol_end_time,version,fingerprint_id,auto_calculate_leave,before_work_age,work_age,identification_num,work_province,work_city,
+    work_address_type,position_seq,position_level,photo
+  </sql>
+  
+  <sql id="E_Column_List" >
+    e.id,e.company_id,e.coop_company_id,e.code,e.emp_type_id,e.cn_name,e.eng_name,e.picture,e.birthday,e.sex,e.age,e.household_register,
+	e.political_status,e.degree_of_education,e.contract_renewal,e.email,e.marital_status,e.nation,e.address,e.mobile,e.telephone,
+	e.extension_number,e.industry_relevance,e.working_background,e.ule_account,e.work_type,e.whether_scheduling,e.create_time,
+	e.create_user,e.update_time,e.update_user,e.del_flag,e.remark,e.job_status,e.entry_status,e.floor_Code,e.seat_code,e.our_age,
+	e.first_entry_time,e.quit_time,e.industry_relevance_other,e.degree_of_education_other,e.political_status_other,
+	e.country,e.country_other,e.position_title,e.salary_balance_date,e.report_to_leader,e.probation_end_time,e.version,e.work_age,e.before_work_age
+  </sql>
+  
+  <select id="getById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+  	select <include refid="Base_Column_List"/> from base_employee
+  	where id = #{id,jdbcType=BIGINT}
+  </select>
+  
+  <select id="getByIdentificationNum" resultMap="BaseResultMap">
+  	select <include refid="Base_Column_List"/> from base_employee
+  	where del_flag = 0 and identification_num = #{identificationNum,jdbcType=VARCHAR} ORDER BY id DESC
+  </select>
+  
+  <select id="getByEmpId" parameterType="java.lang.Long" resultType="com.ule.oa.base.po.Employee">
+  	select em.id,em.email email,em.cn_name cnName,em.code,de.name as 'empDepart.depart.name',de.id as 'empDepart.depart.id',po.position_name AS 'empPosition.position.position_name',po.id AS 'empPosition.position.id' from base_employee em,base_emp_depart ed,base_depart de,base_emp_position ep,base_position po
+  	where em.del_flag=0
+  	  and ed.del_flag=0
+  	  and de.del_flag=0
+  	  AND ep.del_flag=0
+  	  AND po.del_flag=0
+  	  and em.id=ed.employee_id
+  	  and ed.depart_id = de.id
+  	  AND em.id=ep.employee_id
+  	  AND ep.position_id = po.id
+  	  and em.id = #{id,jdbcType=BIGINT}
+  </select>
+  
+  <select id="getListByCondition" resultMap="BaseResultMap" parameterType="com.ule.oa.base.po.Employee" >
+    select <include refid="Base_Column_List"/> from base_employee
+    where del_flag = 0
+     <if test="id != null">
+    	and id = #{id,jdbcType=BIGINT}
+     </if>
+   	<if test="companyId != null" >
+       and company_id = #{companyId,jdbcType=BIGINT}
+     </if>
+     <if test="code != null and code != ''" >
+       and code = #{code,jdbcType=VARCHAR}
+     </if>
+     <if test="empTypeId != null" >
+       and emp_type_id = #{empTypeId,jdbcType=INTEGER}
+     </if>
+     <if test="empTypeIdList != null and empTypeIdList.size > 0" >
+       and emp_type_id in
+           <foreach collection="empTypeIdList" index="index" item="item" open="(" separator="," close=")">
+	           #{item}
+	       </foreach>
+     </if>
+     <if test="cnName != null and cnName != ''" >
+       and cn_name = #{cnName,jdbcType=VARCHAR}
+     </if>
+     <if test="engName != null and engName != ''" >
+       and eng_name = #{engName,jdbcType=VARCHAR}
+     </if>
+     <if test="birthday != null and birthday !='' " >
+       and birthday = #{birthday,jdbcType=TIMESTAMP}
+     </if>
+     <if test="sex != null" >
+       and sex = #{sex,jdbcType=INTEGER}
+     </if>
+     <if test="age != null" >
+       and age = #{age,jdbcType=INTEGER}
+     </if>
+     <if test="householdRegister != null and householdRegister !='' " >
+       and household_register = #{householdRegister,jdbcType=VARCHAR}
+     </if>
+     <if test="politicalStatus != null" >
+       and political_status = #{politicalStatus,jdbcType=BIGINT}
+     </if>
+     <if test="degreeOfEducation != null" >
+       and degree_of_education = #{degreeOfEducation,jdbcType=BIGINT}
+     </if>
+     <if test="contractRenewal != null" >
+       and contract_renewal = #{contractRenewal,jdbcType=INTEGER}
+     </if>
+     <if test="email != null and email != ''" >
+       and email = #{email,jdbcType=VARCHAR}
+     </if>
+     <if test="maritalStatus != null" >
+       and marital_status = #{maritalStatus,jdbcType=BIGINT}
+     </if>
+     <if test="nation != null" >
+       and nation = #{nation,jdbcType=BIGINT}
+     </if>
+     <if test="address != null and address != ''" >
+       and address = #{address,jdbcType=VARCHAR}
+     </if>
+     <if test="mobile != null and mobile != ''" >
+       and mobile = #{mobile,jdbcType=VARCHAR}
+     </if>
+     <if test="telephone != null and telephone != ''" >
+       and telephone = #{telephone,jdbcType=VARCHAR}
+     </if>
+     <if test="extensionNumber != null and extensionNumber != ''" >
+       and extension_number = #{extensionNumber,jdbcType=VARCHAR}
+     </if>
+     <if test="industryRelevance != null" >
+       and industry_relevance = #{industryRelevance,jdbcType=BIGINT}
+     </if>
+     <if test="workingBackground != null" >
+       and working_background = #{workingBackground,jdbcType=INTEGER}
+     </if>
+     <if test="uleAccount != null and uleAccount != ''" >
+       and ule_account = #{uleAccount,jdbcType=VARCHAR}
+     </if>
+     <if test="workType != null" >
+       and work_type = #{workType,jdbcType=BIGINT}
+     </if>
+     <if test="whetherScheduling != null" >
+       and whether_scheduling = #{whetherScheduling,jdbcType=BIGINT}
+     </if>
+     <if test="updateTime != null and updateTime != ''" >
+       and update_time = #{updateTime,jdbcType=TIMESTAMP}
+     </if>
+     <if test="updateUser != null and updateUser != ''" >
+       and update_user = #{updateUser,jdbcType=VARCHAR}
+     </if>
+     <if test="remark != null and remark != ''" >
+       and remark = #{remark,jdbcType=VARCHAR}
+     </if>
+     <if test="jobStatus != null" >
+       and job_status = #{jobStatus,jdbcType=INTEGER}
+     </if>
+     <if test="entryStatus != null" >
+       and entry_status = #{entryStatus,jdbcType=INTEGER}
+     </if>
+     <if test="floorCode != null" >
+       and floor_Code = #{floorCode,jdbcType=VARCHAR}
+     </if>
+     <if test="seatCode != null" >
+       and seat_code = #{seatCode,jdbcType=VARCHAR}
+     </if>
+     <if test="jobStatusList != null"> 
+	      and job_status in 
+	      <foreach collection="jobStatusList" index="index" item="item" open="(" separator="," close=")">
+               #{item}
+          </foreach>
+	  </if>
+	  <if test="ids != null"> 
+	      and id in 
+	      <foreach collection="ids" index="index" item="item" open="(" separator="," close=")">
+               #{item}
+          </foreach>
+	  </if>
+	  
+	  <!-- 白名单集合 -->
+	  <if test="absenteeismids != null"> 
+	      and id not in 
+	      <foreach collection="absenteeismids" index="index" item="item" open="(" separator="," close=")">
+               #{item}
+          </foreach>
+	  </if>
+	  <if test="codeList != null"> 
+	      and code  in 
+	      <foreach collection="codeList" index="index" item="item" open="(" separator="," close=")">
+               #{item}
+          </foreach>
+	  </if>
+	  
+     <if test="reportToLeader != null" >
+       and report_to_leader = #{reportToLeader,jdbcType=BIGINT}
+     </if>
+     <if test="workAddressType != null" >
+       and work_address_type = #{workAddressType,jdbcType=INTEGER}
+     </if>
+     
+  </select>
+  
+  <select id="getListByConditionCount" parameterType="com.ule.oa.base.po.Employee" resultType="java.lang.Integer">
+    select count(*) from base_employee
+    where del_flag = 0
+     <if test="id != null">
+    	and id = #{id,jdbcType=BIGINT}
+     </if>
+   	<if test="companyId != null" >
+       and company_id = #{companyId,jdbcType=BIGINT}
+     </if>
+     <if test="code != null and code != ''" >
+       and code = #{code,jdbcType=VARCHAR}
+     </if>
+     <if test="empTypeId != null" >
+       and emp_type_id = #{empTypeId,jdbcType=INTEGER}
+     </if>
+     <if test="empTypeIdList != null and empTypeIdList.size > 0" >
+       and emp_type_id in
+           <foreach collection="empTypeIdList" index="index" item="item" open="(" separator="," close=")">
+	           #{item}
+	       </foreach>
+     </if>
+     <if test="cnName != null and cnName != ''" >
+       and cn_name = #{cnName,jdbcType=VARCHAR}
+     </if>
+     <if test="engName != null and engName != ''" >
+       and eng_name = #{engName,jdbcType=VARCHAR}
+     </if>
+     <if test="birthday != null and birthday !='' " >
+       and birthday = #{birthday,jdbcType=TIMESTAMP}
+     </if>
+     <if test="sex != null" >
+       and sex = #{sex,jdbcType=INTEGER}
+     </if>
+     <if test="age != null" >
+       and age = #{age,jdbcType=INTEGER}
+     </if>
+     <if test="householdRegister != null and householdRegister !='' " >
+       and household_register = #{householdRegister,jdbcType=VARCHAR}
+     </if>
+     <if test="politicalStatus != null" >
+       and political_status = #{politicalStatus,jdbcType=BIGINT}
+     </if>
+     <if test="degreeOfEducation != null" >
+       and degree_of_education = #{degreeOfEducation,jdbcType=BIGINT}
+     </if>
+     <if test="contractRenewal != null" >
+       and contract_renewal = #{contractRenewal,jdbcType=INTEGER}
+     </if>
+     <if test="email != null and email != ''" >
+       and email = #{email,jdbcType=VARCHAR}
+     </if>
+     <if test="maritalStatus != null" >
+       and marital_status = #{maritalStatus,jdbcType=BIGINT}
+     </if>
+     <if test="nation != null" >
+       and nation = #{nation,jdbcType=BIGINT}
+     </if>
+     <if test="address != null and address != ''" >
+       and address = #{address,jdbcType=VARCHAR}
+     </if>
+     <if test="mobile != null and mobile != ''" >
+       and mobile = #{mobile,jdbcType=VARCHAR}
+     </if>
+     <if test="telephone != null and telephone != ''" >
+       and telephone = #{telephone,jdbcType=VARCHAR}
+     </if>
+     <if test="extensionNumber != null and extensionNumber != ''" >
+       and extension_number = #{extensionNumber,jdbcType=VARCHAR}
+     </if>
+     <if test="industryRelevance != null" >
+       and industry_relevance = #{industryRelevance,jdbcType=BIGINT}
+     </if>
+     <if test="workingBackground != null" >
+       and working_background = #{workingBackground,jdbcType=INTEGER}
+     </if>
+     <if test="uleAccount != null and uleAccount != ''" >
+       and ule_account = #{uleAccount,jdbcType=VARCHAR}
+     </if>
+     <if test="workType != null" >
+       and work_type = #{workType,jdbcType=BIGINT}
+     </if>
+     <if test="whetherScheduling != null" >
+       and whether_scheduling = #{whetherScheduling,jdbcType=BIGINT}
+     </if>
+     <if test="updateTime != null" >
+       and update_time = #{updateTime,jdbcType=TIMESTAMP}
+     </if>
+     <if test="updateUser != null and updateUser != ''" >
+       and update_user = #{updateUser,jdbcType=VARCHAR}
+     </if>
+     <if test="remark != null and remark != ''" >
+       and remark = #{remark,jdbcType=VARCHAR}
+     </if>
+     <if test="jobStatus != null" >
+       and job_status = #{jobStatus,jdbcType=INTEGER}
+     </if>
+     <if test="entryStatus != null" >
+       and entry_status = #{entryStatus,jdbcType=INTEGER}
+     </if>
+     <if test="floorCode != null" >
+       and floor_Code = #{floorCode,jdbcType=VARCHAR}
+     </if>
+     <if test="seatCode != null" >
+       and seat_code = #{seatCode,jdbcType=VARCHAR}
+     </if>
+     <if test="ids != null"> 
+	      and id in 
+	      <foreach collection="ids" index="index" item="item" open="(" separator="," close=")">
+               #{item}
+          </foreach>
+	  </if>
+	  <if test="reportToLeader != null">
+     	and report_to_leader = #{reportToLeader,jdbcType=BIGINT}
+     </if>
+  </select>
+  
+  
+  <select id="getAttnEmpListByCondition" resultMap="BaseResultMap" parameterType="com.ule.oa.base.po.Employee" >
+    select <include refid="Base_Column_List"/> from base_employee
+    where del_flag = 0 and (work_address_type = 0 or work_province = '北京')
+    and (job_status = #{jobStatus,jdbcType=INTEGER}
+    or quit_time &gt;= #{quitTime,jdbcType=DATE})
+    and first_Entry_time &lt;= #{quitTime,jdbcType=DATE}
+    <if test="ids != null"> 
+	      and id in 
+	      <foreach collection="ids" index="index" item="item" open="(" separator="," close=")">
+               #{item}
+          </foreach>
+	</if>
+    ORDER BY id
+    limit #{offset},#{limit}
+  </select>
+  
+  <insert id="save" parameterType="com.ule.oa.base.po.Employee" useGeneratedKeys="true" keyProperty="id">
+    insert into base_employee (company_id,coop_company_id,code, 
+      emp_type_id, cn_name, eng_name,picture, birthday, sex, age, 
+      household_register, political_status, degree_of_education, 
+      contract_renewal, email, marital_status,nation, address, mobile, telephone,extension_number,
+      industry_relevance, working_background, ule_account, work_type, whether_scheduling,
+      create_time, create_user, update_time, update_user, del_flag, remark,job_status,entry_status,
+      floor_code,seat_code,first_Entry_time,report_to_leader,probation_end_time,fingerprint_id
+      ,auto_calculate_leave,identification_num,work_province,work_city,work_address_type,position_seq,position_level
+      )
+    values (#{companyId,jdbcType=BIGINT},#{coopCompanyId,jdbcType=BIGINT},#{code,jdbcType=VARCHAR}, 
+      #{empTypeId,jdbcType=BIGINT}, #{cnName,jdbcType=VARCHAR}, #{engName,jdbcType=VARCHAR}, #{picture,jdbcType=VARCHAR}, 
+      #{birthday,jdbcType=TIMESTAMP}, #{sex,jdbcType=INTEGER}, #{age,jdbcType=INTEGER}, 
+      #{householdRegister,jdbcType=VARCHAR}, #{politicalStatus,jdbcType=BIGINT}, #{degreeOfEducation,jdbcType=BIGINT}, 
+      #{contractRenewal,jdbcType=INTEGER}, #{email,jdbcType=VARCHAR}, #{maritalStatus,jdbcType=BIGINT}, 
+      #{nation,jdbcType=BIGINT}, #{address,jdbcType=VARCHAR}, #{mobile,jdbcType=VARCHAR}, #{telephone,jdbcType=VARCHAR},#{extensionNumber,jdbcType=VARCHAR},
+      #{industryRelevance,jdbcType=BIGINT}, #{workingBackground,jdbcType=INTEGER}, #{uleAccount,jdbcType=VARCHAR}, 
+      #{workType,jdbcType=BIGINT}, #{whetherScheduling,jdbcType=BIGINT}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{createUser,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP}, 
+      #{updateUser,jdbcType=VARCHAR}, #{delFlag,jdbcType=INTEGER}, #{remark,jdbcType=VARCHAR},
+      #{jobStatus,jdbcType=INTEGER},#{entryStatus,jdbcType=INTEGER},#{floorCode,jdbcType=VARCHAR},#{seatCode,jdbcType=VARCHAR},#{firstEntryTime,jdbcType=TIMESTAMP},#{reportToLeader,jdbcType=BIGINT},#{probationEndTime,jdbcType=TIMESTAMP},#{fingerprintId,jdbcType=BIGINT}
+      ,#{autoCalculateLeave,jdbcType=INTEGER},#{identificationNum,jdbcType=VARCHAR},#{workAddressProvince,jdbcType=VARCHAR},
+      #{workAddressCity,jdbcType=VARCHAR},#{workAddressType,jdbcType=INTEGER},#{positionSeq,jdbcType=VARCHAR},#{positionLevel,jdbcType=VARCHAR}
+      )
+      <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">
+            SELECT LAST_INSERT_ID() AS id
+       </selectKey> 
+  </insert>
+  
+  <update id="updateById" parameterType="com.ule.oa.base.po.Employee" >
+    update base_employee
+    <set >
+  	  <!-- 新添  修改离职日期  和 修改在逻辑删除状态 -->
+	  <if test="delFlag!=null">
+	    del_Flag = #{delFlag,jdbcType=BIGINT}, 
+	  </if>
+	  <if test="quitTime!=null">	  
+         <choose>  
+         	<when test="quitTimeStauts != null">quit_time = null,</when>  
+            <when test="quitTimeStauts == null">quit_time = #{quitTime,jdbcType=DATE},</when>                 
+         </choose>     	
+   	 </if>
+	  
+      <if test="companyId != null" >
+        company_id = #{companyId,jdbcType=BIGINT},
+      </if>
+      <if test="code != null and code != ''" >
+        code = #{code,jdbcType=VARCHAR},
+      </if>
+      <if test="positionTitle != null and positionTitle != ''" >
+        position_title = #{positionTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="companyId != null" >
+        company_id = #{companyId,jdbcType=INTEGER},
+      </if>
+      <if test="empTypeId != null" >
+        emp_type_id = #{empTypeId,jdbcType=INTEGER},
+      </if>
+      <if test="cnName != null and cnName != ''" >
+        cn_name = #{cnName,jdbcType=VARCHAR},
+      </if>
+      <if test="engName != null and engName != ''" >
+        eng_name = #{engName,jdbcType=VARCHAR},
+      </if>
+      <if test="birthday != null" >
+        birthday = #{birthday,jdbcType=TIMESTAMP},
+      </if>
+      <if test="sex != null" >
+        sex = #{sex,jdbcType=INTEGER},
+      </if>
+      <if test="age != null" >
+        age = #{age,jdbcType=INTEGER},
+      </if>
+      <if test="beforeWorkAge != null" >
+        before_work_age = #{beforeWorkAge,jdbcType=DOUBLE},
+      </if>
+      <if test="householdRegister != null and householdRegister != ''" >
+        household_register = #{householdRegister,jdbcType=VARCHAR},
+      </if>
+      <if test="politicalStatus != null" >
+        political_status = #{politicalStatus,jdbcType=BIGINT},
+      </if>
+      <if test="politicalStatusOther != null" >
+        political_status_other = #{politicalStatusOther,jdbcType=BIGINT},
+      </if>
+      <if test="degreeOfEducation != null" >
+        degree_of_education = #{degreeOfEducation,jdbcType=BIGINT},
+      </if>
+      <if test="degreeOfEducationOther != null" >
+        degree_of_education_other = #{degreeOfEducationOther,jdbcType=BIGINT},
+      </if>
+      <if test="contractRenewal != null" >
+        contract_renewal = #{contractRenewal,jdbcType=INTEGER},
+      </if>
+      <if test="email != null and email != ''" >
+        email = #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="maritalStatus != null" >
+        marital_status = #{maritalStatus,jdbcType=BIGINT},
+      </if>
+      <if test="country != null" >
+        country = #{country,jdbcType=BIGINT},
+      </if>
+      <if test="countryOther != null and countryOther != ''" >
+        country_other = #{countryOther,jdbcType=VARCHAR},<!-- 空字符串也要写进来 -->
+      </if>
+      <if test="nation != null" >
+        nation = #{nation,jdbcType=BIGINT},
+      </if>
+      <if test="address != null and address != ''" >
+        address = #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="mobile != null and mobile != ''" >
+        mobile = #{mobile,jdbcType=VARCHAR},
+      </if>
+      <if test="telephone != null and telephone != ''" >
+        telephone = #{telephone,jdbcType=VARCHAR},
+      </if>
+      <if test="extensionNumber != null and extensionNumber != ''" >
+        extension_number = #{extensionNumber,jdbcType=VARCHAR},
+     </if>
+      <if test="industryRelevance != null" >
+        industry_relevance = #{industryRelevance,jdbcType=BIGINT},
+      </if>
+      <if test="industryRelevanceOther != null and industryRelevanceOther != ''" >
+        industry_relevance_other = #{industryRelevanceOther,jdbcType=VARCHAR},<!-- 空字符串也要写进来 -->
+      </if>
+      <if test="workingBackground != null" >
+        working_background = #{workingBackground,jdbcType=INTEGER},
+      </if>
+      <if test="uleAccount != null and uleAccount != ''" >
+        ule_account = #{uleAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="workType != null" >
+        work_type = #{workType,jdbcType=BIGINT},
+      </if>
+      <if test="whetherScheduling != null" >
+        whether_scheduling = #{whetherScheduling,jdbcType=BIGINT},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUser != null and updateUser != ''" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null and remark != ''" >
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="jobStatus != null" >
+       job_status = #{jobStatus,jdbcType=INTEGER},
+     </if>
+     <if test="entryStatus != null and entryStatus != ''" >
+       entry_status = #{entryStatus,jdbcType=INTEGER},
+     </if>
+     <if test="floorCode != null and floorCode != ''" >
+       floor_Code = #{floorCode,jdbcType=VARCHAR},
+     </if>
+     <if test="seatCode != null and seatCode != ''" >
+       seat_code = #{seatCode,jdbcType=VARCHAR},
+     </if>
+   	 <if test="salaryBalanceDate != null" >
+        salary_balance_date = #{salaryBalanceDate,jdbcType=TIMESTAMP},
+     </if>
+     <if test="reportToLeader != null">
+     	report_to_leader = #{reportToLeader,jdbcType=BIGINT},
+     </if>
+     <if test="protocolEndTime != null">
+     	protocol_end_time = #{protocolEndTime,jdbcType=TIMESTAMP},
+     </if>
+     <if test="probationEndTime != null">
+     	probation_end_time = #{probationEndTime,jdbcType=TIMESTAMP},
+     </if>
+     <if test="fingerprintId != null">
+     	fingerprint_id = #{fingerprintId,jdbcType=BIGINT},
+     </if>
+     <if test="autoCalculateLeave != null">
+     	auto_calculate_leave = #{autoCalculateLeave,jdbcType=INTEGER},
+     </if>
+     <if test="positionSeq != null and positionSeq != ''">
+     	position_seq = #{positionSeq,jdbcType=VARCHAR},
+     </if>
+     <if test="positionLevel != null and positionLevel != ''">
+     	position_level = #{positionLevel,jdbcType=VARCHAR},
+     </if>
+     <if test="photo != null and photo != ''">
+     	photo = #{photo,jdbcType=VARCHAR},
+     </if>
+     <if test="workAddressProvince != null and workAddressProvince != ''">
+     	work_province = #{workAddressProvince,jdbcType=VARCHAR},
+     </if>
+     <if test="workAddressCity != null and workAddressCity != ''">
+     	work_city = #{workAddressCity,jdbcType=VARCHAR},
+     </if>
+     <if test="workAddressType != null">
+     	work_address_type = #{workAddressType,jdbcType=INTEGER},
+     </if>
+      <if test="identificationNum != null and identificationNum != ''">
+     	identification_num = #{identificationNum,jdbcType=VARCHAR},
+     </if>
+     version = version + 1
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+   <!-- 分页查询部门职位信息 -->
+   <!-- 新增一个查询版本_ 入职时间 _ 指纹id_司龄_部门负责人id-->
+  <select id="getPageList" parameterType="com.ule.oa.base.po.Employee" resultType="com.ule.oa.base.po.Employee">
+	  	select bd.leader as departLeaderId,be.fingerprint_id,be.first_Entry_time,be.version,be.id, be.company_id, be.code, et.type_c_name as empTypeName, be.cn_name, be.eng_name, be.birthday, be.sex, be.age, 
+	  	be.household_register,be.political_status, be.degree_of_education, be.contract_renewal, be.email, be.marital_status, be.nation, be.address, 
+	  	be.mobile,be.telephone,be.extension_number,be.industry_relevance, be.working_background, be.ule_account, be.work_type,scc.display_name workTypeName, be.whether_scheduling, 
+	  	bp.id as 'position.id',bd.id as 'depart.id',be.create_time, be.create_user, be.update_time, be.update_user, be.del_flag, be.remark,be.salary_balance_date, 
+	  	be.report_to_leader,be.job_status,be.entry_status,be.floor_code,be.seat_code,bp.position_name as positionName,bd.name as departName,
+	  	be.quit_time,be.before_work_age,be.work_age,be.our_age,(select cn_name from base_employee where id = be.report_to_leader) as leaderName
+		from base_employee be
+		left join base_emp_type et
+		on(be.emp_type_id  = et.id and be.company_id = et.company_id and et.del_flag =0)
+		left join base_emp_depart ed
+		on (be.id = ed.employee_id and ed.del_flag = 0)
+		left join base_depart bd
+		on (ed.depart_id = bd.id and be.company_id = bd.company_id and bd.del_flag = 0)
+		left join base_emp_position ep
+		on (be.id = ep.employee_id and ep.del_flag = 0)
+		left join base_position bp
+		on (ep.position_id = bp.id and bp.company_id = bp.company_id and bp.del_flag = 0)
+        LEFT JOIN sys_company_config scc on be.work_type = scc.id and scc.del_flag =0
+		<if test="null != coopCompany and coopCompany.id != null">
+			left join base_coop_company cc
+			on(et.id = cc.emp_type_id and cc.del_flag =0 and cc.id = #{coopCompany.id,jdbcType=BIGINT})
+		</if>
+		where be.del_flag = 0
+		<!-- 新增员工id 查询 -->
+		<if test="id != null">
+			and be.id = #{id,jdbcType=INTEGER}
+		</if>
+		<!-- 新增 职位名称模糊查询 -->
+		<if test="positionName != null and positionName !=''">
+			and bp.position_name like concat('%',#{positionName,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="empTypeId != null" >
+		  and be.emp_type_id = #{empTypeId,jdbcType=INTEGER}
+		</if>
+		<if test="workAddressType != null" >
+		  and be.work_address_type = #{workAddressType,jdbcType=INTEGER}
+		</if>
+	  	<if test="companyId != null" >
+		  and be.company_id = #{companyId,jdbcType=BIGINT}
+		</if>
+		<if test="cnName != null and cnName != ''" >
+		  and be.cn_name like concat('%',#{cnName,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="code != null and code != ''" >
+		  and be.code  like concat('%',#{code,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="householdRegister != null and householdRegister != ''" >
+		  and be.household_register  like concat('%',#{householdRegister,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="maritalStatus != null" >
+		  and be.marital_status = #{maritalStatus,jdbcType=BIGINT}
+		</if>
+		<if test="sex != null" >
+		  and be.sex = #{sex,jdbcType=INTEGER}
+		</if>
+		<if test="age != null" >
+		  and be.age = #{age,jdbcType=INTEGER}
+		</if>
+		
+		<if test="jobStatus != null and jobStatus==0">
+			and be.job_status = 0
+		</if>
+		<if test="jobStatus != null and jobStatus==1">
+			and be.job_status = 1
+		</if>
+		<if test="jobStatus != null and jobStatus==2">
+			and be.job_status = 2
+		</if>
+		<if test="jobStatusList != null and jobStatusList.size > 0"> 
+	        and be.job_status in 
+		    <foreach collection="jobStatusList" index="index" item="item" open="(" separator="," close=")">
+	           #{item}
+	        </foreach>
+	    </if>
+		<if test="departList != null and departList.size > 0">
+  			and ed.depart_id in
+  			<foreach collection="departList" item="departId" open="(" separator="," close=")">
+  				#{departId,jdbcType=BIGINT}
+  			</foreach>
+  		</if>
+  		<if test="currentUserDepart != null and currentUserDepart.size > 0">
+  			and be.id in
+  			<foreach collection="currentUserDepart" item="ids" open="(" separator="," close=")">
+  				#{ids,jdbcType=BIGINT}
+  			</foreach>
+  		</if>
+  		<if test="subEmployeeIdList != null and subEmployeeIdList.size > 0">
+			and be.id in
+			<foreach collection="subEmployeeIdList" item="ids" open="(" separator="," close=")">
+				#{ids,jdbcType=BIGINT}
+			</foreach>
+		</if>
+  		<if test="workType != null and workType != ''">
+  			and be.work_type = #{workType,jdbcType=BIGINT}
+  		</if>
+	    <if test="whetherScheduling != null" >
+	       and be.whether_scheduling = #{whetherScheduling,jdbcType=BIGINT}
+	    </if>
+  		<if test="degreeOfEducation != null">
+  			and be.degree_of_education = #{degreeOfEducation,jdbcType=BIGINT}
+  		</if>
+  		<if test="reportToLeader != null">
+  			and be.report_to_leader = #{reportToLeader,jdbcType=BIGINT}
+  		</if>
+  		<if test="positionId != null">
+  			and ep.position_id = #{positionId,jdbcType=BIGINT}
+  		</if>
+	    <if test="protocolEndTimeBegin != null" >
+	        and be.protocol_end_time &gt;= #{protocolEndTimeBegin,jdbcType=DATE}
+	    </if>
+	    <if test="protocolEndTimeEnd != null" >
+	        and be.protocol_end_time &lt; #{protocolEndTimeEnd,jdbcType=DATE}
+	    </if>
+	    <if test="firstEntryTimeBegin != null" >
+	        and be.first_Entry_time &gt;= #{firstEntryTimeBegin,jdbcType=DATE}
+	    </if>
+	    <if test="firstEntryTimeEnd != null" >
+	        and be.first_Entry_time &lt; #{firstEntryTimeEnd,jdbcType=DATE}
+	    </if>
+	    <if test="probationEndTimeBegin != null" >
+	        and be.probation_end_time &gt;= #{probationEndTimeBegin,jdbcType=DATE}
+	    </if>
+	    <if test="probationEndTimeEnd != null" >
+	        and be.probation_end_time &lt; #{probationEndTimeEnd,jdbcType=DATE}
+	    </if>
+	    <if test="quitTimeBegin != null" >
+	        and be.Quit_time &gt;= #{quitTimeBegin,jdbcType=DATE}
+	    </if>
+	    <if test="quitTimeEnd != null" >
+	        and be.Quit_time &lt; #{quitTimeEnd,jdbcType=DATE}
+	    </if>
+	    <if test="birthdayBegin != null" >
+	        and be.birthday &gt;= #{birthday,jdbcType=DATE}
+	    </if>
+	    <if test="birthdayEnd != null" >
+	        and be.birthday &lt; #{birthday,jdbcType=DATE}
+	    </if>
+	    <if test="nameCodeStr != null and nameCodeStr !=''">
+			and (be.code like concat('%',#{nameCodeStr,jdbcType=VARCHAR},'%')
+			or be.cn_name like concat('%',#{nameCodeStr,jdbcType=VARCHAR},'%'))
+		  </if>
+		<if test="departId != null and departId!=''" >
+	        and  bd.id = #{departId,jdbcType=BIGINT}
+	    </if>
+	    <if test="empTypeIdList != null and empTypeIdList.size > 0" >
+           and be.emp_type_id in
+           <foreach collection="empTypeIdList" index="index" item="item" open="(" separator="," close=")">
+	           #{item}
+	       </foreach>
+        </if>
+  		ORDER BY be.emp_type_id,CAST(SUBSTRING(be.CODE, 3) AS SIGNED)
+  		<if test="offset != null and limit != null">
+			limit #{offset},#{limit}
+		</if>
+  </select>
+  <!-- 离职通知 显示内容 -->
+  <select id="getQuitPageList" parameterType="com.ule.oa.base.po.Employee" resultType="com.ule.oa.base.po.Employee">
+	select bd.leader as departLeaderId,be.fingerprint_id,be.first_Entry_time,be.version,be.id, be.company_id, be.code, et.type_c_name as empTypeName, be.cn_name, be.eng_name, be.birthday, be.sex, be.age, 
+	  	be.household_register,be.political_status, be.degree_of_education, be.contract_renewal, be.email, be.marital_status, be.nation, be.address, 
+	  	be.mobile,be.telephone,be.extension_number,be.industry_relevance, be.working_background, be.ule_account, be.work_type,scc.display_name workTypeName, be.whether_scheduling, 
+	  	bp.id as 'position.id',bd.id as 'depart.id',be.create_time, be.create_user, be.update_time, be.update_user, be.del_flag, be.remark,be.salary_balance_date, 
+	  	be.report_to_leader reportToLeader,be.job_status,be.entry_status,be.floor_code,be.seat_code,bp.position_name as positionName,bd.name as departName,
+	  	be.quit_time,be.before_work_age,be.work_age,be.our_age,(select cn_name from base_employee where id=be.report_to_leader)as leaderName,
+			(select cn_name from base_employee where id=bd.leader) as departLeaderName 
+		from base_employee be
+		left join base_emp_type et
+		on(be.emp_type_id  = et.id and be.company_id = et.company_id and et.del_flag =0)
+		left join base_emp_depart ed
+		on (be.id = ed.employee_id and ed.del_flag = 0)
+		left join base_depart bd
+		on (ed.depart_id = bd.id and be.company_id = bd.company_id and bd.del_flag = 0)
+		left join base_emp_position ep
+		on (be.id = ep.employee_id and ep.del_flag = 0)
+		left join base_position bp
+		on (ep.position_id = bp.id and bp.company_id = bp.company_id and bp.del_flag = 0)
+        LEFT JOIN sys_company_config scc on be.work_type = scc.id and scc.del_flag =0  
+  		<if test="null != coopCompany and coopCompany.id != null">
+			left join base_coop_company cc
+			on(et.id = cc.emp_type_id and cc.del_flag =0 and cc.id = #{coopCompany.id,jdbcType=BIGINT})
+		</if>
+		where be.del_flag = 0  and  be.job_status in (0,2,3,4)
+		<!-- 新增员工id 查询 -->
+		<if test="id != null">
+			and be.id = #{id,jdbcType=INTEGER}
+		</if>
+		<!-- 新增 职位名称模糊查询 -->
+		<if test="positionName != null and positionName !=''">
+			and bp.position_name like concat('%',#{positionName,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="empTypeId != null" >
+		  and be.emp_type_id = #{empTypeId,jdbcType=INTEGER}
+		</if>
+	  	<if test="companyId != null" >
+		  and be.company_id = #{companyId,jdbcType=BIGINT}
+		</if>
+		<if test="cnName != null and cnName != ''" >
+		  and be.cn_name like concat('%',#{cnName,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="code != null and code != ''" >
+		  and be.code  like concat('%',#{code,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="maritalStatus != null" >
+		  and be.marital_status = #{maritalStatus,jdbcType=BIGINT}
+		</if>
+		<if test="sex != null" >
+		  and be.sex = #{sex,jdbcType=INTEGER}
+		</if>
+		<if test="age != null" >
+		  and be.age = #{age,jdbcType=INTEGER}
+		</if>
+		<if test="jobStatus != null" >
+		 and be.job_status = #{jobStatus,jdbcType=INTEGER}
+		</if>
+		<if test="departList != null and departList.size > 0">
+  			and ed.depart_id in
+  			<foreach collection="departList" item="departId" open="(" separator="," close=")">
+  				#{departId,jdbcType=BIGINT}
+  			</foreach>
+  		</if>
+  		<if test="workType != null and workType != ''">
+  			and be.work_type = #{workType,jdbcType=BIGINT}
+  		</if>
+	    <if test="whetherScheduling != null" >
+	       and be.whether_scheduling = #{whetherScheduling,jdbcType=BIGINT}
+	    </if>
+  		<if test="degreeOfEducation != null">
+  			and be.degree_of_education = #{degreeOfEducation,jdbcType=BIGINT}
+  		</if>
+  		<if test="reportToLeader != null">
+  			and be.report_to_leader = #{reportToLeader,jdbcType=BIGINT}
+  		</if>
+  		<if test="positionId != null">
+  			and ep.position_id = #{positionId,jdbcType=BIGINT}
+  		</if>
+	    <if test="protocolEndTimeBegin != null" >
+	        and be.protocol_end_time &gt;= #{protocolEndTimeBegin,jdbcType=DATE}
+	    </if>
+	    <if test="protocolEndTimeEnd != null" >
+	        and be.protocol_end_time &lt; #{protocolEndTimeEnd,jdbcType=DATE}
+	    </if>
+	    <if test="firstEntryTimeBegin != null" >
+	        and be.first_Entry_time &gt;= #{firstEntryTimeBegin,jdbcType=DATE}
+	    </if>
+	    <if test="firstEntryTimeEnd != null" >
+	        and be.first_Entry_time &lt; #{firstEntryTimeEnd,jdbcType=DATE}
+	    </if>
+	    <if test="probationEndTimeBegin != null" >
+	        and be.probation_end_time &gt;= #{probationEndTimeBegin,jdbcType=DATE}
+	    </if>
+	    <if test="probationEndTimeEnd != null" >
+	        and be.probation_end_time &lt; #{probationEndTimeEnd,jdbcType=DATE}
+	    </if>
+	    <if test="quitTimeBegin != null" >
+	        and be.Quit_time &gt;= #{quitTimeBegin,jdbcType=DATE}
+	    </if>
+	    <if test="quitTimeEnd != null" >
+	        and be.Quit_time &lt; #{quitTimeEnd,jdbcType=DATE}
+	    </if>
+	   <!-- 新增小于等于 -->
+	    <if test="quitEltTimeEnd != null" >
+	        and be.Quit_time &lt;= #{quitEltTimeEnd,jdbcType=DATE}
+	    </if>
+	   
+	    ORDER BY be.quit_time desc, be.first_Entry_time desc
+	    
+	    <if test="offset != null and limit != null">
+			limit #{offset},#{limit}
+		</if>
+  </select>
+  <!-- 离职通知操作  统计 -->
+  <select id="getQuitCount" parameterType="com.ule.oa.base.po.Employee" resultType="java.lang.Integer">
+  	select count(1)
+		from base_employee be
+		left join base_emp_type et
+		on(be.emp_type_id  = et.id and be.company_id = et.company_id and et.del_flag =0)
+		left join base_emp_depart ed
+		on (be.id = ed.employee_id and ed.del_flag = 0)
+		left join base_depart bd
+		on (ed.depart_id = bd.id and be.company_id = bd.company_id and bd.del_flag = 0)
+		left join base_emp_position ep
+		on (be.id = ep.employee_id and ep.del_flag = 0)
+		left join base_position bp
+		on (ep.position_id = bp.id and bp.company_id = bp.company_id and bp.del_flag = 0)
+        LEFT JOIN sys_company_config scc on be.work_type = scc.id and scc.del_flag =0  
+  		<if test="null != coopCompany and coopCompany.id != null">
+			left join base_coop_company cc
+			on(et.id = cc.emp_type_id and cc.del_flag =0 and cc.id = #{coopCompany.id,jdbcType=BIGINT})
+		</if>
+		where be.del_flag = 0  and  be.job_status in (0,2,3,4)
+		<!-- 新增员工id 查询 -->
+		<if test="id != null">
+			and be.id = #{id,jdbcType=INTEGER}
+		</if>
+		<!-- 新增 职位名称模糊查询 -->
+		<if test="positionName != null and positionName !=''">
+			and bp.position_name like concat('%',#{positionName,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="empTypeId != null" >
+		  and be.emp_type_id = #{empTypeId,jdbcType=INTEGER}
+		</if>
+	  	<if test="companyId != null" >
+		  and be.company_id = #{companyId,jdbcType=BIGINT}
+		</if>
+		<if test="cnName != null and cnName != ''" >
+		  and be.cn_name like concat('%',#{cnName,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="code != null and code != ''" >
+		  and be.code  like concat('%',#{code,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="maritalStatus != null" >
+		  and be.marital_status = #{maritalStatus,jdbcType=BIGINT}
+		</if>
+		<if test="sex != null" >
+		  and be.sex = #{sex,jdbcType=INTEGER}
+		</if>
+		<if test="age != null" >
+		  and be.age = #{age,jdbcType=INTEGER}
+		</if>
+		<if test="jobStatus != null" >
+		 and be.job_status = #{jobStatus,jdbcType=INTEGER}
+		</if>
+		<if test="departList != null and departList.size > 0">
+  			and ed.depart_id in
+  			<foreach collection="departList" item="departId" open="(" separator="," close=")">
+  				#{departId,jdbcType=BIGINT}
+  			</foreach>
+  		</if>
+  		
+  		<if test="workType != null and workType != ''">
+  			and be.work_type = #{workType,jdbcType=BIGINT}
+  		</if>
+	    <if test="whetherScheduling != null" >
+	       and be.whether_scheduling = #{whetherScheduling,jdbcType=BIGINT}
+	    </if>
+  		<if test="degreeOfEducation != null">
+  			and be.degree_of_education = #{degreeOfEducation,jdbcType=BIGINT}
+  		</if>
+  		<if test="reportToLeader != null">
+  			and be.report_to_leader = #{reportToLeader,jdbcType=BIGINT}
+  		</if>
+  		<if test="positionId != null">
+  			and ep.position_id = #{positionId,jdbcType=BIGINT}
+  		</if>
+	    <if test="protocolEndTimeBegin != null" >
+	        and be.protocol_end_time &gt;= #{protocolEndTimeBegin,jdbcType=DATE}
+	    </if>
+	    <if test="protocolEndTimeEnd != null" >
+	        and be.protocol_end_time &lt; #{protocolEndTimeEnd,jdbcType=DATE}
+	    </if>
+	    <if test="firstEntryTimeBegin != null" >
+	        and be.first_Entry_time &gt;= #{firstEntryTimeBegin,jdbcType=DATE}
+	    </if>
+	    <if test="firstEntryTimeEnd != null" >
+	        and be.first_Entry_time &lt; #{firstEntryTimeEnd,jdbcType=DATE}
+	    </if>
+	    <if test="probationEndTimeBegin != null" >
+	        and be.probation_end_time &gt;= #{probationEndTimeBegin,jdbcType=DATE}
+	    </if>
+	    <if test="probationEndTimeEnd != null" >
+	        and be.probation_end_time &lt; #{probationEndTimeEnd,jdbcType=DATE}
+	    </if>
+	    <if test="quitTimeBegin != null" >
+	        and be.Quit_time &gt;= #{quitTimeBegin,jdbcType=DATE}
+	    </if>
+	    <if test="quitTimeEnd != null" >
+	        and be.Quit_time &lt; #{quitTimeEnd,jdbcType=DATE}
+	    </if>
+	    ORDER BY be.quit_time desc, be.first_Entry_time desc
+  </select>
+  <!-- 查询部门职位总记录数 -->
+  <select id="getCount" parameterType="com.ule.oa.base.po.Employee" resultType="java.lang.Integer">
+	  	select count(1) from base_employee be
+		left join base_emp_type et
+		on(be.emp_type_id  = et.id and be.company_id = et.company_id and et.del_flag =0)
+		left join base_emp_depart ed
+		on (be.id = ed.employee_id and ed.del_flag = 0)
+		left join base_depart bd
+		on (ed.depart_id = bd.id and be.company_id = bd.company_id and bd.del_flag = 0)
+		left join base_emp_position ep
+		on (be.id = ep.employee_id and ep.del_flag = 0)
+		left join base_position bp
+		on (ep.position_id = bp.id and bp.company_id = bp.company_id and bp.del_flag = 0)
+		<if test="null != coopCompany and coopCompany.id != null">
+			left join base_coop_company cc
+			on(et.id = cc.emp_type_id and cc.del_flag =0 and cc.id = #{coopCompany.id,jdbcType=BIGINT})
+		</if>
+		where be.del_flag = 0
+		<!-- 新增 职位名称模糊查询 -->
+		<if test="positionName != null and positionName !=''">
+			and bp.position_name like concat('%',#{positionName,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="empTypeId != null" >
+		  and be.emp_type_id = #{empTypeId,jdbcType=INTEGER}
+		</if>
+		<if test="workAddressType != null" >
+		  and be.work_address_type = #{workAddressType,jdbcType=INTEGER}
+		</if>
+	  	<if test="companyId != null" >
+		  and be.company_id = #{companyId,jdbcType=BIGINT}
+		</if>
+		<if test="cnName != null and cnName != ''" >
+		  and be.cn_name like concat('%',#{cnName,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="code != null and code != ''" >
+		  and be.code  like concat('%',#{code,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="householdRegister != null and householdRegister != ''" >
+		  and be.household_register  like concat('%',#{householdRegister,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="maritalStatus != null" >
+		  and be.marital_status = #{maritalStatus,jdbcType=BIGINT}
+		</if>
+		<if test="sex != null" >
+		  and be.sex = #{sex,jdbcType=INTEGER}
+		</if>
+		<if test="age != null" >
+		  and be.age = #{age,jdbcType=INTEGER}
+		</if>
+		<if test="jobStatus != null" >
+		 and be.job_status = #{jobStatus,jdbcType=INTEGER}
+		</if>
+		<if test="jobStatusList != null and jobStatusList.size > 0"> 
+	        and be.job_status in 
+		    <foreach collection="jobStatusList" index="index" item="item" open="(" separator="," close=")">
+	           #{item}
+	        </foreach>
+	    </if>
+		<if test="departList != null and departList.size > 0">
+  			and ed.depart_id in
+  			<foreach collection="departList" item="departId" open="(" separator="," close=")">
+  				#{departId,jdbcType=BIGINT}
+  			</foreach>
+  		</if>
+  		<if test="currentUserDepart != null and currentUserDepart.size > 0">
+  			and be.id in
+  			<foreach collection="currentUserDepart" item="ids" open="(" separator="," close=")">
+  				#{ids,jdbcType=BIGINT}
+  			</foreach>
+  		</if>
+  		<if test="subEmployeeIdList != null and subEmployeeIdList.size > 0">
+			and be.id in
+			<foreach collection="subEmployeeIdList" item="ids" open="(" separator="," close=")">
+				#{ids,jdbcType=BIGINT}
+			</foreach>
+		</if>
+  		<if test="workType != null and workType != ''">
+  			and be.work_type = #{workType,jdbcType=BIGINT}
+  		</if>
+	    <if test="whetherScheduling != null" >
+	       and be.whether_scheduling = #{whetherScheduling,jdbcType=BIGINT}
+	    </if>
+  		<if test="jobStatus != null and jobStatus != ''">
+  			and be.job_status = #{jobStatus,jdbcType=BIGINT}
+  		</if>
+  		<if test="degreeOfEducation != null">
+  			and be.degree_of_education = #{degreeOfEducation,jdbcType=BIGINT}
+  		</if>
+  		<if test="reportToLeader != null">
+  			and be.report_to_leader = #{reportToLeader,jdbcType=BIGINT}
+  		</if>
+  		<if test="positionId != null">
+  			and ep.position_id = #{positionId,jdbcType=BIGINT}
+  		</if>
+	    <if test="protocolEndTimeBegin != null" >
+	        and be.protocol_end_time &gt;= #{protocolEndTimeBegin,jdbcType=DATE}
+	    </if>
+	    <if test="protocolEndTimeEnd != null" >
+	        and be.protocol_end_time &lt; #{protocolEndTimeEnd,jdbcType=DATE}
+	    </if>
+	    <if test="firstEntryTimeBegin != null" >
+	        and be.first_Entry_time &gt;= #{firstEntryTimeBegin,jdbcType=DATE}
+	    </if>
+	    <if test="firstEntryTimeEnd != null" >
+	        and be.first_Entry_time &lt; #{firstEntryTimeEnd,jdbcType=DATE}
+	    </if>
+	    <if test="probationEndTimeBegin != null" >
+	        and be.probation_end_time &gt;= #{probationEndTimeBegin,jdbcType=DATE}
+	    </if>
+	    <if test="probationEndTimeEnd != null" >
+	        and be.probation_end_time &lt; #{probationEndTimeEnd,jdbcType=DATE}
+	    </if>
+	    <if test="quitTimeBegin != null" >
+	        and be.Quit_time &gt;= #{quitTimeBegin,jdbcType=DATE}
+	    </if>
+	    <if test="quitTimeBegin != null" >
+	        and be.Quit_time &lt; #{quitTimeBegin,jdbcType=DATE}
+	    </if>
+	     <if test="birthdayBegin != null" >
+	        and be.birthday &gt;= #{birthday,jdbcType=DATE}
+	    </if>
+	    <if test="birthdayEnd != null" >
+	        and be.birthday &lt; #{birthday,jdbcType=DATE}
+	    </if>
+	    <if test="nameCodeStr != null and nameCodeStr !=''">
+			and (be.code like concat('%',#{nameCodeStr,jdbcType=VARCHAR},'%')
+			or be.cn_name like concat('%',#{nameCodeStr,jdbcType=VARCHAR},'%'))
+		 </if>
+		 <if test="departId != null and departId!=''" >
+	        and bd.id = #{departId,jdbcType=BIGINT}
+	    </if>
+	    <if test="empTypeIdList != null and empTypeIdList.size > 0" >
+           and be.emp_type_id in
+           <foreach collection="empTypeIdList" index="index" item="item" open="(" separator="," close=")">
+	           #{item}
+	       </foreach>
+        </if>
+  </select>
+  
+  <!-- 根据部门名称查询该部门下的所有员工和员工的职称 -->
+  <select id="getEmpsByDepart" parameterType="java.lang.String" resultMap="BaseResultMap">
+  	SELECT e.id, e.cn_name, e.work_type,e.whether_scheduling,p.position_name as 'positionName', d.name as 'departName' 
+  	FROM base_employee e 
+  	left join base_emp_depart ed
+  	on (e.id = ed.employee_id and ed.del_flag = 0)
+	LEFT JOIN base_depart d on ed.depart_id = d.id
+	left join base_emp_position ep 
+	on (e.id = ep.employee_id and ep.del_flag = 0)
+	LEFT JOIN base_position p on ep.position_id = p.id
+	WHERE e.del_flag = 0
+	    and e.job_status in(0,2)
+		AND p.del_flag = 0
+		AND d.del_flag = 0
+		AND d.id = #{departId,jdbcType=VARCHAR}
+  </select>
+  
+  <select id="getListByDepartId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+  	SELECT e.* 
+  	FROM base_employee e 
+  	left join base_emp_depart ed
+  	on (e.id = ed.employee_id and ed.del_flag = 0)
+	LEFT JOIN base_depart d on ed.depart_id = d.id
+	WHERE e.del_flag = 0
+		AND d.del_flag = 0
+		AND d.id = #{departId,jdbcType=BIGINT}
+  </select>
+  
+   <select id="getListByDepart" parameterType="java.lang.Long" resultType="com.ule.oa.base.po.Employee">
+  	SELECT a.CODE code,a.cn_name cnName,a.email email,a.mobile mobile,a.EXTENSION_NUMBER extensionNumber,a.job_status jobStatus,c.user_name engName
+		FROM
+			base_employee a
+			LEFT JOIN base_emp_depart b ON a.id = b.employee_id
+			LEFT JOIN base_user c ON a.id = c.employee_id 
+			LEFT JOIN base_depart d on b.depart_id = d.id
+		WHERE
+			a.del_flag = 0 
+			AND b.del_flag = 0 
+			AND c.del_flag =0
+			AND d.del_flag = 0
+			AND d.id = #{departId,jdbcType=BIGINT}
+  </select>
+  
+  <!-- 一级部门,查询该部门下所有部门的员工数 -->
+  <select id="getEmpTotalByDepartId" parameterType="java.lang.Long" resultType="java.lang.Integer">
+  	SELECT count(distinct e.id) as 'total' 
+  	FROM base_employee e 
+  	LEFT JOIN base_emp_depart ed on e.id = ed.employee_id
+	WHERE e.del_flag = 0
+		and ed.depart_id in (
+			SELECT d.id FROM base_depart d WHERE d.id = #{departId,jdbcType=BIGINT} or d.parent_id = #{departId,jdbcType=BIGINT} and d.del_flag = 0
+		)
+  </select>
+  
+  <!-- 非一级部门,查询该部门的员工数 -->
+  <select id="getEmpCountByDepartId" parameterType="java.lang.Long" resultType="java.lang.Integer">
+  	SELECT count(distinct e.id) as 'total' 
+  	FROM base_employee e 
+  	LEFT JOIN base_emp_depart ed on e.id = ed.employee_id
+	WHERE e.del_flag = 0
+		and ed.depart_id = #{departId,jdbcType=BIGINT}
+  </select>
+  
+   <select id="getLeaderById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+      SELECT em.id,em.code,em.cn_name,em.eng_name,de.name as 'empDepart.depart.name',po.position_name as 'empPosition.position.positionName' FROM base_employee em ,base_position po,base_depart de,base_emp_depart bed,base_emp_position bep
+	    WHERE 
+	     bep.position_id = po.id
+	     AND bep.employee_id = em.id
+	     AND bed.depart_id = de.id
+	     AND bed.employee_id = em.id
+	     AND em.del_flag = 0
+		 AND em.id = #{id,jdbcType=BIGINT}
+	 ORDER BY convert(em.cn_name USING gbk) asc
+  </select>
+  
+  <select id="getMLevalEmpsByDepart" parameterType="com.ule.oa.base.po.Employee" resultMap="BaseResultMap">
+      SELECT e.id,e.code,e.cn_name,e.eng_name,p.position_name AS 'empPosition.position.positionName',bd.name AS 'empDepart.depart.name'
+		FROM
+		  base_employee e 
+		  LEFT JOIN base_emp_depart ed 
+		    ON e.id = ed.employee_id 
+		  LEFT JOIN base_emp_position ep 
+		    ON e.id = ep.employee_id 
+		  LEFT JOIN base_position p 
+		    ON ep.position_id = p.id 
+		  LEFT JOIN base_company_position_level l 
+		    ON l.id = p.position_level_id 
+		    AND l.company_id = p.company_id 
+		  LEFT JOIN base_depart bd 
+		    ON bd.id = ed.depart_id
+		WHERE l.code = 'M'  and  e.job_status !=1 and e.del_flag=0 and ed.del_flag=0 and ep.del_flag=0 and p.del_flag=0
+		ORDER BY convert(e.cn_name USING gbk) asc
+  </select>
+  
+  <select id="getAllMLevalEmps" parameterType="com.ule.oa.base.po.Employee"  resultMap="BaseResultMap">
+    SELECT be.id,be.cn_name FROM 
+	base_employee be
+	LEFT JOIN base_emp_position bep ON be.id = bep.employee_id 
+	LEFT JOIN base_position bp ON bep.position_id = bp.id 
+	LEFT JOIN base_company_position_level bcpl ON bcpl.id = bp.position_level_id AND bcpl.company_id = bp.company_id 
+	WHERE bcpl.code = 'M'
+    <if test="id != null" >
+	    and be.id &lt;&gt; #{id}
+    </if>
+    ORDER BY convert(be.cn_name using gbk) asc
+  </select>
+  
+   <select id="getMLevalEmpsCountByDepart" parameterType="java.lang.Long" resultType="java.lang.Integer">
+      SELECT count(1) FROM base_employee e 
+		  LEFT JOIN base_emp_depart ed 
+		    ON e.id = ed.employee_id 
+		  LEFT JOIN base_emp_position ep 
+		    ON e.id = ep.employee_id 
+		  LEFT JOIN base_position p 
+		    ON ep.position_id = p.id 
+		  LEFT JOIN base_company_position_seq s 
+		    ON p.position_seq_id = s.id 
+		    AND p.company_id = s.company_id 
+		  LEFT JOIN base_company_position_level l 
+		    ON l.id = p.position_level_id 
+		    AND l.company_id = p.company_id 
+		  LEFT JOIN base_depart bd 
+		    ON bd.id = ed.depart_id
+		WHERE ed.depart_id = #{empDepart.departId,jdbcType=BIGINT}
+		  AND l.code = 'M' 
+  </select>
+  
+  <select id="getEmployyeeIdCount" parameterType="java.lang.String" resultType="java.lang.Integer">
+     SELECT count(1)  FROM
+		 base_emp_position ep 
+	  LEFT JOIN base_position p 
+	    ON ep.position_id = p.id 
+	  LEFT JOIN base_company_position_seq s 
+	    ON p.position_seq_id = s.id 
+	    AND p.company_id = s.company_id 
+	  LEFT JOIN base_company_position_level l 
+	    ON l.id = p.position_level_id 
+	    AND l.company_id = p.company_id 
+	where  l.code = 'M' 
+	and ep.employee_id = #{employeeId,jdbcType=VARCHAR}
+  </select>
+  
+  <select id="getListCountForBoardroomDue" parameterType="com.ule.oa.base.po.Employee" resultType="java.lang.Integer">
+    select count(1) 
+	  from base_employee be,base_emp_depart bed,base_depart bd,base_emp_position bep,base_position bp
+	 where be.id = bed.employee_id
+	   and bd.id = bed.depart_id
+	   and be.id = bep.employee_id
+	   and bp.id = bep.position_id
+	   and be.del_flag = 0
+	   and be.del_flag = 0
+	   and bed.del_flag = 0
+	   and bd.del_flag = 0
+	   and bep.del_flag = 0
+	   and bp.del_flag = 0
+	   <if test="empDepart != null and empDepart.departId != null" >
+		   and bd.id = #{empDepart.departId,jdbcType=BIGINT}
+	   </if>
+	   <if test="code != null and code != '' and cnName != null and cnName != ''" >
+		   and (be.code = #{code,jdbcType=VARCHAR} or be.cn_Name = #{cnName,jdbcType=VARCHAR})
+	   </if>
+  </select>
+  
+   <select id="getListForBoardroomDue" parameterType="com.ule.oa.base.po.Employee" resultMap="BaseResultMap">
+    select be.id,be.cn_name,bd.name "empDepart.depart.name",bp.position_name "empPosition.position.position_name" 
+	  from base_employee be,base_emp_depart bed,base_depart bd,base_emp_position bep,base_position bp
+	 where be.id = bed.employee_id
+	   and bd.id = bed.depart_id
+	   and be.id = bep.employee_id
+	   and bp.id = bep.position_id
+	   and be.del_flag = 0
+	   and be.del_flag = 0
+	   and bed.del_flag = 0
+	   and bd.del_flag = 0
+	   and bep.del_flag = 0
+	   and bp.del_flag = 0
+	   <if test="empDepart != null and empDepart.departId != null" >
+		   and bd.id = #{empDepart.departId,jdbcType=BIGINT}
+	   </if>
+	   <if test="code != null and code != '' and cnName != null and cnName != ''" >
+		   and (be.code = #{code,jdbcType=VARCHAR} or be.cn_Name = #{cnName,jdbcType=VARCHAR})
+	   </if>
+	 limit #{offset},#{limit}
+  </select>
+  
+  <select id="getForEmpSelfAssessmentById" parameterType="java.lang.Long" resultType="com.ule.oa.base.po.Employee">
+		select bec.contract_signed_date "empContract.contractSignedDate",bec.probation_expire "empContract.probationExpire",be.id,be.cn_name,be.code,bd.name "depart.name",bp.position_name "position.position_name",bc.name "company.name"
+		  from base_employee be,base_depart bd,base_emp_depart bed,base_position bp,base_emp_position bep,base_company bc,base_emp_contract bec
+		 where bed.employee_id = be.id
+		   and bed.depart_id = bd.id
+		   and bep.employee_id = be.id
+		   and bep.position_id = bp.id
+		   and be.company_id = bc.id
+		   and be.id = bec.employee_id
+		   and be.DEL_FLAG = 0
+		   and bd.DEL_FLAG = 0
+		   and bed.DEL_FLAG = 0
+		   and bp.DEL_FLAG = 0
+		   and bep.DEL_FLAG = 0
+		   and bc.DEL_FLAG = 0
+		   and bec.DEL_FLAG = 0
+		   and be.id = #{id,jdbcType=BIGINT}
+	</select>
+  
+  <!-- 根据部门id查询该部门的M级别负责人（按照职位序列从高到底排序） -->
+  <select id="getMLeaderByDepartId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+      	SELECT e.id, e.cn_name, p.position_name as 'empPosition.position.positionName', s.rank as 'empPosition.position.seqRank' FROM base_employee e 
+      	left join base_emp_depart ed on e.id = ed.employee_id
+      	left join base_emp_position ep on e.id = ep.employee_id
+		LEFT JOIN base_position p ON ep.position_id = p.id
+		LEFT JOIN base_company_position_seq s on p.position_seq_id = s.id and p.company_id = s.company_id
+		LEFT JOIN base_company_position_level l on l.id = p.position_level_id and l.company_id = p.company_id
+		WHERE ed.depart_id = #{departId,jdbcType=BIGINT} 
+		and l.code = 'M'
+		ORDER BY s.rank ASC
+  </select>
+  
+  <!-- 根据姓名或编号查询员工信息 -->
+  <select id="getEmpListByCondition" resultMap="BaseResultMap" parameterType="com.ule.oa.base.po.Employee" >
+	    SELECT distinct e.id, p.position_name as positionName, d.name as departName, l.name as levelName , e.cn_name as cnName
+	    FROM base_employee e
+		LEFT JOIN base_emp_position ep on e.id = ep.employee_id
+		LEFT JOIN base_position p on ep.position_id = p.id
+		LEFT JOIN base_emp_depart ed on e.id = ed.employee_id
+		LEFT JOIN base_depart d on ed.depart_id = d.id
+		LEFT JOIN base_company_position_level l on p.position_level_id = l.id
+	    <where>
+	    	 e.del_flag = 0
+	    	 <if test="condition != null and condition != ''">
+		    	and (e.cn_name = #{condition} or e.code = #{condition})
+		     </if>
+	    </where>
+	    limit #{offset},#{limit}
+   </select>
+   
+   <!-- 根据姓名或编号查询员工信息Count -->
+  <select id="getEmpListByConditionCount" resultType="Integer" parameterType="com.ule.oa.base.po.Employee" >
+	    SELECT count(distinct e.id)
+	    FROM base_employee e
+		LEFT JOIN base_emp_position ep on e.id = ep.employee_id
+		LEFT JOIN base_position p on ep.position_id = p.id
+		LEFT JOIN base_emp_depart ed on e.id = ed.employee_id
+		LEFT JOIN base_depart d on ed.depart_id = d.id
+		LEFT JOIN base_company_position_level l on p.position_level_id = l.id
+	    <where>
+	    	 e.del_flag = 0
+	    	 <if test="condition != null and condition != ''">
+		    	and (e.cn_name = #{condition} or e.code = #{condition})
+		     </if>
+	    </where>
+   </select>
+   
+  <!-- 查询部门负责人 -->
+  <select id="getLeaderByDepartId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+  	SELECT <include refid="E_Column_List"/>
+  	FROM base_employee e 
+	LEFT JOIN base_depart d on d.leader = e.id
+	WHERE e.del_flag = 0
+		AND d.del_flag = 0
+		<if test="departId != null" >
+		      AND d.id = #{departId,jdbcType=BIGINT}
+		</if>		   
+  </select>
+  
+  <select id="getDepartHeaderList" resultMap="BaseResultMap">
+  	SELECT <include refid="E_Column_List"/>
+  	FROM base_employee e 
+	LEFT JOIN base_depart d on d.leader = e.id
+	WHERE e.del_flag = 0
+		AND d.del_flag = 0 
+  </select>
+  
+  <!-- 查询部门行使权力人 -->
+  <select id="getPowerByDepartId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+  	SELECT <include refid="E_Column_List"/>
+  	FROM base_employee e 
+	LEFT JOIN base_depart d on d.power = e.id
+	WHERE e.del_flag = 0
+		AND d.del_flag = 0
+		AND d.id = #{departId,jdbcType=BIGINT}
+  </select>
+  
+  <select id="getEmpListByNameCount" parameterType="java.lang.String" resultType="java.lang.Integer">
+  	SELECT count(1) FROM base_employee 
+	WHERE del_flag = 0
+		and cn_name = #{cnName}
+  </select>
+  
+  <select id="getEmpListLikeNameCount" parameterType="java.lang.String" resultType="java.lang.Integer">
+  	SELECT count(1) FROM base_employee 
+	WHERE del_flag = 0
+		and cn_name like CONCAT('%',#{cnName},'%')
+  </select>
+  
+  <select id="getByEmpIdList" parameterType="java.util.List" resultType="com.ule.oa.base.po.Employee">
+  	  	SELECT em.cn_name as cnName,em.email as email,em.id,po.position_name AS positioNname FROM base_employee em,base_emp_position ep,base_position po
+	 	WHERE em.del_flag=0
+	 	  AND ep.del_flag=0
+	 	  AND po.del_flag=0
+	 	  AND em.id=ep.employee_id
+	 	  AND ep.position_id = po.id
+	 	  AND em.id IN
+	 	  <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+               #{item}
+          </foreach>
+  </select>
+  
+  <select id="getReportList" parameterType="com.ule.oa.base.po.Employee" resultMap="BaseResultMap">
+  	  	SELECT a.* FROM base_employee a LEFT JOIN base_emp_depart b ON a.id = b.employee_id 
+           WHERE a.first_Entry_time &lt;= #{firstEntryTime}  and a.del_flag=0 and b.del_flag=0
+           
+           <if test="departId != null" >
+		      AND b.depart_id = #{departId}
+		   </if>
+		   <if test="workAddressType != null" >
+	           and a.work_address_type = #{workAddressType,jdbcType=INTEGER}
+       		</if>
+		   <!-- 新添加条件 模糊查询name 和精准code  zjl -->
+		   <if test="cnName != null and cnName!='' " >
+		      AND a.cn_name like concat('%',#{cnName,jdbcType=VARCHAR},'%')	
+		      
+		   </if>
+		   <if test="code != null and code!='' " >
+		      AND a.code = #{code}
+		   </if> 
+		   <if test="currentUserDepart != null and currentUserDepart.size > 0">
+				and a.id in
+				<foreach collection="currentUserDepart" item="ids" open="(" separator="," close=")">
+					#{ids,jdbcType=BIGINT}
+				</foreach>
+			</if>  
+			<if test="subEmployeeIdList != null and subEmployeeIdList.size > 0">
+				and a.id in
+				<foreach collection="subEmployeeIdList" item="ids" open="(" separator="," close=")">
+					#{ids,jdbcType=BIGINT}
+				</foreach>
+			</if>
+			<if test="empTypeIdList != null and empTypeIdList.size > 0" >
+	           and a.emp_type_id in
+	           <foreach collection="empTypeIdList" index="index" item="item" open="(" separator="," close=")">
+		           #{item}
+		       </foreach>
+       		</if>
+		   ORDER BY CAST(SUBSTRING(a.code,3)AS SIGNED) ASC
+		    <if test="null != offset and null != limit">
+		   	 limit #{offset} , #{limit}
+		    </if>
+  </select>
+  
+  <select id="getReportListCount" parameterType="com.ule.oa.base.po.Employee" resultType="int">
+  	  	SELECT count(*) FROM base_employee a LEFT JOIN base_emp_depart b ON a.id = b.employee_id 
+           WHERE a.first_Entry_time &lt;= #{firstEntryTime}  and a.del_flag=0 and b.del_flag=0
+           <if test="departId != null" >
+		      AND b.depart_id = #{departId}
+		   </if>	
+		   <if test="workAddressType != null" >
+	           and a.work_address_type = #{workAddressType,jdbcType=INTEGER}
+       	   </if>	   
+		   <!-- 新添加条件 模糊查询name 和精准code  zjl -->
+		   <if test="cnName != null and cnName!='' " >
+		      AND a.cn_name like concat('%',#{cnName,jdbcType=VARCHAR},'%')		 
+		   </if>
+		   <if test="code != null and code !=''" >
+		      AND a.code = #{code}
+		   </if> 
+		   <if test="currentUserDepart != null and currentUserDepart.size > 0">
+				and a.id in
+				<foreach collection="currentUserDepart" item="ids" open="(" separator="," close=")">
+					#{ids,jdbcType=BIGINT}
+				</foreach>
+			</if>
+			<if test="subEmployeeIdList != null and subEmployeeIdList.size > 0">
+				and a.id in
+				<foreach collection="subEmployeeIdList" item="ids" open="(" separator="," close=")">
+					#{ids,jdbcType=BIGINT}
+				</foreach>
+			</if>
+			<if test="empTypeIdList != null and empTypeIdList.size > 0" >
+	           and a.emp_type_id in
+	           <foreach collection="empTypeIdList" index="index" item="item" open="(" separator="," close=")">
+		           #{item}
+		       </foreach>
+       		</if>
+  </select>
+  
+   <select id="getReportListLeverCount" parameterType="com.ule.oa.base.po.Employee" resultType="int">
+  	  	SELECT count(*) FROM base_employee a LEFT JOIN base_emp_depart b ON a.id = b.employee_id 
+           WHERE a.first_Entry_time &lt;= #{firstEntryTime} and a.del_flag=0 and b.del_flag=0
+           <if test="departId != null" >
+		      AND b.depart_id = #{departId}
+		   </if>
+		   <if test="workAddressType != null" >
+	           and a.work_address_type = #{workAddressType,jdbcType=INTEGER}
+       	   </if>			   
+		   <!-- 新添加条件 模糊查询name 和精准code  zjl -->
+		   <if test="cnName != null and cnName!='' " >
+		      AND a.cn_name like concat('%',#{cnName,jdbcType=VARCHAR},'%')		 
+		   </if>
+		   <if test="code != null and code !=''" >
+		      AND a.code = #{code}
+		   </if>
+		   <if test="currentUserDepart != null and currentUserDepart.size > 0">
+				and a.id in
+				<foreach collection="currentUserDepart" item="ids" open="(" separator="," close=")">
+					#{ids,jdbcType=BIGINT}
+				</foreach>
+			</if>
+			<if test="subEmployeeIdList != null and subEmployeeIdList.size > 0">
+				and a.id in
+				<foreach collection="subEmployeeIdList" item="ids" open="(" separator="," close=")">
+					#{ids,jdbcType=BIGINT}
+				</foreach>
+			</if>
+			<if test="empTypeIdList != null and empTypeIdList.size > 0" >
+	           and a.emp_type_id in
+	           <foreach collection="empTypeIdList" index="index" item="item" open="(" separator="," close=")">
+		           #{item}
+		       </foreach>
+       		</if>
+		   and  b.depart_id  is not null
+		   ORDER BY CAST(SUBSTRING(a.code,3)AS SIGNED) ASC
+  </select>
+  <select id="queryDepartHeadIdByEmpId" parameterType="java.lang.Long" resultType="java.util.Map" >
+	SELECT
+		bd.id departId,bd.name departName,bd.leader departLeader
+	FROM
+		base_employee be
+	LEFT JOIN base_emp_depart bed ON be.id = bed.employee_id
+	LEFT JOIN base_depart bd ON bed.depart_id = bd.id 
+	
+	WHERE
+		be.id = #{empId,jdbcType=BIGINT}
+	
+  </select>
+  
+  <select id="queryEmpBaseInfoById" parameterType="java.lang.Long" resultType="java.util.Map" >
+	SELECT
+		be.code,bd.name departName,be.cn_name cnName,bp.position_name positionName,bd.code departCode
+	FROM
+		base_employee be
+	LEFT JOIN base_emp_depart bed ON be.id = bed.employee_id
+	LEFT JOIN base_depart bd ON bed.depart_id = bd.id 
+	LEFT JOIN base_emp_position bep ON be.id = bep.employee_id
+	LEFT JOIN base_position bp ON bep.position_id = bp.id
+	WHERE
+		be.id = #{empId,jdbcType=BIGINT}
+  </select>
+  
+  <update id="updReporterBatch" parameterType="com.ule.oa.base.po.Employee">
+    update base_employee 
+    set report_to_leader = #{reportToLeader},update_time = now(),update_user=#{updateUser}
+    where id in
+	<foreach collection="ids" item="id" open="(" separator="," close=")">
+		#{id,jdbcType=BIGINT}
+	</foreach>
+  </update>
+  
+  <select id="getEmpByPhone" parameterType="com.ule.oa.base.po.Employee" resultType="Map">
+  		SELECT a.code,a.cn_name,a.eng_name,
+		  a.email,
+		  a.mobile,
+		  a.telephone,
+		  a.floor_Code,
+		  (select name from base_company where id =a.company_id) as companyName,
+		  (SELECT 
+		    cn_name 
+		  FROM
+		    base_employee 
+		  WHERE id = a.report_to_leader) AS leaderName ,
+		  c.name AS departName,
+		  e.position_name
+		FROM
+		  base_employee a 
+		  LEFT JOIN base_emp_depart b 
+		    ON a.id = b.employee_id 
+		  LEFT JOIN base_depart c ON b.depart_id = c.id
+		  LEFT JOIN base_emp_position d ON a.id = d.employee_id 
+		  LEFT JOIN base_position e ON d.position_id = e.id
+		WHERE a.del_flag=0 AND b.del_flag=0 AND c.del_flag=0  AND d.del_flag=0 AND e.del_flag=0
+		    <if test="email!=null and email!=''">
+		 	   And a.email= #{email}
+		    </if> 
+		    <if test="mobile!=null and mobile!=''">
+		       AND a.mobile = #{mobile} 
+		    </if>
+		     
+  </select>
+  <select id="queryByNameOrCode" parameterType="java.lang.String" resultMap="BaseResultMap">
+  	select <include refid="Base_Column_List"/> from base_employee
+  	where cn_name LIKE CONCAT('%',#{nameOrCode},'%') OR code like CONCAT('%',#{nameOrCode},'%')
+  </select>
+  <select id="getDepartId" parameterType="java.lang.String" resultType="java.lang.Long">
+  	select id from base_depart where name = #{departName} and del_flag = 0;
+  </select>
+  <insert id="saveDepart" parameterType="com.ule.oa.base.po.Depart" useGeneratedKeys="true" keyProperty="id">
+  	 insert into base_depart(
+      	company_id, 
+      	code, 
+      	name, 
+      	leader, 
+      	parent_id, 
+      	remark, 
+      	del_flag, 
+      	rank, 
+      	type,
+      	power,
+      	create_time, 
+      	create_user
+      ) values
+      (
+        #{companyId,jdbcType=BIGINT},
+        #{code,jdbcType=VARCHAR},
+        #{name,jdbcType=VARCHAR},
+        #{leader,jdbcType=BIGINT},
+        #{parentId,jdbcType=BIGINT},
+        #{remark,jdbcType=VARCHAR},
+        #{delFlag,jdbcType=INTEGER},
+        #{rank,jdbcType=INTEGER},
+        #{type,jdbcType=INTEGER},
+        #{power,jdbcType=BIGINT},
+        #{createTime,jdbcType=TIMESTAMP},
+        #{createUser,jdbcType=VARCHAR}
+      )
+      <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">
+            SELECT LAST_INSERT_ID() AS id
+       </selectKey>  
+  </insert>
+  <select id="getDepartMaxCode" resultType="java.lang.String">
+  	SELECT code FROM base_depart WHERE del_flag = 0 ORDER BY id DESC LIMIT 1; 
+  </select>
+  <select id="getPositionSeqMaxRank" resultType="int">
+  	SELECT Max(rank) FROM base_company_position_seq WHERE del_flag = 0; 
+  </select>
+  <select id="getPositionMaxRank" resultType="int">
+  	SELECT Max(rank) FROM base_position WHERE del_flag = 0;
+  </select>
+  <select id="getEmpTypeId" parameterType="java.lang.String" resultType="java.lang.Long">
+  	select id from base_emp_type where type_c_name=#{empType} and del_flag = 0;
+  </select>
+  <select id="queryEmpList" resultType="int">
+  	select count(1) FROM base_employee where code=#{code} and del_flag = 0;
+  </select>
+  <update id="updateReporter">
+  	UPDATE base_employee be SET be.report_to_leader = (SELECT id base_employee WHERE code = #{reportToLeaderCode} and del_flag = 0) WHERE be.id = #{empId};
+  </update>
+  <update id="updateDepartLeader">
+  	UPDATE base_depart SET leader = (SELECT id FROM base_employee WHERE code=#{departLeaderCode} and del_flag = 0) WHERE id=#{departId};
+  </update>
+  <insert id="initPass">
+  	INSERT INTO base_user(user_name,company_id,employee_id,is_locked,create_time,create_user,update_time,update_user,del_flag) VALUES 
+  	(#{pingYin},1,#{empId},0,NOW(),#{userId},NOW(),#{userId},0); 
+  </insert>
+  <insert id="initEmpAndDepart">
+  	INSERT INTO base_emp_depart(employee_id,depart_id,create_time,create_user,update_time,update_user,del_flag,VERSION) VALUES 
+	(#{empId},#{departId},NOW(),#{userId},NOW(),#{userId},0,0);
+  </insert>
+  <insert id="initPosition">
+  	INSERT INTO base_emp_position(employee_id,position_id,create_time,create_user,update_time,update_user,del_flag,VERSION) VALUES 
+	(#{empId},#{positionId},NOW(),#{userId},NOW(),#{userId},0,0 );
+  </insert>
+  <select id="getWorkTypeId" resultType="java.lang.Long">
+  	SELECT id FROM sys_company_config WHERE code = 'typeOfWork' and display_name = #{workType} and del_flag = 0
+  </select>
+  <select id="getWhetherSchedulId" resultType="java.lang.Long">
+  	SELECT id FROM sys_config WHERE code = 'whetherScheduling' and display_name = #{whetherScheduling} and del_flag = 0
+  </select>
+  <select id="getEmpListByCodeCount" parameterType="java.lang.String" resultType="java.lang.Integer">
+  	SELECT count(1) FROM base_employee 
+	WHERE del_flag = 0
+		and code = #{empCode}
+  </select>
+  <select id="getPositionSeqId" parameterType="java.lang.String" resultType="java.lang.Long">
+  	SELECT id FROM base_company_position_seq WHERE name = #{poistionSeq}
+  </select>
+  <insert id="savePositionSeq" parameterType="com.ule.oa.base.po.CompanyPositionSeq" useGeneratedKeys="true" keyProperty="id">
+    insert into base_company_position_seq (company_id,code, 
+      name, rank, create_time, 
+      create_user, update_time, update_user, 
+      remark, del_flag)
+    values (#{companyId,jdbcType=BIGINT}, #{code,jdbcType=VARCHAR}, 
+      #{name,jdbcType=VARCHAR}, #{rank,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{createUser,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP}, #{updateUser,jdbcType=VARCHAR}, 
+      #{remark,jdbcType=VARCHAR}, #{delFlag,jdbcType=INTEGER})
+      <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">
+            SELECT LAST_INSERT_ID() AS id
+       </selectKey> 
+  </insert>
+  <select id="getPositionIdByName" resultType="java.lang.Long">
+  	SELECT id FROM base_position WHERE position_name = #{positionTitle} and del_flag = 0
+  </select>
+  <select id="getPositionLevelId" resultType="java.lang.Long">
+  	SELECT id FROM base_company_position_level WHERE name = #{poistionLevel} and del_flag = 0
+  </select>
+  <select id="getEmpIdByCode" resultType="java.lang.Long">
+  	SELECT id FROM base_employee WHERE code = #{code} and del_flag = 0
+  </select>
+  <select id="getEmailCount" resultType="int">
+  	SELECT count(1) FROM base_employee WHERE email = #{email} and job_status = 0 and del_flag = 0
+  </select>
+  
+  <update id="resetAutoCalculateLeave">
+  	UPDATE base_employee set auto_calculate_leave = 1 where auto_calculate_leave=0;
+  </update>
+  
+  <update id="updateAutoCaLculateLeave" parameterType="com.ule.oa.base.po.Employee" >
+     update base_employee set auto_calculate_leave = #{autoCalculateLeave,jdbcType=INTEGER} where id = #{id,jdbcType=BIGINT};
+  </update>
+  
+  <select id="getImportEmployeeList" resultMap="BaseResultMap">
+  	SELECT <include refid="Base_Column_List"/> 
+  	FROM base_employee
+  	WHERE report_to_leader = null
+  	<if test="empCodeList != null"> 
+	      and code in 
+	      <foreach collection="empCodeList" index="index" item="item" open="(" separator="," close=")">
+               #{item}
+          </foreach>
+	  </if>
+  </select>
+  <update id="updateReporterToLeader">
+  	UPDATE base_employee be 
+  	SET be.report_to_leader = #{reportToLeaderId} 
+  	WHERE be.id = #{empId};
+  </update>
+  
+  <select id="getEmployeeMapByGroupId" resultType="Map" >
+	   SELECT 
+	  b.code AS code,
+	  b.cn_name AS employ_name,
+	  b.id AS employ_id,
+	  b.first_Entry_time AS firstEntryTime,
+	  b.Quit_time AS quitTime 
+	FROM
+	  base_emp_schedule_group a 
+	  INNER JOIN base_employee b 
+	    ON a.emp_id = b.id and CASE WHEN b.quit_time IS NOT NULL THEN DATE_FORMAT(b.quit_time,'%Y-%m-%d') &gt;= #{classMonth,jdbcType=DATE} ELSE 1=1 END
+	WHERE a.group_id = #{groupId} 
+	  AND a.del_flag = 0 
+	  AND b.del_flag = 0 
+	  AND b.job_status IN(0,2)
+  </select>
+  <select id="getAssigneeIdListByProcinstId" parameterType="java.lang.String" resultType="java.lang.String">
+	 SELECT ( SELECT 
+	    ri.USER_ID_ 
+	  FROM
+	    ACT_RU_IDENTITYLINK ri 
+	    LEFT JOIN ACT_RU_TASK rt 
+	      ON ri.TASK_ID_ = rt.ID_ 
+	  WHERE ri.TYPE_ = 'candidate' 
+	    AND rt.PROC_INST_ID_ = #{procinstId,jdbcType=VARCHAR}
+	  UNION
+	  ALL 
+	  SELECT 
+	    ASSIGNEE_
+	  FROM
+	    ACT_RU_TASK 
+	  WHERE PROC_INST_ID_ = #{procinstId,jdbcType=VARCHAR}) assignee
+  </select>
+   <select id="getAllReportPerson" resultMap="BaseResultMap">
+	  select temp.id,temp.cn_name from (SELECT e.id,e.cn_name
+	   	FROM base_employee e
+	   	LEFT JOIN base_depart d
+	   	ON d.leader=e.id
+	   	WHERE d.del_flag = 0
+	   	AND e.del_flag = 0
+	   	AND e.job_status != 1
+   	UNION
+	    SELECT e.id,e.cn_name
+		FROM
+		  base_employee e 
+		  LEFT JOIN base_emp_depart ed 
+		    ON e.id = ed.employee_id 
+		  LEFT JOIN base_emp_position ep 
+		    ON e.id = ep.employee_id 
+		  LEFT JOIN base_position p 
+		    ON ep.position_id = p.id 
+		  LEFT JOIN base_company_position_level l 
+		    ON l.id = p.position_level_id 
+		    AND l.company_id = p.company_id 
+		  LEFT JOIN base_depart bd 
+		    ON bd.id = ed.depart_id
+		WHERE l.code = 'M'
+			AND e.del_flag = 0
+			AND ep.del_flag = 0
+			AND p.del_flag = 0
+			AND l.del_flag = 0
+			AND bd.del_flag = 0
+			AND e.job_status != 1 ) temp order by convert(cn_name using gbk) asc
+  </select>
+  <select id="getAllEmpByWorkTypeAndLeaderAndDepart" parameterType="com.ule.oa.base.po.RequestParamQueryEmpCondition" resultMap="BaseResultMap">
+  	SELECT e.id as id,e.code as code,e.cn_name as cnName,e.first_entry_time as firstEntryTime,e.quit_time as quitTime,e.whether_scheduling as whetherScheduling
+  	FROM base_employee e
+  	LEFT JOIN base_emp_depart ed ON e.id = ed.employee_id
+  	<where>
+  		e.del_flag = 0
+	  	AND ed.del_flag = 0
+	  	<if test="employeeIdList != null and employeeIdList.size > 0" >
+           and e.id in
+           <foreach collection="employeeIdList" index="index" item="item" open="(" separator="," close=")">
+	           #{item}
+	       </foreach>
+        </if>
+  		<!-- 登录人是汇报对象则查下属员工 -->
+  		<if test="leaderId != null"> 
+  			AND e.report_to_leader = #{leaderId}
+	  	</if>
+	  	<if test="workType != null"> 
+  			AND e.work_type = #{workType}
+	  	</if>
+	  	<if test="departId != null"> 
+  			AND ed.depart_id = #{departId}
+	  	</if>
+	  	<!-- 搜索条件查询汇报对象下的员工 -->
+	  	<if test="searchLeader != null and searchLeader != ''"> 
+  			AND (select cn_name from base_employee where id=e.report_to_leader)  like concat('%',#{searchLeader},'%')
+	  	</if>
+	  	<if test="empCode != null and empCode != ''"> 
+	  		AND e.code like concat('%',#{empCode},'%')
+	  	</if>
+	  	<if test="empCnName != null and empCnName != ''"> 
+  			AND e.cn_name like concat('%',#{empCnName},'%')
+	  	</if>
+	  	<if test="empTypeIdList != null and empTypeIdList.size > 0" >
+           and e.emp_type_id in
+           <foreach collection="empTypeIdList" index="index" item="item" open="(" separator="," close=")">
+	           #{item}
+	       </foreach>
+        </if>
+	  	AND (e.job_status = 0 or e.job_status = 2 or (e.job_status = 1 and e.Quit_time &gt;= #{chooseMonth} ))
+  	</where>
+  	<if test="offset != null and limit != null">
+		limit #{offset},#{limit}
+	</if>
+  </select>
+  
+  <select id="getStandardEmpCountByCount" parameterType="com.ule.oa.base.po.RequestParamQueryEmpCondition" resultType="int">
+  	SELECT count(1)
+  	FROM base_employee e
+  	LEFT JOIN base_emp_depart ed ON e.id = ed.employee_id
+  	<where>
+  		e.del_flag = 0
+	  	AND ed.del_flag = 0
+	   <if test="employeeIdList != null and employeeIdList.size > 0" >
+           and e.id in
+           <foreach collection="employeeIdList" index="index" item="item" open="(" separator="," close=")">
+	           #{item}
+	       </foreach>
+        </if>
+  		<!-- 登录人是汇报对象则查下属员工 -->
+  		<if test="leaderId != null"> 
+  			AND e.report_to_leader = #{leaderId}
+	  	</if>
+	  	<if test="workType != null"> 
+  			AND e.work_type = #{workType}
+	  	</if>
+	  	<if test="departId != null"> 
+  			AND ed.depart_id = #{departId}
+	  	</if>
+	  	<!-- 搜索条件查询汇报对象下的员工 -->
+	  	<if test="searchLeader != null and searchLeader != ''"> 
+  			AND (select cn_name from base_employee where id=e.report_to_leader)  like concat('%',#{searchLeader},'%')
+	  	</if>
+	  	<if test="empCode != null and empCode != ''"> 
+	  		AND e.code like concat('%',#{empCode},'%')
+	  	</if>
+	  	<if test="empCnName != null and empCnName != ''" > 
+  			AND e.cn_name like concat('%',#{empCnName},'%')
+	  	</if>
+	  	<if test="empTypeIdList != null and empTypeIdList.size > 0" >
+           and e.emp_type_id in
+           <foreach collection="empTypeIdList" index="index" item="item" open="(" separator="," close=")">
+	           #{item}
+	       </foreach>
+        </if>
+	  	AND (e.job_status = 0 or e.job_status = 2 or (e.job_status = 1 and e.Quit_time &gt;= #{chooseMonth} ))
+  	</where>
+  </select>
+  <select id="isQuitThisDay" resultType="int">
+  	SELECT count(1)
+  	FROM base_employee e
+  	WHERE id = #{empId}
+  	AND job_status = 1
+  	AND Quit_time &lt; #{delayDate}
+  </select>
+  
+  <select id="getByReportToLeaders" resultMap="BaseResultMap">
+  	SELECT <include refid="Base_Column_List"/> 
+  	FROM base_employee
+  	WHERE del_flag = 0
+  	<if test="reportToLeaderList != null"> 
+	      and report_to_leader in 
+	      <foreach collection="reportToLeaderList" index="index" item="item" open="(" separator="," close=")">
+               #{item}
+          </foreach>
+	</if>
+  </select>
+  
+  <select id="getByReportToLeadersAndDepartId" resultMap="BaseResultMap">
+  	 SELECT DISTINCT id FROM (
+	  	 SELECT a.id AS id
+		  	FROM base_employee a LEFT JOIN base_emp_depart b ON a.id = b.employee_id
+		  	WHERE a.del_flag = 0 AND b.del_flag = 0 AND b.depart_id = #{departId} AND a.report_to_leader = #{employeeId} 
+	     UNION ALL
+	
+		 SELECT a.id AS id
+		  	FROM base_employee a LEFT JOIN base_emp_depart b ON a.id = b.employee_id
+		  	WHERE a.del_flag = 0 AND b.del_flag = 0 AND b.depart_id = #{departId} AND a.report_to_leader IN(
+			  	SELECT a.id AS id FROM base_employee a LEFT JOIN base_emp_depart b ON a.id = b.employee_id
+			  	WHERE a.del_flag = 0 AND b.del_flag = 0 AND b.depart_id = #{departId} AND a.report_to_leader = #{employeeId})
+		 UNION ALL 
+	
+		 SELECT a.id AS id
+		  	FROM base_employee a LEFT JOIN base_emp_depart b ON a.id = b.employee_id
+		  	WHERE a.del_flag = 0 AND b.del_flag = 0 AND b.depart_id = #{departId} AND a.report_to_leader IN(
+				 SELECT a.id AS id FROM base_employee a LEFT JOIN base_emp_depart b ON a.id = b.employee_id
+				 WHERE a.del_flag = 0 AND b.del_flag = 0 AND b.depart_id = #{departId} AND a.report_to_leader IN(
+					  	SELECT a.id AS id FROM base_employee a LEFT JOIN base_emp_depart b ON a.id = b.employee_id
+					  	WHERE a.del_flag = 0 AND b.del_flag = 0 AND b.depart_id = #{departId} AND a.report_to_leader = #{employeeId}))
+	     UNION ALL
+	
+		 SELECT a.id AS id
+		  	FROM base_employee a LEFT JOIN base_emp_depart b ON a.id = b.employee_id
+		  	WHERE a.del_flag = 0 AND b.del_flag = 0 AND b.depart_id = #{departId} AND a.report_to_leader IN(
+			  	SELECT a.id AS id
+			  	     FROM base_employee a LEFT JOIN base_emp_depart b ON a.id = b.employee_id
+			  	WHERE a.del_flag = 0 AND b.del_flag = 0 AND b.depart_id = #{departId} AND a.report_to_leader IN(
+					 SELECT a.id AS id
+					  	FROM base_employee a LEFT JOIN base_emp_depart b ON a.id = b.employee_id
+					  	WHERE a.del_flag = 0 AND b.del_flag = 0 AND b.depart_id = #{departId} AND a.report_to_leader IN(
+						  	SELECT a.id AS id
+						  	FROM base_employee a LEFT JOIN base_emp_depart b ON a.id = b.employee_id
+						  	WHERE a.del_flag = 0 AND b.del_flag = 0 AND b.depart_id = #{departId} AND a.report_to_leader = #{employeeId})))
+		  	
+		 UNION ALL 
+		 SELECT a.id AS id
+		  	FROM base_employee a LEFT JOIN base_emp_depart b ON a.id = b.employee_id
+		  	WHERE a.del_flag = 0 AND b.del_flag = 0 AND b.depart_id = #{departId} AND a.report_to_leader IN(
+			  	SELECT a.id AS id
+			  	    FROM base_employee a LEFT JOIN base_emp_depart b ON a.id = b.employee_id
+			  	WHERE a.del_flag = 0 AND b.del_flag = 0 AND b.depart_id = #{departId} AND a.report_to_leader IN(
+				  	SELECT a.id AS id
+				  	    FROM base_employee a LEFT JOIN base_emp_depart b ON a.id = b.employee_id
+				  	WHERE a.del_flag = 0 AND b.del_flag = 0 AND b.depart_id = #{departId} AND a.report_to_leader IN(
+						SELECT a.id AS id FROM base_employee a LEFT JOIN base_emp_depart b ON a.id = b.employee_id
+						  	WHERE a.del_flag = 0 AND b.del_flag = 0 AND b.depart_id = #{departId} AND a.report_to_leader IN(
+							  	SELECT a.id AS id FROM base_employee a LEFT JOIN base_emp_depart b ON a.id = b.employee_id
+							  		WHERE a.del_flag = 0 AND b.del_flag = 0 AND b.depart_id = #{departId} AND a.report_to_leader = #{employeeId}))))
+		) detail
+  </select>
+  
+  <select id="getInfoByCode" parameterType="java.lang.String" resultType="com.ule.oa.base.po.Employee">
+	  	select be.id,be.cn_name as cnName,be.eng_name as engName,be.sex,be.code,be.email,be.mobile,be.telephone,be.first_Entry_time as firstEntryTime,
+	  	       be.EXTENSION_NUMBER as extensionNumber,be.floor_Code as floorCode,be.SEAT_CODE as seatCode,be.fingerprint_id as fingerprintId,
+	  	       be.company_id as companyId,bd.id as departId,bd.name as departName,bd.leader as departLeaderId, be.emp_type_id as empTypeId, et.type_c_name as empTypeName,
+	  	       be.work_type as workType,scc.display_name workTypeName,be.whether_scheduling as whetherScheduling, sc.display_name whetherSchedulingName,
+	  	       be.report_to_leader as reportToLeader,bp.id as positionId,bp.position_name as positionName,be.quit_time as quitTime,be.job_status as jobStatus
+		from base_employee be
+		left join base_emp_type et
+		on(be.emp_type_id  = et.id and be.company_id = et.company_id and et.del_flag =0)
+		left join base_emp_depart ed
+		on (be.id = ed.employee_id and ed.del_flag = 0)
+		left join base_depart bd
+		on (ed.depart_id = bd.id and be.company_id = bd.company_id and bd.del_flag = 0)
+		left join base_emp_position ep
+		on (be.id = ep.employee_id and ep.del_flag = 0)
+		left join base_position bp
+		on (ep.position_id = bp.id and bp.company_id = bp.company_id and bp.del_flag = 0)
+        LEFT JOIN sys_company_config scc on be.work_type = scc.id and scc.del_flag =0
+        LEFT JOIN sys_config sc on be.whether_scheduling = sc.id and sc.del_flag =0
+		where be.del_flag = 0 and be.code = #{code,jdbcType=VARCHAR} ORDER BY id desc limit 0,1
+  </select>
+  
+  <select id="getMaxCodeByPrefix" parameterType="java.lang.String" resultType="java.lang.Integer">
+     select max(CAST(SUBSTRING(code,3)AS SIGNED)) from base_employee where del_flag = 0 and CODE LIKE concat('%',#{prefix,jdbcType=VARCHAR},'%')
+  </select>
+  
+  <select id="getIdentificationNum" resultType="com.ule.oa.base.po.Employee">
+     SELECT <include refid="Base_Column_List"/> FROM base_employee WHERE del_flag = 0 and job_status !=0 
+        and cn_name = #{cnName,jdbcType=VARCHAR}  and birthday = #{birthDate,jdbcType=TIMESTAMP} order by id desc
+  </select>
+  
+  <select id="getListByBirthDate" resultType="com.ule.oa.base.po.Employee">
+     SELECT <include refid="Base_Column_List"/> FROM base_employee WHERE del_flag = 0 and birthday = #{birthDate,jdbcType=TIMESTAMP}
+  </select>
+  <select id="getEmpByBirthday" resultMap="BaseResultMap">
+  	SELECT <include refid="Base_Column_List"/> FROM base_employee 
+  	WHERE del_flag = 0 AND identification_num like concat(#{birthdayStr},'%')
+  	ORDER BY identification_num DESC
+  </select>
+  
+  <select id="getEmployeeTreeList" resultType="Map">
+  	SELECT 
+	  a.id AS id,
+	  a.cn_name AS name,
+	  1 AS type,
+	  c.id AS pId
+	FROM
+	  base_employee a 
+	  LEFT JOIN base_emp_depart b 
+	    ON a.id = b.employee_id 
+	  LEFT JOIN base_depart c
+	    ON b.depart_id = c.id
+	WHERE a.job_status IN(0,2) 
+	  AND a.del_flag = 0 
+	  AND b.del_flag = 0 
+	  AND c.del_flag = 0
+  </select>
+  
+  <select id="getEmployeeSeqList" resultType="Map">
+  	SELECT 
+	  a.id as id,d.name as name,a.version as version
+	FROM
+	  base_employee a 
+	  LEFT JOIN base_emp_position b 
+	    ON a.id = b.employee_id 
+	  LEFT JOIN base_position c 
+	    ON b.position_id = c.id
+	  LEFT JOIN base_company_position_seq d
+	    ON c.position_seq_id = d.id
+	    where a.del_flag=0 and b.del_flag=0 and c.del_flag=0
+  </select>
+  
+  <select id="getAttnReportNeedList" resultType="com.ule.oa.base.po.Employee">
+		SELECT 
+		  a.id AS id,
+		  a.cn_name AS cnName,
+		  a.code AS CODE,
+		  c.id AS departId,
+		  c.name AS departName,
+		  a.whether_scheduling AS whetherScheduling,
+		  a.work_type AS workType,
+		  e.position_name as positionName
+		FROM
+		  base_employee a 
+		  LEFT JOIN base_emp_depart b ON a.id = b.employee_id 
+		  LEFT JOIN base_depart c ON b.depart_id = c.id
+		  LEFT JOIN base_emp_position d ON a.id = d.employee_id
+		  LEFT JOIN base_position e ON e.id = d.position_id
+		WHERE a.del_flag = 0 AND b.del_flag = 0 AND c.del_flag = 0 AND d.del_flag = 0 AND e.del_flag = 0
+		      <if test="empTypeIdList != null and empTypeIdList.size > 0" >
+		       and a.emp_type_id in
+		           <foreach collection="empTypeIdList" index="index" item="item" open="(" separator="," close=")">
+			           #{item}
+			       </foreach>
+    		  </if>
+		      AND (a.job_status = 0 or a.job_status = 2 or (a.job_status = 1 and a.Quit_time &gt;= #{monthStart} ))
+  </select>
+  
+  <select id="getListByCodes" resultType="com.ule.oa.base.po.Employee">
+		SELECT <include refid="Base_Column_List"/> 
+		  	FROM base_employee
+		  	WHERE del_flag = 0
+			      and code in 
+			      <foreach collection="codeList" index="index" item="item" open="(" separator="," close=")">
+		               #{item}
+		          </foreach>
+  </select>
+  
+</mapper>

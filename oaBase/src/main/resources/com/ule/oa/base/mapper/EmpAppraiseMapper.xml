@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ule.oa.base.mapper.EmpAppraiseMapper" >
+
+  <resultMap id="BaseResultMap" type="com.ule.oa.base.po.EmpAppraise" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="employee_id" property="employeeId" jdbcType="BIGINT" />
+    <result column="annual_examination_time" property="annualExaminationTime" jdbcType="TIMESTAMP" />
+    <result column="start_time" property="startTime" jdbcType="TIMESTAMP" />
+    <result column="end_time" property="endTime" jdbcType="TIMESTAMP" />
+    <result column="score" property="score" jdbcType="VARCHAR" />
+    <result column="conclusion" property="conclusion" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="del_flag" property="delFlag" jdbcType="INTEGER" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="version" property="version" jdbcType="BIGINT" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    id, employee_id, annual_examination_time, start_time, end_time, score, create_time, 
+    create_user, update_time, update_user, del_flag, remark,conclusion,version
+  </sql>
+  
+  <select id="getListByCondition" resultMap="BaseResultMap" resultType="com.ule.oa.base.po.EmpAppraise">
+  	select <include refid="Base_Column_List"/> from base_emp_appraise
+  	where del_flag = 0
+  	<if test="employeeId != null">
+  		and employee_id = #{employeeId,jdbcType=BIGINT}
+  	</if>
+  </select>
+  
+  <select id="getListByEmployeeId" resultMap="BaseResultMap">
+  	select <include refid="Base_Column_List"/> from base_emp_appraise
+  		where del_flag = 0 and employee_id = #{employeeId,jdbcType=BIGINT}
+  </select>
+  
+  <insert id="save" parameterType="com.ule.oa.base.po.EmpAppraise" >
+    insert into base_emp_appraise (employee_id, annual_examination_time, 
+      start_time, end_time, score, 
+      conclusion, create_time, create_user, 
+      update_time, update_user, del_flag, 
+      remark)
+    values (#{employeeId,jdbcType=BIGINT}, #{annualExaminationTime,jdbcType=TIMESTAMP}, 
+      #{startTime,jdbcType=TIMESTAMP}, #{endTime,jdbcType=TIMESTAMP}, #{score,jdbcType=VARCHAR}, 
+      #{conclusion,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{createUser,jdbcType=VARCHAR}, 
+      #{updateTime,jdbcType=TIMESTAMP}, #{updateUser,jdbcType=VARCHAR}, #{delFlag,jdbcType=INTEGER}, 
+      #{remark,jdbcType=VARCHAR})
+  </insert>
+  
+  <update id="updateById" parameterType="com.ule.oa.base.po.EmpAppraise" >
+    update base_emp_appraise
+    <set >
+      <if test="employeeId != null" >
+        employee_id = #{employeeId,jdbcType=BIGINT},
+      </if>
+      <if test="annualExaminationTime != null" >
+        annual_examination_time = #{annualExaminationTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="startTime != null" >
+        start_time = #{startTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endTime != null" >
+        end_time = #{endTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="score != null" >
+        score = #{score,jdbcType=VARCHAR},
+      </if>
+      <if test="conclusion != null" >
+        conclusion = #{conclusion,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUser != null" >
+        create_user = #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="delFlag != null" >
+        del_flag = #{delFlag,jdbcType=INTEGER},
+      </if>
+      <if test="remark != null" >
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+	  version = version + 1
+    </set>
+    where id = #{id,jdbcType=BIGINT} and version = #{version,jdbcType=BIGINT}
+  </update>
+  
+  <insert id="saveBatch" parameterType="com.ule.oa.base.po.EmpAppraise" >
+      insert into base_emp_appraise (employee_id, annual_examination_time, 
+      start_time, end_time, score, 
+      conclusion, create_time, create_user, 
+      update_time, update_user, del_flag, 
+      remark)
+      values
+      <foreach collection ="list" item="item" index= "index" separator =",">
+	      (#{item.employeeId,jdbcType=BIGINT}, #{item.annualExaminationTime,jdbcType=TIMESTAMP}, 
+	       #{item.startTime,jdbcType=TIMESTAMP}, #{item.endTime,jdbcType=TIMESTAMP}, #{item.score,jdbcType=VARCHAR}, 
+	       #{item.conclusion,jdbcType=VARCHAR}, #{item.createTime,jdbcType=TIMESTAMP}, #{item.createUser,jdbcType=VARCHAR}, 
+	       #{item.updateTime,jdbcType=TIMESTAMP}, #{item.updateUser,jdbcType=VARCHAR}, #{item.delFlag,jdbcType=INTEGER}, 
+	       #{item.remark,jdbcType=VARCHAR})
+      </foreach >
+  </insert>
+  
+  <update id="deleteByEmployeeId">
+	    update base_emp_appraise set del_flag = 1,update_time=#{updateTime,jdbcType=TIMESTAMP}
+	    ,update_user = #{updateUser,jdbcType=VARCHAR}
+	    where del_flag=0 and employee_id = #{employeeId,jdbcType=BIGINT} 
+  </update>
+  
+</mapper>

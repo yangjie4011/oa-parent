@@ -1,0 +1,364 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ule.oa.base.mapper.EmployeeDutyMapper" >
+  <resultMap id="BaseResultMap" type="com.ule.oa.base.po.EmployeeDuty" >
+    <id column="ID" property="id" jdbcType="BIGINT" />
+    <result column="company_id" property="companyId" jdbcType="BIGINT" />
+    <result column="depart_id" property="departId" jdbcType="BIGINT" />
+    <result column="employ_id" property="employId" jdbcType="BIGINT" />
+    <result column="employ_name" property="employName" jdbcType="VARCHAR" />
+    <result column="year" property="year" jdbcType="VARCHAR" />
+    <result column="VACATION_NAME" property="vacationName" jdbcType="VARCHAR" />
+    <result column="duty_date" property="dutyDate" jdbcType="DATE" />
+    <result column="duty_item" property="dutyItem" jdbcType="VARCHAR" />
+    <result column="start_time" property="startTime" jdbcType="TIMESTAMP" />
+    <result column="end_time" property="endTime" jdbcType="TIMESTAMP" />
+    <result column="WORK_HOURS" property="workHours" jdbcType="DOUBLE" />
+    <result column="class_setting_person" property="classSettingPerson" jdbcType="VARCHAR"/>
+    <result column="source" property="source" jdbcType="INTEGER" />
+    <result column="del_flag" property="delFlag" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    ID, company_id, depart_id,employ_id, employ_name, year, VACATION_NAME, duty_date, duty_item, start_time,
+    end_time, WORK_HOURS, class_setting_person, source, del_flag, create_time, create_user, update_user, update_time,remark
+  </sql>
+  
+  <select id="selectByCondition" resultMap="BaseResultMap" parameterType="com.ule.oa.base.po.EmployeeDuty" >
+    SELECT  <include refid="Base_Column_List" /> FROM
+	  attn_employ_duty  where del_flag=0
+    <if test="dutyDate != null" >
+      and duty_date = #{dutyDate,jdbcType=DATE}
+    </if>
+    <if test="employId != null" >
+      and employ_id = #{employId,jdbcType=BIGINT}
+    </if>
+    <if test="departId != null" >
+      and depart_id = #{departId,jdbcType=BIGINT}
+    </if>
+    <if test="vacationName != null" >
+      and VACATION_NAME = #{vacationName,jdbcType=VARCHAR}
+    </if>
+    <if test="year != null" >
+      and year = #{year,jdbcType=VARCHAR}
+    </if>
+    order by duty_date
+  </select>
+  
+  <select id="getDutyDetail" resultType="com.ule.oa.base.po.EmployeeDuty" parameterType="com.ule.oa.base.po.EmployeeDuty" >
+      SELECT a.id,a.company_id as companyId,a.depart_id as departId,a.employ_id as employId,b.code as employCode,
+             a.employ_name as employName,a.year,a.VACATION_NAME as vacationName,a.duty_date as dutyDate,a.duty_item as dutyItem,
+             a.start_time as startTime,a.end_time as endTime,a.WORK_HOURS as workHours,a.source,a.remark as remark FROM attn_employ_duty a LEFT JOIN base_employee b ON a.employ_id=b.id 
+      where a.del_flag=0
+            and a.depart_id = #{departId,jdbcType=BIGINT}
+            and a.VACATION_NAME = #{vacationName,jdbcType=VARCHAR}
+            and a.year = #{year,jdbcType=VARCHAR}
+            <if test="sourceList != null"> 
+	              and source in 
+			      <foreach collection="sourceList" index="index" item="item" open="(" separator="," close=")">
+		               #{item}
+		          </foreach>
+	  		</if>
+            order by a.duty_date
+  </select>
+  
+  <select id="getGroupByCondition" resultMap="BaseResultMap" parameterType="com.ule.oa.base.po.EmployeeDuty" >
+    SELECT ANY_VALUE(depart_id) as departId,ANY_VALUE(VACATION_NAME) as vacationName,ANY_VALUE(year) as year,ANY_VALUE(class_setting_person) AS classSettingPerson FROM
+	  attn_employ_duty  where del_flag=0
+    <if test="departId != null" >
+      and depart_id = #{departId,jdbcType=BIGINT}
+    </if>
+    <if test="vacationName != null and vacationName != ''" >
+      and VACATION_NAME = #{vacationName,jdbcType=VARCHAR}
+    </if>
+    <if test="year != null and year != ''" >
+      and year = #{year,jdbcType=VARCHAR}
+    </if>
+    GROUP BY depart_id,YEAR,vacation_name
+  </select>
+  
+ <select id="getEmployDutyCountByCondition" resultMap="BaseResultMap" parameterType="com.ule.oa.base.po.EmployeeDuty" >
+    SELECT ANY_VALUE(employ_id) AS employId FROM attn_employ_duty 
+       WHERE del_flag=0 and depart_id = #{departId,jdbcType=BIGINT} 
+             AND YEAR= #{year,jdbcType=VARCHAR} 
+             AND vacation_name= #{vacationName,jdbcType=VARCHAR} 
+             GROUP BY employ_id
+  </select>
+  
+  <select id="getExistDutyListByCondition" resultMap="BaseResultMap" parameterType="com.ule.oa.base.po.EmployeeDuty">
+  	SELECT <include refid="Base_Column_List" /> FROM attn_employ_duty
+    WHERE del_flag=0
+    AND depart_id = #{departId,jdbcType=BIGINT}
+    AND YEAR= #{year,jdbcType=VARCHAR}
+    AND vacation_name= #{vacationName,jdbcType=VARCHAR}
+    AND source = 0
+  </select>
+  
+  <insert id="save" parameterType="com.ule.oa.base.po.EmployeeDuty" >
+  	<selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">
+		SELECT LAST_INSERT_ID() AS id
+	</selectKey>
+	
+	insert into attn_employ_duty
+	<trim prefix="(" suffix=")" suffixOverrides=",">
+		  <if test="companyId != null" >
+	        company_id,
+	      </if>
+	      <if test="departId != null" >
+	        depart_id,
+	      </if>
+	      <if test="employId != null" >
+	        employ_id,
+	      </if>
+	      <if test="employName != null" >
+	        employ_name,
+	      </if>
+	      <if test="year != null" >
+	        year,
+	      </if>
+	      <if test="vacationName != null" >
+	        VACATION_NAME,
+	      </if>
+	      <if test="dutyDate != null" >
+	        duty_date,
+	      </if>
+	      <if test="dutyItem != null" >
+	        duty_item,
+	      </if>
+	      <if test="startTime != null" >
+	        start_time,
+	      </if>
+	      <if test="endTime != null" >
+	        end_time,
+	      </if>
+	      <if test="workHours != null" >
+	        WORK_HOURS,
+	      </if>
+	      <if test="classSettingPerson != null">
+	      	class_setting_person,
+	      </if>
+	      <if test="source != null" >
+	        source,
+	      </if>
+	      <if test="remark != null" >
+	        remark,
+	      </if>
+	      <if test="delFlag != null" >
+	        del_flag,
+	      </if>
+	      <if test="createTime != null" >
+	        create_time,
+	      </if>
+	      <if test="createUser != null" >
+	        create_user,
+	      </if>
+	      <if test="updateUser != null" >
+	        update_user,
+	      </if>
+	      <if test="updateTime != null" >
+	        update_time,
+	      </if>
+	</trim>
+	
+	<trim prefix="values(" suffix=")" suffixOverrides=",">
+		  <if test="companyId != null" >
+	        #{companyId,jdbcType=BIGINT},
+	      </if>
+	      <if test="departId != null" >
+	        #{departId,jdbcType=BIGINT},
+	      </if>
+	      <if test="employId != null" >
+	        #{employId,jdbcType=BIGINT},
+	      </if>
+	      <if test="employName != null" >
+	        #{employName,jdbcType=VARCHAR},
+	      </if>
+	      <if test="year != null" >
+	        #{year,jdbcType=VARCHAR},
+	      </if>
+	      <if test="vacationName != null" >
+	        #{vacationName,jdbcType=VARCHAR},
+	      </if>
+	      <if test="dutyDate != null" >
+	        #{dutyDate,jdbcType=DATE},
+	      </if>
+	      <if test="dutyItem != null" >
+	        #{dutyItem,jdbcType=VARCHAR},
+	      </if>
+	      <if test="startTime != null" >
+	        #{startTime,jdbcType=TIMESTAMP},
+	      </if>
+	      <if test="endTime != null" >
+	        #{endTime,jdbcType=TIMESTAMP},
+	      </if>
+	      <if test="workHours != null" >
+	        #{workHours,jdbcType=DOUBLE},
+	      </if>
+	      <if test="classSettingPerson != null">
+	      	#{classSettingPerson,jdbcType=VARCHAR},
+	      </if>
+	      <if test="source != null" >
+	        #{source,jdbcType=INTEGER},
+	      </if>
+	      <if test="remark != null" >
+	        #{remark,jdbcType=VARCHAR},
+	      </if>
+	      <if test="delFlag != null" >
+	        #{delFlag,jdbcType=INTEGER},
+	      </if>
+	      <if test="createTime != null" >
+	        #{createTime,jdbcType=TIMESTAMP},
+	      </if>
+	      <if test="createUser != null" >
+	        #{createUser,jdbcType=VARCHAR},
+	      </if>
+	      <if test="updateUser != null" >
+	        #{updateUser,jdbcType=VARCHAR},
+	      </if>
+	      <if test="updateTime != null" >
+	        #{updateTime,jdbcType=TIMESTAMP},
+	      </if>
+	</trim>
+  </insert>
+  
+  <insert id="batchSave" parameterType="java.util.List">
+	insert into attn_employ_duty (
+	    company_id,
+        depart_id,
+        employ_id,
+        employ_name,
+        year,
+        VACATION_NAME,
+        duty_date,
+        duty_item,
+        start_time,
+        end_time,
+        WORK_HOURS,
+        class_setting_person,
+        create_time,
+        create_user,
+        del_flag,
+        source,
+        remark
+	)
+	select T.* FROM (
+     	<foreach collection="list" item="item" index="index" separator="UNION">
+		SELECT
+			#{item.companyId} as company_id,
+			#{item.departId} as depart_id,
+			#{item.employId} as employ_id,
+			#{item.employName} as employ_name,
+			#{item.year} as year,
+			#{item.vacationName} as VACATION_NAME, 
+            #{item.dutyDate} as duty_date, 
+            #{item.dutyItem} as duty_item, 
+            #{item.startTime} as start_time, 
+            #{item.endTime} as end_time, 
+            #{item.workHours} as WORK_HOURS, 
+			#{item.classSettingPerson} as class_setting_person,
+			#{item.createTime} as create_time,
+			#{item.createUser} as create_user,
+			#{item.delFlag} as del_flag,
+			#{item.source} as source,
+			#{item.remark} as remark
+		FROM DUAL
+	</foreach>
+       ) T
+  </insert>
+  
+  <update id="update" parameterType="com.ule.oa.base.po.EmployeeDuty" >
+    update attn_employ_duty
+    <set >
+      <if test="dutyItem != null" >
+	    duty_item = #{dutyItem,jdbcType=VARCHAR},
+	  </if>
+      <if test="startTime != null" >
+	    start_time = #{startTime,jdbcType=TIMESTAMP},
+	  </if>
+      <if test="endTime != null" >
+        end_time = #{endTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="workHours != null" >
+        WORK_HOURS = #{workHours,jdbcType=DOUBLE},
+      </if>
+      <if test="classSettingPerson != null">
+      	class_setting_person = #{classSettingPerson,jdbcType=VARCHAR},
+      </if>
+      <if test="delFlag != null" >
+	    del_flag = #{delFlag,jdbcType=INTEGER},
+	  </if>
+	  <if test="source != null" >
+	    source = #{source,jdbcType=INTEGER},
+	  </if>
+	  <if test="remark != null" >
+	    remark = #{remark,jdbcType=VARCHAR},
+	  </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP}
+      </if>
+    </set>
+    where employ_id = #{employId,jdbcType=BIGINT} and duty_date = #{dutyDate,jdbcType=DATE}
+  </update>
+  
+  <update id="deleteByCondition" parameterType="com.ule.oa.base.po.EmployeeDuty" >
+    update attn_employ_duty set del_flag =1
+    where del_flag=0
+    <if test="departId != null" >
+      and depart_id = #{departId,jdbcType=BIGINT}
+    </if>
+    <if test="vacationName != null" >
+      and VACATION_NAME = #{vacationName,jdbcType=VARCHAR}
+    </if>
+    <if test="year != null" >
+      and year = #{year,jdbcType=VARCHAR}
+    </if>
+    <if test="source != null" >
+	  and source = #{source,jdbcType=INTEGER}
+	</if>
+  </update>
+  
+  <update id="deleteOldDuty" parameterType="com.ule.oa.base.po.EmployeeDuty" >
+    update attn_employ_duty set del_flag =1,update_time=#{updateTime,jdbcType=TIMESTAMP},update_user=#{updateUser,jdbcType=VARCHAR}
+    where del_flag=0
+          and depart_id = #{departId,jdbcType=BIGINT}
+          and VACATION_NAME = #{vacationName,jdbcType=VARCHAR}
+          and year = #{year,jdbcType=VARCHAR}
+          <if test="sourceList != null"> 
+              and source in 
+		      <foreach collection="sourceList" index="index" item="item" open="(" separator="," close=")">
+	               #{item}
+	          </foreach>
+  		  </if>
+  </update>
+  
+  <!-- 获取值班人数 -->
+  <select id="getDutyNum" resultMap="BaseResultMap" parameterType="com.ule.oa.base.po.EmployeeDuty" >
+    SELECT DISTINCT employ_id FROM
+	  attn_employ_duty  where del_flag=0 and depart_id = #{departId,jdbcType=BIGINT}
+      and VACATION_NAME = #{vacationName,jdbcType=VARCHAR}
+      and year = #{year,jdbcType=VARCHAR}
+  </select>
+  
+  <select id="getDutyListBySource" resultMap="BaseResultMap" parameterType="com.ule.oa.base.po.EmployeeDuty" >
+    SELECT  <include refid="Base_Column_List" /> FROM
+	  attn_employ_duty  where del_flag=0
+    <if test="dutyDate != null" >
+      and duty_date = #{dutyDate,jdbcType=DATE}
+    </if>
+    <if test="employId != null" >
+      and employ_id = #{employId,jdbcType=BIGINT}
+    </if>
+    <if test="source != null" >
+      and source = #{source,jdbcType=BIGINT}
+    </if>
+  </select>
+  
+</mapper>

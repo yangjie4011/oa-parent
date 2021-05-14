@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ule.oa.base.mapper.EmpWorkRecordMapper" >
+  <resultMap id="BaseResultMap" type="com.ule.oa.base.po.EmpWorkRecord" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="employee_id" property="employeeId" jdbcType="BIGINT" />
+    <result column="start_time" property="startTime" jdbcType="TIMESTAMP" />
+    <result column="end_time" property="endTime" jdbcType="TIMESTAMP" />
+    <result column="company_name" property="companyName" jdbcType="VARCHAR" />
+    <result column="position_name" property="positionName" jdbcType="VARCHAR" />
+    <result column="position_title" property="positionTitle" jdbcType="VARCHAR" />
+    <result column="position_task" property="positionTask" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="del_flag" property="delFlag" jdbcType="INTEGER" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="version" property="version" jdbcType="BIGINT"/>
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    id, employee_id, start_time, end_time, company_name, position_name, position_title, 
+    position_task, create_time, create_user, update_time, update_user, del_flag, remark,version
+  </sql>
+  
+  <select id="getListByCondition" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+     select <include refid="Base_Column_List" /> from base_emp_work_record
+     where del_flag = 0
+ 	 <if test="employeeId != null" >
+       and employee_id = #{employeeId,jdbcType=BIGINT}
+     </if>
+     <if test="startTime != null" >
+       and start_time = #{startTime,jdbcType=TIMESTAMP}
+     </if>
+     <if test="endTime != null" >
+       and end_time = #{endTime,jdbcType=TIMESTAMP}
+     </if>
+     <if test="companyName != null" >
+       and company_name = #{companyName,jdbcType=VARCHAR}
+     </if>
+     <if test="positionName != null" >
+       and position_name = #{positionName,jdbcType=VARCHAR}
+     </if>
+     <if test="positionTitle != null" >
+       and position_title = #{positionTitle,jdbcType=VARCHAR}
+     </if>
+     <if test="positionTask != null" >
+       and position_task = #{positionTask,jdbcType=VARCHAR}
+     </if>
+     <if test="updateTime != null" >
+       and update_time = #{updateTime,jdbcType=TIMESTAMP}
+     </if>
+     <if test="updateUser != null" >
+       and update_user = #{updateUser,jdbcType=VARCHAR}
+     </if>
+     <if test="remark != null" >
+       and remark = #{remark,jdbcType=VARCHAR}
+     </if>
+  </select>
+  
+  <select id="getListByEmployeeId" resultMap="BaseResultMap" >
+     select <include refid="Base_Column_List" /> from base_emp_work_record
+    	 where del_flag = 0 and employee_id = #{employeeId,jdbcType=BIGINT} order by start_time
+  </select>
+  
+  <insert id="save" parameterType="com.ule.oa.base.po.EmpWorkRecord" >
+    insert into base_emp_work_record (id, employee_id, start_time, 
+      end_time, company_name, position_name, 
+      position_title, position_task, create_time, 
+      create_user, update_time, update_user, 
+      del_flag, remark)
+    values (#{id,jdbcType=BIGINT}, #{employeeId,jdbcType=BIGINT}, #{startTime,jdbcType=TIMESTAMP}, 
+      #{endTime,jdbcType=TIMESTAMP}, #{companyName,jdbcType=VARCHAR}, #{positionName,jdbcType=VARCHAR}, 
+      #{positionTitle,jdbcType=VARCHAR}, #{positionTask,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{createUser,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP}, #{updateUser,jdbcType=VARCHAR}, 
+      #{delFlag,jdbcType=INTEGER}, #{remark,jdbcType=VARCHAR})
+  </insert>
+  
+  <insert id="saveBatch" parameterType="com.ule.oa.base.po.EmpWorkRecord" >
+	    insert into base_emp_work_record (employee_id, start_time, 
+	      end_time, company_name, position_name, 
+	      position_title, position_task, create_time, 
+	      create_user, update_time, update_user, 
+	      del_flag, remark)
+          values
+      <foreach collection ="list" item="item" index= "index" separator =",">
+	     (#{item.employeeId,jdbcType=BIGINT}, #{item.startTime,jdbcType=TIMESTAMP}, 
+	      #{item.endTime,jdbcType=TIMESTAMP}, #{item.companyName,jdbcType=VARCHAR}, #{item.positionName,jdbcType=VARCHAR}, 
+	      #{item.positionTitle,jdbcType=VARCHAR}, #{item.positionTask,jdbcType=VARCHAR}, #{item.createTime,jdbcType=TIMESTAMP}, 
+	      #{item.createUser,jdbcType=VARCHAR}, #{item.updateTime,jdbcType=TIMESTAMP}, #{item.updateUser,jdbcType=VARCHAR}, 
+	      #{item.delFlag,jdbcType=INTEGER}, #{item.remark,jdbcType=VARCHAR})
+      </foreach >
+  </insert>
+  
+  <update id="deleteBatchNotApply">
+    update base_emp_work_record set del_flag = 1,update_time=#{updateTime,jdbcType=TIMESTAMP}
+    ,update_user = #{updateUser,jdbcType=VARCHAR}
+    where employee_id = #{employeeId,jdbcType=BIGINT} and id not in
+    <foreach collection ="list" item="item" index= "index" open="(" separator="," close=")">
+        #{item.id}
+    </foreach>
+  </update>
+  
+  <update id="deleteByEmployeeId">
+    update base_emp_work_record set del_flag = 1,update_time=#{updateTime,jdbcType=TIMESTAMP}
+    ,update_user = #{updateUser,jdbcType=VARCHAR}
+    where del_flag=0 and employee_id = #{employeeId,jdbcType=BIGINT}
+  </update>
+  
+  <update id="updateById" parameterType="com.ule.oa.base.po.EmpWorkRecord" >
+    update base_emp_work_record
+    <set >
+      <if test="employeeId != null" >
+        employee_id = #{employeeId,jdbcType=BIGINT},
+      </if>
+      <if test="startTime != null" >
+        start_time = #{startTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endTime != null" >
+        end_time = #{endTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="companyName != null" >
+        company_name = #{companyName,jdbcType=VARCHAR},
+      </if>
+      <if test="positionName != null" >
+        position_name = #{positionName,jdbcType=VARCHAR},
+      </if>
+      <if test="positionTitle != null" >
+        position_title = #{positionTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="positionTask != null" >
+        position_task = #{positionTask,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="delFlag != null" >
+        del_flag = #{delFlag,jdbcType=INTEGER},
+      </if>
+      <if test="remark != null" >
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      version = version + 1
+    </set>
+    where id = #{id,jdbcType=BIGINT} and version = #{version,jdbcType=BIGINT}
+  </update>
+</mapper>

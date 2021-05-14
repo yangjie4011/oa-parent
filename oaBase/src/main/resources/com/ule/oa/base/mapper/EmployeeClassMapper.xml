@@ -1,0 +1,483 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ule.oa.base.mapper.EmployeeClassMapper" >
+  <resultMap id="BaseResultMap" type="com.ule.oa.base.po.EmployeeClass" >
+    <id column="ID" property="id" jdbcType="BIGINT" />
+    <result column="company_id" property="companyId" jdbcType="BIGINT" />
+    <result column="employ_id" property="employId" jdbcType="BIGINT" />
+    <result column="employ_name" property="employName" jdbcType="VARCHAR" />
+    <result column="class_date" property="classDate" jdbcType="DATE" />
+    <result column="class_setting_id" property="classSettingId" jdbcType="BIGINT" />
+    <result column="class_setting_code" property="classSettingCode" jdbcType="VARCHAR" />
+    <result column="del_flag" property="delFlag" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="class_setting_person" property="classSettingPerson" jdbcType="VARCHAR"/>
+    <result column="version" property="version" jdbcType="BIGINT"/>
+  </resultMap>
+  
+  <resultMap id="EmployeeClassSettingMap" type="com.ule.oa.base.po.EmployeeClass" >
+    <result column="company_id" property="companyId" jdbcType="BIGINT" />
+    <result column="employ_id" property="employId" jdbcType="BIGINT" />
+    <result column="class_date" property="classDate" jdbcType="DATE" />
+    <result column="start_time" property="startTime" jdbcType="TIME" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="end_time" property="endTime" jdbcType="TIME" />
+    <result column="is_Inter_day" property="isInterDay" jdbcType="INTEGER" />
+    <result column="must_attn_time" property="mustAttnTime" jdbcType="DOUBLE" />
+    <result column="class_setting_id" property="classSettingId" jdbcType="BIGINT" />
+    <result column="version" property="version" jdbcType="BIGINT"/>
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    ID, company_id, employ_id, employ_name, class_date, class_setting_id, class_setting_code,class_setting_person,
+    del_flag, create_time, create_user, update_user, update_time,version
+  </sql>
+  
+  <!-- 根据部门id获取需要排班人数 -->
+  <select id="getMustClassSettingCountByDepartId" resultType="java.lang.Integer" parameterType="java.lang.Long">
+  	select count(emp.id) from base_employee emp
+	join sys_config conf
+	on (
+		emp.whether_scheduling = conf.id
+		and conf.code = 'whetherScheduling'
+		and conf.display_code = 'yes'
+		and emp.del_flag = 0
+		and conf.del_flag = 0
+	)
+	left join base_emp_depart ed
+	on (emp.id = ed.employee_id and ed.del_flag = 0)
+	where ed.depart_id = #{departId,jdbcType=BIGINT}
+  </select>
+  
+  <!-- 根据部门id和排班时间获取已经排班人数和排班人（查看当月和下月已经排班人数和排班人） -->
+  <select id="getAlreadyClassSettingByDepartIdAndMonth" resultType="com.ule.oa.base.po.EmployeeClass" parameterType="com.ule.oa.base.po.EmployeeClass">
+  	select count(distinct ec.employ_id) alreadyClassSettingCount,ec.class_setting_person classSettingPerson
+	from base_employee emp
+	left join base_emp_depart ed
+	on (
+		emp.id = ed.employee_id and emp.del_flag = 0 and ed.del_flag = 0
+	)
+	join attn_employ_class ec
+	on(
+		emp.id = ec.employ_id and ec.del_flag = 0
+	)
+	where ed.depart_id = #{departId,jdbcType=BIGINT}
+	and ec.class_date &gt;= #{startTime,jdbcType=DATE}
+	and ec.class_date &lt;= #{endTime,jdbcType=DATE}
+	group by ec.class_setting_person 
+ </select>
+
+  <select id="selectByCondition" resultMap="BaseResultMap" parameterType="com.ule.oa.base.po.EmployeeClass" >
+    SELECT a.employ_id,a.class_date,a.class_setting_id,b.must_attn_time as mustAttnTime,b.name as name ,b.start_time as startTime,b.end_time as endTime,a.id as id,b.is_Inter_day as isInterDay
+	FROM
+	  attn_employ_class a 
+	  LEFT JOIN attn_class_setting b 
+	    ON a.class_setting_id = b.id  
+	  inner join base_employee e 
+	    on a.employ_id = e.id AND CASE WHEN e.Quit_time IS NOT NULL THEN a.class_date  &lt;= e.Quit_time WHEN e.Quit_time IS NULL THEN a.class_date &gt;= #{startTime,jdbcType=DATE} END
+    where a.del_flag=0
+    <if test="classDate != null" >
+      and a.class_date = #{classDate,jdbcType=DATE}
+    </if>
+    <if test="employId != null" >
+      and a.employ_id = #{employId,jdbcType=BIGINT}
+    </if>
+     <if test="departId != null" >
+      and a.depart_id = #{departId,jdbcType=BIGINT}
+    </if>
+    <if test="startTime != null" >
+      and DATE_FORMAT(a.class_date,'%Y-%m-%d') &gt;= DATE_FORMAT(#{startTime},'%Y-%m-%d')
+    </if>
+    <if test="endTime != null" >
+      and DATE_FORMAT(a.class_date,'%Y-%m-%d') &lt;= DATE_FORMAT(#{endTime},'%Y-%m-%d')
+    </if>
+    <if test="classSettingId != null" >
+      and a.class_setting_id = #{classSettingId,jdbcType=BIGINT}
+    </if>
+  </select>
+  
+  <select id="getByEmployIdAndDate" resultMap="BaseResultMap" >
+        SELECT a.employ_id,a.class_date,a.class_setting_id,b.must_attn_time as mustAttnTime,b.name as name ,b.start_time as startTime,b.end_time as endTime,a.id as id FROM
+	       attn_employ_class a LEFT JOIN attn_class_setting b 
+	    ON a.class_setting_id = b.id   where a.del_flag=0 and a.employ_id=#{employId,jdbcType=BIGINT} and a.class_date=#{classDate,jdbcType=DATE}  limit 0,1
+  </select>
+  
+  <select id="getEmployeeClassSetting" resultMap="EmployeeClassSettingMap" parameterType="com.ule.oa.base.po.EmployeeClass" >
+    SELECT a.company_id,a.employ_id,a.class_date,b.start_time,a.version,b.name,b.end_time,b.must_attn_time,b.is_Inter_day,a.class_setting_id
+	FROM attn_employ_class a
+	LEFT JOIN attn_class_setting b ON a.class_setting_id = b.id 
+	where a.del_flag=0  and a.employ_id is not null
+    <if test="classDate != null" >
+      and a.class_date = #{classDate,jdbcType=DATE}
+    </if>
+    <if test="employId != null" >
+      and a.employ_id = #{employId,jdbcType=BIGINT}
+    </if>
+    <if test="startTime != null" >
+      and a.class_date &gt;= #{startTime,jdbcType=DATE}
+    </if>
+    <if test="endTime != null" >
+      and a.class_date &lt;= #{endTime,jdbcType=DATE}
+    </if>
+  </select>
+  
+  <select id="getEmployeeClassList" resultMap="EmployeeClassSettingMap" parameterType="com.ule.oa.base.po.EmployeeClass" >
+    SELECT a.class_setting_id,a.company_id,a.employ_id,a.class_date,a.version,b.name,b.start_time,b.end_time,b.must_attn_time,b.is_Inter_day
+	FROM attn_employ_class a
+	LEFT JOIN attn_class_setting b ON a.class_setting_id = b.id 
+	where a.del_flag=0 and a.employ_id is not null
+    <if test="classDate != null" >
+      and a.class_date = #{classDate,jdbcType=DATE}
+    </if>
+    <if test="employId != null" >
+      and a.employ_id = #{employId,jdbcType=BIGINT}
+    </if>
+    <if test="startTime != null" >
+      and a.class_date &gt;= #{startTime,jdbcType=DATE}
+    </if>
+    <if test="endTime != null" >
+      and a.class_date &lt;= #{endTime,jdbcType=DATE}
+    </if>
+	<if test="employeeIds != null"> 
+	    and a.employ_id in 
+	    <foreach collection="employeeIds" index="index" item="item" open="(" separator="," close=")">
+             #{item}
+         	</foreach>
+  	</if>
+  </select>
+  
+  <select id="getEmployeeClassHours" resultMap="EmployeeClassSettingMap" parameterType="com.ule.oa.base.po.EmployeeClass" >
+    SELECT a.company_id,a.employ_id,SUM(b.must_attn_time)must_attn_time<!-- ,DATE_FORMAT(a.class_date,'%Y-%m')class_date去掉按月显示 -->
+	FROM attn_employ_class a
+	LEFT JOIN attn_class_setting b ON a.class_setting_id = b.id 
+	where a.del_flag=0 and a.employ_id is not null
+    <if test="classDate != null" >
+      and DATE_FORMAT(a.class_date,'%Y-%m') = DATE_FORMAT(#{classDate,jdbcType=DATE},'%Y-%m')
+    </if>
+    <if test="startTime != null" >
+      and DATE_FORMAT(a.class_date,'%Y-%m-%d') &gt;= DATE_FORMAT(#{startTime},'%Y-%m-%d')
+    </if>
+    <if test="endTime != null" >
+      and DATE_FORMAT(a.class_date,'%Y-%m-%d') &lt;= DATE_FORMAT(#{endTime},'%Y-%m-%d')
+    </if>
+    <if test="employId != null" >
+      and employ_id = #{employId,jdbcType=BIGINT}
+    </if>
+    GROUP BY a.company_id,a.employ_id
+  </select>
+  
+  <select id="getClassHours" resultMap="EmployeeClassSettingMap" parameterType="com.ule.oa.base.po.EmployeeClass" >
+    SELECT ANY_VALUE(a.employ_name) as employ_name,ANY_VALUE(a.should_time) as should_time,a.employ_id,SUM(b.must_attn_time)must_attn_time<!-- ,DATE_FORMAT(a.class_date,'%Y-%m')class_date去掉按月显示 -->
+	FROM attn_employ_class a
+	LEFT JOIN attn_class_setting b ON a.class_setting_id = b.id 
+	inner join base_employee e on e.id = a.employ_id AND CASE WHEN e.Quit_time IS NOT NULL THEN a.class_date  &lt;= e.Quit_time WHEN e.Quit_time IS NULL THEN a.class_date &gt;= #{startTime,jdbcType=DATE} END
+	where a.del_flag=0 and a.employ_id is not null
+    <if test="departId != null" >
+      and a.depart_id = #{departId,jdbcType=BIGINT}
+    </if>
+    <if test="classDate != null" >
+      and DATE_FORMAT(a.class_date,'%Y-%m') = DATE_FORMAT(#{classDate,jdbcType=DATE},'%Y-%m')
+    </if>
+    <if test="startTime != null" >
+      and DATE_FORMAT(a.class_date,'%Y-%m-%d') &gt;= DATE_FORMAT(#{startTime},'%Y-%m-%d')
+    </if>
+    <if test="endTime != null" >
+      and DATE_FORMAT(a.class_date,'%Y-%m-%d') &lt;= DATE_FORMAT(#{endTime},'%Y-%m-%d')
+    </if>
+    <if test="employId != null" >
+      and employ_id = #{employId,jdbcType=BIGINT}
+    </if>
+    GROUP BY a.employ_id
+  </select>
+  
+  <select id="getClassHoursMap" resultType="Map" parameterType="com.ule.oa.base.po.EmployeeClass" >
+    SELECT ANY_VALUE(a.employ_name) as employ_name,ANY_VALUE(a.should_time) as should_time,a.employ_id,SUM(b.must_attn_time)must_attn_time,count(1) as dayCount
+	FROM attn_employ_class a
+	LEFT JOIN attn_class_setting b ON a.class_setting_id = b.id 
+	where a.del_flag=0 and a.employ_id is not null
+    <if test="departId != null" >
+      and a.depart_id = #{departId,jdbcType=BIGINT}
+    </if>
+    <if test="classDate != null" >
+      and DATE_FORMAT(a.class_date,'%Y-%m') = DATE_FORMAT(#{classDate,jdbcType=DATE},'%Y-%m')
+    </if>
+    <if test="startTime != null" >
+      and DATE_FORMAT(a.class_date,'%Y-%m-%d') &gt;= DATE_FORMAT(#{startTime},'%Y-%m-%d')
+    </if>
+    <if test="endTime != null" >
+      and DATE_FORMAT(a.class_date,'%Y-%m-%d') &lt;= DATE_FORMAT(#{endTime},'%Y-%m-%d')
+    </if>
+    <if test="employId != null" >
+      and employ_id = #{employId,jdbcType=BIGINT}
+    </if>
+    <if test="employeeIds != null"> 
+	    and employ_id in 
+	    <foreach collection="employeeIds" index="index" item="item" open="(" separator="," close=")">
+             #{item}
+         	</foreach>
+  	</if>
+    GROUP BY a.employ_id
+  </select>
+
+  <insert id="save" parameterType="com.ule.oa.base.po.EmployeeClass" >
+  	<selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">
+		SELECT LAST_INSERT_ID() AS id
+	</selectKey>
+	
+	insert into attn_employ_class
+	<trim prefix="(" suffix=")" suffixOverrides=",">
+		  <if test="companyId != null" >
+	        company_id,
+	      </if>
+	      <if test="departId != null" >
+	        depart_id,
+	      </if>
+	      <if test="groupId != null" >
+	        group_id,
+	      </if>
+	      <if test="employId != null" >
+	        employ_id,
+	      </if>
+	      <if test="employName != null" >
+	        employ_name,
+	      </if>
+	      <if test="classDate != null" >
+	        class_date,
+	      </if>
+	      <if test="classSettingId != null" >
+	        class_setting_id,
+	      </if>
+	      <if test="classSettingCode != null" >
+	        class_setting_code,
+	      </if>
+	      <if test="classSettingPerson != null">
+	      	class_setting_person,
+	      </if>
+	      <if test="shouldTime != null" >
+	        should_time,
+	      </if>
+	      <if test="delFlag != null" >
+	        del_flag,
+	      </if>
+	      <if test="createTime != null" >
+	        create_time,
+	      </if>
+	      <if test="createUser != null" >
+	        create_user,
+	      </if>
+	      <if test="updateUser != null" >
+	        update_user,
+	      </if>
+	      <if test="updateTime != null" >
+	        update_time,
+	      </if>
+	</trim>
+	
+	<trim prefix="values(" suffix=")" suffixOverrides=",">
+		  <if test="companyId != null" >
+	        #{companyId,jdbcType=BIGINT},
+	      </if>
+	      <if test="departId != null" >
+	        #{departId,jdbcType=BIGINT},
+	      </if>
+	      <if test="groupId != null" >
+	        #{groupId,jdbcType=BIGINT},
+	      </if>
+	      <if test="employId != null" >
+	        #{employId,jdbcType=BIGINT},
+	      </if>
+	      <if test="employName != null" >
+	        #{employName,jdbcType=VARCHAR},
+	      </if>
+	      <if test="classDate != null" >
+	        #{classDate,jdbcType=DATE},
+	      </if>
+	      <if test="classSettingId != null" >
+	        #{classSettingId,jdbcType=BIGINT},
+	      </if>
+	      <if test="classSettingCode != null" >
+	        #{classSettingCode,jdbcType=VARCHAR},
+	      </if>
+	      <if test="classSettingPerson != null">
+	      	#{classSettingPerson,jdbcType=VARCHAR},
+	      </if>
+	      <if test="shouldTime != null" >
+	        #{shouldTime,jdbcType=DOUBLE},
+	      </if>
+	      <if test="delFlag != null" >
+	        #{delFlag,jdbcType=INTEGER},
+	      </if>
+	      <if test="createTime != null" >
+	        #{createTime,jdbcType=TIMESTAMP},
+	      </if>
+	      <if test="createUser != null" >
+	        #{createUser,jdbcType=VARCHAR},
+	      </if>
+	      <if test="updateUser != null" >
+	        #{updateUser,jdbcType=VARCHAR},
+	      </if>
+	      <if test="updateTime != null" >
+	        #{updateTime,jdbcType=TIMESTAMP},
+	      </if>
+	</trim>
+  </insert>
+  
+  <insert id="batchSave" parameterType="java.util.List">
+  	insert into attn_employ_class (
+  	  company_id, depart_id, group_id, employ_id,employ_name,
+  	  class_date, class_setting_id, 
+      class_setting_code,class_setting_person,should_time,
+      create_time,create_user, update_user, update_time
+      )
+    select tmp.* from (
+    	<foreach collection="list" item="item" separator="UNION">
+    		select 
+    		#{item.companyId,jdbcType=BIGINT} as company_id,#{item.departId,jdbcType=BIGINT} as depart_id,#{item.groupId,jdbcType=BIGINT} as group_id,#{item.employId,jdbcType=BIGINT} as employ_id,#{item.employName,jdbcType=VARCHAR} as employ_name,
+    		#{item.classDate,jdbcType=DATE} as class_date,#{item.classSettingId,jdbcType=BIGINT} as class_setting_id,
+    		#{item.classSettingCode,jdbcType=VARCHAR} as class_setting_code,#{item.classSettingPerson,jdbcType=VARCHAR} as class_setting_person,#{item.shouldTime,jdbcType=DOUBLE} as should_time,
+    		#{item.createTime,jdbcType=TIMESTAMP} as create_time,#{item.createUser,jdbcType=VARCHAR} as create_user,#{item.updateUser,jdbcType=VARCHAR} as update_user,
+    		#{item.updateTime,jdbcType=TIMESTAMP} as update_time
+    		from dual
+    	</foreach>
+    )tmp
+  </insert>
+  
+
+  <update id="updateById" parameterType="com.ule.oa.base.po.EmployeeClass" >
+    update attn_employ_class
+    <set >
+      <if test="classSettingId != null" >
+        class_setting_id = #{classSettingId,jdbcType=BIGINT},
+      </if>
+      <if test="classSettingCode != null" >
+        class_setting_code = #{classSettingCode,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="delFlag != null" >
+	    del_flag = #{delFlag,jdbcType=INTEGER},
+	  </if>
+      <if test="classSettingPerson != null">
+      	class_setting_person = #{classSettingPerson,jdbcType=VARCHAR},
+      </if>
+      <if test="groupId != null">
+      	group_id = #{groupId,jdbcType=BIGINT},
+      </if>
+      version = version + 1
+    </set>
+    where ID = #{id,jdbcType=BIGINT}
+  </update>
+  
+  <update id="deleteByQuitTime" parameterType="com.ule.oa.base.po.EmployeeClass" >
+    update attn_employ_class 
+    <set >
+      del_flag = 1,
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP}
+      </if>
+    </set>
+    where class_date &gt; #{classDate,jdbcType=DATE} and  employ_id = #{employId,jdbcType=BIGINT}
+  </update>
+
+	<select id="getClassHoursMapByid" resultType="Map" parameterType="com.ule.oa.base.po.EmployeeClass" >
+    SELECT ANY_VALUE(a.employ_name) as employ_name,ANY_VALUE(a.should_time) as should_time,a.employ_id,SUM(b.must_attn_time)must_attn_time,count(1) as dayCount
+	FROM attn_employ_class a
+	LEFT JOIN attn_class_setting b ON a.class_setting_id = b.id 
+	left join attn_application_employ_class_detail aad  on aad.employ_id= a.employ_id
+	left join attn_application_employ_class aac on 	 aac.id=aad.attn_application_employ_class_id
+	where a.del_flag=0 and a.employ_id is not null
+    <if test="departId != null" >
+      and a.depart_id = #{departId,jdbcType=BIGINT}
+    </if>
+    <if test="classDate != null" >
+      and DATE_FORMAT(a.class_date,'%Y-%m') = DATE_FORMAT(#{classDate,jdbcType=DATE},'%Y-%m')
+    </if>
+    <if test="startTime != null" >
+      and DATE_FORMAT(a.class_date,'%Y-%m-%d') &gt;= DATE_FORMAT(#{startTime},'%Y-%m-%d')
+    </if>
+    <if test="endTime != null" >
+      and DATE_FORMAT(a.class_date,'%Y-%m-%d') &lt;= DATE_FORMAT(#{endTime},'%Y-%m-%d')
+    </if>
+    <if test="employId != null" >
+      and employ_id = #{employId,jdbcType=BIGINT}
+    </if>
+    <if test="empClassId !=null">
+      and aac.id = #{empClassId,jdbcType=BIGINT}
+    </if>
+   
+    
+    GROUP BY a.employ_id
+  </select>
+
+  <select id="getClassSettingIdByEmployIdAndDate" resultType="java.lang.Long" parameterType="com.ule.oa.base.po.EmployeeClass" >
+	    SELECT class_setting_id FROM attn_employ_class
+		  where del_flag=0 and employ_id = #{employId,jdbcType=BIGINT} and class_date = #{classDate,jdbcType=DATE}
+  </select>
+  
+  <select id="getEmployeeThisMonthClassList" resultMap="EmployeeClassSettingMap" parameterType="com.ule.oa.base.po.EmployeeClass" >
+    SELECT ID
+	FROM attn_employ_class 
+	where del_flag=0 and employ_id is not null
+    <if test="employId != null" >
+      and employ_id = #{employId,jdbcType=BIGINT}
+    </if>
+    <if test="startTime != null" >
+      and class_date &gt;= #{startTime,jdbcType=DATE}
+    </if>
+  </select>
+  
+  <update id="updateGroupId" parameterType="com.ule.oa.base.po.EmployeeClass" >
+    update attn_employ_class
+    <set >
+      group_id = #{groupId,jdbcType=BIGINT},
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      version = version + 1
+    </set>
+    where ID = #{id,jdbcType=BIGINT}
+  </update>
+  
+  <select id="getClassCountByMonth" resultType="int">
+  	select count(1) from attn_employ_class
+  	where del_flag = 0
+  	and group_id = #{groupId}
+  	and class_date &gt;= #{fristDay}
+  	and class_date &lt;= #{lastDay}
+  </select>
+  
+  <update id="deleteByIdList" >
+    update attn_employ_class set del_flag = 1,update_time = now(),update_user = #{updateUser,jdbcType=VARCHAR}
+     where id in 
+	    <foreach collection="idList" index="index" item="item" open="(" separator="," close=")">
+             #{item}
+         </foreach>
+  </update>
+  
+  <delete id="deleteByStartDate">
+    delete from attn_employ_class where class_date &gt;= #{startDate}
+  </delete>
+  
+  <select id="exportScheduleDataByMonthAndGroupId" resultType="com.ule.oa.base.po.EmployeeClass">
+  	select cd.employ_name employName,cd.class_date classDate,cs.start_time startTime,cs.end_time endTime,cs.is_Inter_day isInterDay
+	from attn_employ_class cd,attn_class_setting cs
+	where cd.del_flag = 0 and cd.depart_id=#{departId} and cd.group_id = #{groupId}
+    and cd.class_date &gt;= #{startDate}
+	and cd.class_date &lt;= #{endDate}
+	and cd.class_setting_id = cs.id
+	order by cd.employ_id,cd.class_date
+  </select>
+</mapper>

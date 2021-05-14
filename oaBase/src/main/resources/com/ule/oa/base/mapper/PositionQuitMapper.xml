@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ule.oa.base.mapper.PositionQuitMapper" >
+  
+  <select id="getReportPageList" parameterType="com.ule.oa.base.po.QuitHistory" resultType="com.ule.oa.base.po.QuitHistory">
+    <!-- 分页查询报表 -->
+        SELECT a.code AS code,a.cn_name AS employeeName,b.employee_type AS employeeType,
+        a.first_Entry_time AS entryTime,a.Quit_time AS quitTime,b.depart_name AS departName,
+        b.position_name AS positionName,b.report_leader AS reportLeader,
+        b.depart_header AS departHeader FROM base_employee a LEFT JOIN quit_history b ON a.id=b.employee_id
+	<where>
+		a.job_status=1 and DATE_FORMAT(a.Quit_time,'%Y-%m-%d') &lt; DATE_FORMAT(now(),'%Y-%m-%d')
+  		<if test="departName != null and departName != ''">
+  			and b.depart_name = #{departName,jdbcType=VARCHAR}
+  		</if> 		
+  		<if test="employeeName != null and employeeName != ''">
+  			and a.cn_name  like concat('%',#{employeeName,jdbcType=VARCHAR},'%')
+  		</if>
+  		<if test="quitStartTime != null and quitStartTime != ''">
+  			and DATE_FORMAT(a.Quit_time,'%Y-%m-%d') &gt;= #{quitStartTime,jdbcType=DATE}
+  		</if>
+  		<if test="quitEndTime != null and quitEndTime != ''">
+  			and DATE_FORMAT(a.Quit_time,'%Y-%m-%d') &lt;= #{quitEndTime,jdbcType=DATE}
+  		</if>	 		
+	</where>
+	 	ORDER BY a.Quit_time DESC 
+	 	<if test="offset != null and limit != null">
+			limit #{offset},#{limit}
+		</if>	 
+  </select>
+  
+  
+  <!-- 查询报表总记录数 -->
+  <select id="getReportCount" parameterType="com.ule.oa.base.po.QuitHistory" resultType="java.lang.Integer">
+  	  SELECT count(1) FROM base_employee a LEFT JOIN quit_history b ON a.id=b.employee_id
+	<where>
+		a.job_status=1 and DATE_FORMAT(a.Quit_time,'%Y-%m-%d') &lt; DATE_FORMAT(now(),'%Y-%m-%d')
+  		<if test="departName != null and departName != ''">
+  			and b.depart_name = #{departName,jdbcType=VARCHAR}
+  		</if> 		
+  		<if test="employeeName != null and employeeName != ''">
+  			and a.cn_name  like concat('%',#{employeeName,jdbcType=VARCHAR},'%')
+  		</if>
+  		<if test="quitStartTime != null and quitStartTime != ''">
+  			and DATE_FORMAT(a.Quit_time,'%Y-%m-%d') &gt;= #{quitStartTime,jdbcType=DATE}
+  		</if>
+  		<if test="quitEndTime != null and quitEndTime != ''">
+  			and DATE_FORMAT(a.Quit_time,'%Y-%m-%d') &lt;= #{quitEndTime,jdbcType=DATE}
+  		</if>	 		
+	</where>
+  </select>
+  
+  <select id="getExportReportList" parameterType="com.ule.oa.base.po.Employee" resultType="Map">
+  		<!-- SELECT
+			bp.position_name,bemp.Quit_time,bd.`name` AS dpname,
+			bet.type_c_name,bc.`name`,eer.id,eer.contract_code,
+			eer.ENTRY_DATE,eer.RESIGNATION_date,dbemp.cn_name AS deptLeaderName,
+			bemp.cn_name AS leaderName
+		FROM
+			hr_emp_resign eer
+		INNER JOIN base_company bc ON eer.company_id = bc.id
+		INNER JOIN base_depart bd ON eer.depart_id = bd.id
+		INNER JOIN base_employee bemp ON bemp.id = eer.leader
+		LEFT JOIN base_employee dbemp ON dbemp.id = bd.leader
+		INNER JOIN base_emp_position beps on  beps.employee_id =bemp.id
+		inner join base_position bp on bp.id=beps.position_id
+		INNER JOIN base_emp_type bet ON bemp.emp_type_id = bet.id -->
+		select bemps.id,bemps.cn_name,bemps.Quit_time,bemps.job_status,bemps.first_Entry_time,bemps.version,
+			 bemps.salary_balance_date,bp.position_name,bdt.`name` AS departmentName,bc.`name` AS companyName,
+			 bempst.type_c_name As empTypeName,dbemp.cn_name AS departName,leader.cn_name AS leaderName
+		from base_employee bemps 
+		left JOIN base_company bc ON bemps.company_id = bc.id
+		left join base_emp_depart bempsd on bempsd.employee_id=bemps.id
+		left JOIN base_depart bdt ON bdt.id=bempsd.depart_id
+		left JOIN base_emp_position bempsps on  bemps.id =bempsps.employee_id
+		left join base_position bp on bp.id=bempsps.position_id
+		left JOIN base_emp_type bempst ON bemps.emp_type_id = bempst.id
+		LEFT JOIN base_employee dbemp ON dbemp.id = bdt.leader
+		LEFT JOIN base_employee leader ON leader.id = bemps.report_to_leader
+	<where>
+		bemps.job_status=1
+  		<if test="departId != null">
+  			and bempsd.depart_id = #{departId,jdbcType=BIGINT}
+  		</if> 		
+  		<if test="cnName != null and cnName != ''">
+  			and bemps.cnName  like concat('%',#{cnName,jdbcType=VARCHAR},'%')
+  		</if>
+  		
+  		<if test="firstEntryTimeBegin != null and firstEntryTimeBegin != ''">
+  			and DATE_FORMAT(bemps.first_Entry_time,'%Y-%m-%d') &gt;= #{firstEntryTimeBegin,jdbcType=DATE}
+  			
+  		</if>
+  		<if test="firstEntryTimeEnd != null and firstEntryTimeEnd != ''">
+  			and DATE_FORMAT(bemps.first_Entry_time,'%Y-%m-%d') &lt;= #{firstEntryTimeEnd,jdbcType=DATE}
+  		</if>
+  		<if test="quitTimeBegin != null and quitTimeBegin != ''">
+  			and DATE_FORMAT(bemps.Quit_time,'%Y-%m-%d') &gt;= #{quitTimeBegin,jdbcType=DATE}
+  		</if>
+  		<if test="quitTimeEnd != null and quitTimeEnd != ''">
+  			and DATE_FORMAT(bemps.Quit_time,'%Y-%m-%d') &lt;= #{quitTimeEnd,jdbcType=DATE}
+  		</if>	 		
+	</where>
+  </select>
+  
+  <!-- <insert id="insert" parameterType="com.ule.oa.base.po.HrEmpResign" resultType="java.lang.Integer">
+  	insert into base_employee (Company_Id,Employee_Id,Contract_Code,Depart_Id,Depart_Name,Entry_Date,
+    	RESIGNATION_date,Last_Date,Importance,Reason_LeavIng,Leader_Opinion,LEADER_date,Leader,
+		Leader_Name,Hr_Opinion,Hr_Date,Hr_Id,Hr_Name,PayRoll_Date,TurnOver_Status,
+		Version ,Del_Flag,Create_Time,UpDate_Time,Create_User,UpDate_User 
+    )
+    values (#{companyId,jdbcType=BIGINT},#{employeeId,jdbcType=BIGINT},#{contractCode,jdbcType=VARCHAR}, 
+      #{departId,jdbcType=BIGINT}, #{departName,jdbcType=VARCHAR}, #{entryDate,jdbcType=TIMESTAMP}, #{RESIGNATIONDate,jdbcType=TIMESTAMP}, 
+      #{lastDate,jdbcType=TIMESTAMP}, #{importance,jdbcType=INTEGER}, #{reasonLeavIng,jdbcType=VARCHAR}, 
+      #{leaderOpinion,jdbcType=VARCHAR}, #{LEADERDate,jdbcType=TIMESTAMP}, #{leader,jdbcType=BIGINT}, 
+      #{leaderName,jdbcType=VARCHAR}, #{hrOpinion,jdbcType=VARCHAR}, #{hrDate,jdbcType=TIMESTAMP}, 
+      #{hrId,jdbcType=BIGINT}, #{hrName,jdbcType=VARCHAR}, #{payRollDate,jdbcType=TIMESTAMP}, #{turnOverStatus,jdbcType=BIGINT},
+      #{createTime,jdbcType=TIMESTAMP}, #{createUser,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP}, 
+      #{updateUser,jdbcType=VARCHAR}, #{delFlag,jdbcType=INTEGER},#{version,jdbcType=INTEGER}
+     )
+  
+   
+  </insert> -->
+</mapper>

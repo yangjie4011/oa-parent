@@ -1,0 +1,459 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ule.oa.base.mapper.RemoveSubordinateAbsenceMapper" >
+  <resultMap id="BaseResultMap" type="com.ule.oa.base.po.RemoveSubordinateAbsence" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="employee_id" property="employeeId" jdbcType="BIGINT" />
+    <result column="submitter_id" property="submitterId" jdbcType="BIGINT" />
+    <result column="overHoursOfAttendance" property="overHoursOfAttendance" jdbcType="DOUBLE" />
+    <result column="yesterday_off_time" property="yesterdayOffTime" jdbcType="TIMESTAMP" />
+    <result column="attendance_date" property="attendanceDate" jdbcType="DATE" />
+    <result column="attendance_hour" property="attendanceHour" jdbcType="VARCHAR" />
+    <result column="remove_absence_hours" property="removeAbsenceHours" jdbcType="DOUBLE" />
+    <result column="remove_absence_reason" property="removeAbsenceReason" jdbcType="VARCHAR" />
+    <result column="approal_status" property="approalStatus" jdbcType="BIGINT" />
+    <result column="approal_reason" property="approalReason" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="del_flag" property="delFlag" jdbcType="INTEGER" />
+    <result column="processinstance_id" property="processinstanceId" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    id, employee_id, submitter_id,overHoursOfAttendance,yesterday_off_time, attendance_date,attendance_hour,
+    remove_absence_hours,remove_absence_reason,approal_status,approal_reason,
+    create_time,update_time, create_user, update_user, del_flag,processinstance_id
+  </sql>
+  <select id="getById" resultMap="BaseResultMap">
+  	select <include refid="Base_Column_List"/>
+  	from remove_subordinate_absence
+  	where id = #{id}
+	and del_flag = 0
+  </select>
+  <select id="getByEmpAndDate" resultMap="BaseResultMap">
+  	select <include refid="Base_Column_List"/>
+  	from remove_subordinate_absence
+  	where employee_id = #{employeeId}
+  	and attendance_date = #{attendanceDate}
+	and del_flag = 0
+  </select>
+  
+  <insert id="insertRemoveSubordinateAbsence" parameterType="com.ule.oa.base.po.RemoveSubordinateAbsence" useGeneratedKeys="true" keyProperty="id">
+  	insert into remove_subordinate_absence(employee_id,submitter_id,overHoursOfAttendance,yesterday_off_time,attendance_date,attendance_hour,
+  	remove_absence_hours,remove_absence_reason,approal_status,approal_reason,create_time,create_user,del_flag,processinstance_id)
+  	values (#{employeeId},#{submitterId},#{overHoursOfAttendance},#{yesterdayOffTime},#{attendanceDate},#{attendanceHour},#{removeAbsenceHours},#{removeAbsenceReason},
+  	#{approalStatus},#{approalReason},#{createTime},#{createUser},#{delFlag},#{processinstanceId})
+  	<selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">
+        SELECT LAST_INSERT_ID() AS id
+    </selectKey>
+  </insert>
+  <select id="getByProcessId" resultMap="BaseResultMap">
+  	select be.code as empCode,be.cn_name as empName,(select cn_name from base_employee where id=rsa.submitter_id)as leaderName,
+  	bd.name as departName,rsa.id,rsa.employee_id,rsa.submitter_id,rsa.overHoursOfAttendance,rsa.yesterday_off_time,rsa.attendance_date,
+  	rsa.attendance_hour,rsa.remove_absence_hours,rsa.remove_absence_reason,rsa.approal_status,rsa.approal_reason,
+  	rsa.update_time,rsa.update_user,rsa.create_time,rsa.processinstance_id
+	from remove_subordinate_absence rsa
+	left JOIN  base_employee be on rsa.employee_id=be.id
+	left JOIN  base_emp_depart bed on be.id = bed.employee_id
+	left JOIN  base_depart bd on bed.depart_id = bd.id
+  	where rsa.processinstance_id = #{processId}
+	and rsa.del_flag = 0
+  </select>
+  <update id="updateById" parameterType="com.ule.oa.base.po.RemoveSubordinateAbsence">
+  	update remove_subordinate_absence
+    <set >
+	  <if test="approalStatus != null">
+	    approal_status = #{approalStatus}, 
+	  </if>
+	  <if test="approalReason != null">
+	  	approal_reason = #{approalReason},
+	  </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser},
+      </if>
+    </set>
+    where id = #{id}
+  </update>
+  
+  <select id="getList" resultType="com.ule.oa.base.po.RemoveSubordinateAbsence" parameterType="com.ule.oa.base.po.RemoveSubordinateAbsence">
+  	select <include refid="Base_Column_List"/>
+  	from remove_subordinate_absence
+  	where del_flag = 0 and  employee_id = #{employeeId}
+  	<if test="startTime != null and startTime!=''" >
+        and DATE_FORMAT(attendance_date,'%Y-%m-%d') &gt;= #{startTime,jdbcType=DATE}
+    </if>
+    <if test="endTime != null and endTime!=''" >
+        and DATE_FORMAT(attendance_date,'%Y-%m-%d') &lt;= #{endTime,jdbcType=DATE}
+    </if>
+  	<if test="attendanceDate !=null and attendanceDate!=''">
+  	  and DATE_FORMAT(attendance_date,'%Y-%m-%d') = #{attendanceDate,jdbcType=DATE}
+  	</if>
+  	<if test="approalStatus !=null and approalStatus!=''">
+  	  and approal_status = #{approalStatus,jdbcType=BIGINT}
+  	</if>
+  	ORDER BY attendance_date desc
+	<if test="offset != null and limit != null">
+		limit #{offset},#{limit}
+	</if>
+	</select>
+	
+	<select id="getCompletedListByDate" resultType="com.ule.oa.base.po.RemoveSubordinateAbsence" parameterType="com.ule.oa.base.po.RemoveSubordinateAbsence">
+	  	select <include refid="Base_Column_List"/>
+	  	from remove_subordinate_absence
+	  	where del_flag = 0 and attendance_date &gt;= #{startDate,jdbcType=DATE} and attendance_date &lt;= #{endDate,jdbcType=DATE}
+	  	  and approal_status in(200,600)
+	</select>
+	
+    <select id="getPageList" resultType="com.ule.oa.base.po.RemoveSubordinateAbsence" parameterType="com.ule.oa.base.po.RemoveSubordinateAbsence">
+  	select be.`code` as empCode,be.cn_name as empName,bd.name as departName,(select cn_name from base_employee where id=rsa.submitter_id)as leaderName,
+		rsa.yesterday_off_time As yesterdayOffTime,rsa.attendance_date AS attendanceDate,rsa.remove_absence_hours AS removeAbsenceHours,rsa.remove_absence_reason AS removeAbsenceReason,rsa.approal_status AS approalStatus,rsa.update_user AS updateUser,
+		rsa.processinstance_id As processinstanceId,rsa.attendance_hour AS attendanceHour,rsa.overHoursOfAttendance,rsa.id
+	  	from remove_subordinate_absence rsa
+	left JOIN  base_employee be on rsa.employee_id=be.id
+	left join base_emp_depart ed
+		on (be.id = ed.employee_id and ed.del_flag = 0)
+		left join base_depart bd
+		on (ed.depart_id = bd.id and be.company_id = bd.company_id and bd.del_flag = 0)
+	where rsa.del_flag = 0	
+		<if test="empName != null and empName != ''" >
+		  and be.cn_name like concat('%',#{empName,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="empCode != null and empCode != ''" >
+		  and be.code  like concat('%',#{empCode,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="leaderName != null and leaderName != ''" >
+		  and (select cn_name from base_employee where id=be.report_to_leader)  like concat('%',#{leaderName,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="departId != null and departId!=''" >
+	        and  bd.id = #{departId,jdbcType=BIGINT}
+	    </if>
+		<if test="startTime != null and startTime!=''" >
+	        and DATE_FORMAT(rsa.attendance_date,'%Y-%m-%d') &gt;= #{startTime,jdbcType=DATE}
+	    </if>
+	    <if test="endTime != null and endTime!=''" >
+	        and DATE_FORMAT(rsa.attendance_date,'%Y-%m-%d') &lt;= #{endTime,jdbcType=DATE}
+	    </if>
+	  	<if test="attendanceDate !=null and attendanceDate!=''">
+	  	  and DATE_FORMAT(rsa.attendance_date,'%Y-%m-%d') = #{attendanceDate,jdbcType=DATE}
+	  	</if>
+	  	<if test="approalStatus !=null and approalStatus!=''">
+	  	  and rsa.approal_status = #{approalStatus,jdbcType=BIGINT}
+	  	</if>
+	  		<if test="assignee != null and assignee != ''" >
+	        and PROCESSINSTANCE_ID in (select DISTINCT
+				* 
+			FROM
+				(
+			SELECT
+				rt.PROC_INST_ID_ 
+			FROM
+				ACT_RU_IDENTITYLINK ri
+				LEFT JOIN ACT_RU_TASK rt ON ri.TASK_ID_ = rt.ID_ 
+			WHERE
+				ri.TYPE_ = 'candidate' 
+				AND ri.USER_ID_ = #{assignee,jdbcType=VARCHAR}
+				
+				UNION ALL
+				
+			SELECT
+				PROC_INST_ID_ 
+			FROM
+				ACT_RU_TASK 
+			WHERE
+				ASSIGNEE_ = #{assignee,jdbcType=VARCHAR}
+				) instance_id
+				)
+        </if>
+        <if test="currentUserDepart != null and currentUserDepart.size > 0">
+			and be.id in
+			<foreach collection="currentUserDepart" item="ids" open="(" separator="," close=")">
+				#{ids,jdbcType=BIGINT}
+			</foreach>
+		</if>
+		<if test="subEmployeeIdList != null and subEmployeeIdList.size > 0">
+			and be.id in
+			<foreach collection="subEmployeeIdList" item="ids" open="(" separator="," close=")">
+				#{ids,jdbcType=BIGINT}
+			</foreach>
+		</if> 
+		<if test="softType!=null and softType==1">ORDER BY rsa.create_time desc,convert(be.cn_name using gbk) collate gbk_chinese_ci asc</if>
+		<if test="softType!=null and softType==2">ORDER BY rsa.attendance_date desc,convert(be.cn_name using gbk) collate gbk_chinese_ci asc</if>
+		<if test="softType==null">ORDER BY rsa.attendance_date desc,convert(be.cn_name using gbk) collate gbk_chinese_ci asc</if>
+		<if test="offset != null and limit != null">
+			limit #{offset},#{limit}
+		</if>
+  </select>
+  
+  <select id="getCount" parameterType="com.ule.oa.base.po.RemoveSubordinateAbsence" resultType="java.lang.Integer">
+  	select count(1)
+	  	from remove_subordinate_absence rsa
+	left JOIN  base_employee be on rsa.employee_id=be.id
+	left join base_emp_depart ed
+		on (be.id = ed.employee_id and ed.del_flag = 0)
+		left join base_depart bd
+		on (ed.depart_id = bd.id and be.company_id = bd.company_id and bd.del_flag = 0)
+	where rsa.del_flag = 0	
+		<if test="empName != null and empName != ''" >
+		  and be.cn_name like concat('%',#{empName,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="empCode != null and empCode != ''" >
+		  and be.code  like concat('%',#{empCode,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="leaderName != null and leaderName != ''" >
+		  and (select cn_name from base_employee where id=be.report_to_leader)  like concat('%',#{leaderName,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="departId != null and departId!=''" >
+	        and  bd.id = #{departId,jdbcType=BIGINT}
+	    </if>
+	    <if test="submitterId != null">
+  			and be.report_to_leader = #{submitterId,jdbcType=BIGINT}
+  		</if>
+		<if test="startTime != null and startTime!=''" >
+	        and DATE_FORMAT(attendance_date,'%Y-%m-%d') &gt;= #{startTime,jdbcType=DATE}
+	    </if>
+	    <if test="endTime != null and endTime!=''" >
+	        and DATE_FORMAT(attendance_date,'%Y-%m-%d') &lt;= #{endTime,jdbcType=DATE}
+	    </if>
+	  	<if test="attendanceDate !=null and attendanceDate!=''">
+	  	  and DATE_FORMAT(attendance_date,'%Y-%m-%d') = #{attendanceDate,jdbcType=DATE}
+	  	</if>
+	  	<if test="approalStatus !=null and approalStatus!=''">
+	  	  and approal_status = #{approalStatus,jdbcType=BIGINT}
+	  	</if>
+	  	<if test="assignee != null and assignee != ''" >
+	        and PROCESSINSTANCE_ID in (select DISTINCT
+				* 
+			FROM
+				(
+			SELECT
+				rt.PROC_INST_ID_ 
+			FROM
+				ACT_RU_IDENTITYLINK ri
+				LEFT JOIN ACT_RU_TASK rt ON ri.TASK_ID_ = rt.ID_ 
+			WHERE
+				ri.TYPE_ = 'candidate' 
+				AND ri.USER_ID_ = #{assignee,jdbcType=VARCHAR}
+				
+				UNION ALL
+				
+			SELECT
+				PROC_INST_ID_ 
+			FROM
+				ACT_RU_TASK 
+			WHERE
+				ASSIGNEE_ = #{assignee,jdbcType=VARCHAR}
+				) instance_id
+				)
+        </if>
+        <if test="currentUserDepart != null and currentUserDepart.size > 0">
+			and be.id in
+			<foreach collection="currentUserDepart" item="ids" open="(" separator="," close=")">
+				#{ids,jdbcType=BIGINT}
+			</foreach>
+		</if>
+		<if test="subEmployeeIdList != null and subEmployeeIdList.size > 0">
+			and be.id in
+			<foreach collection="subEmployeeIdList" item="ids" open="(" separator="," close=")">
+				#{ids,jdbcType=BIGINT}
+			</foreach>
+		</if>
+		<if test="offset != null and limit != null">
+			limit #{offset},#{limit}
+		</if>
+  </select>
+  
+  <select id="myTaskList" resultType="com.ule.oa.base.po.RemoveSubordinateAbsence" parameterType="com.ule.oa.base.po.RemoveSubordinateAbsence">
+  	select be.`code` as empCode,be.cn_name as empName,bd.name as departName,(select cn_name from base_employee where id=rsa.submitter_id)as leaderName,
+	rsa.yesterday_off_time,rsa.attendance_date,rsa.remove_absence_hours,rsa.remove_absence_reason,rsa.approal_status,rsa.update_user,
+	rsa.processinstance_id,rsa.attendance_hour,rsa.overHoursOfAttendance
+	  	from remove_subordinate_absence rsa
+	left JOIN  base_employee be on rsa.employee_id=be.id
+	left join base_emp_depart ed
+		on (be.id = ed.employee_id and ed.del_flag = 0)
+		left join base_depart bd
+		on (ed.depart_id = bd.id and be.company_id = bd.company_id and bd.del_flag = 0)
+		LEFT JOIN ACT_HI_TASKINST t 
+		ON rsa.processinstance_id = t.PROC_INST_ID_
+	where rsa.del_flag = 0	
+  		and t.ASSIGNEE_ = #{assignee,jdbcType=VARCHAR}
+    	AND t.TASK_DEF_KEY_ != 'proposer' 
+    	AND t.TASK_DEF_KEY_ != 'usertask1' 
+    	AND t.END_TIME_ IS NOT NULL 
+    	AND t.PROC_DEF_ID_ LIKE '%removeSubAbsence%'	
+		<if test="empName != null and empName != ''" >
+		  and be.cn_name like concat('%',#{empName,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="empCode != null and empCode != ''" >
+		  and be.code  like concat('%',#{empCode,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="leaderName != null and leaderName != ''" >
+		  and (select cn_name from base_employee where id=be.report_to_leader)  like concat('%',#{leaderName,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="departId != null and departId!=''" >
+	        and  bd.id = #{departId,jdbcType=BIGINT}
+	    </if>
+		<if test="startTime != null and startTime!=''" >
+	        and DATE_FORMAT(rsa.attendance_date,'%Y-%m-%d') &gt;= #{startTime,jdbcType=DATE}
+	    </if>
+	    <if test="endTime != null and endTime!=''" >
+	        and DATE_FORMAT(rsa.attendance_date,'%Y-%m-%d') &lt;= #{endTime,jdbcType=DATE}
+	    </if>
+	  	<if test="attendanceDate !=null and attendanceDate!=''">
+	  	  and DATE_FORMAT(rsa.attendance_date,'%Y-%m-%d') = #{attendanceDate,jdbcType=DATE}
+	  	</if>
+	  	<if test="approalStatus !=null and approalStatus!=''">
+	  	  and rsa.approal_status = #{approalStatus,jdbcType=BIGINT}
+	  	</if>	  		
+	  	<if test="approalStatusList != null and approalStatusList.size > 0">
+			and rsa.approal_status in
+			<foreach collection="approalStatusList" item="ids" open="(" separator="," close=")">
+				#{ids,jdbcType=BIGINT}
+			</foreach>
+		</if>
+        <if test="currentUserDepart != null and currentUserDepart.size > 0">
+			and be.id in
+			<foreach collection="currentUserDepart" item="ids" open="(" separator="," close=")">
+				#{ids,jdbcType=BIGINT}
+			</foreach>
+		</if>
+		<if test="subEmployeeIdList != null and subEmployeeIdList.size > 0">
+			and be.id in
+			<foreach collection="subEmployeeIdList" item="ids" open="(" separator="," close=")">
+				#{ids,jdbcType=BIGINT}
+			</foreach>
+		</if>
+	ORDER BY t.LAST_UPDATED_TIME_ desc,convert(be.cn_name using gbk) collate gbk_chinese_ci asc	
+		<if test="offset != null and limit != null">
+			limit #{offset},#{limit}
+		</if>
+  </select>
+  
+  <select id="myTaskListCount" parameterType="com.ule.oa.base.po.RemoveSubordinateAbsence" resultType="java.lang.Integer">
+  	select count(1)
+	  	from remove_subordinate_absence rsa
+	left JOIN  base_employee be on rsa.employee_id=be.id
+	left join base_emp_depart ed
+		on (be.id = ed.employee_id and ed.del_flag = 0)
+		left join base_depart bd
+		on (ed.depart_id = bd.id and be.company_id = bd.company_id and bd.del_flag = 0)
+		LEFT JOIN ACT_HI_TASKINST t 
+		 ON rsa.processinstance_id = t.PROC_INST_ID_
+	where rsa.del_flag = 0	
+  		and t.ASSIGNEE_ = #{assignee,jdbcType=VARCHAR}
+    	AND t.TASK_DEF_KEY_ != 'proposer' 
+    	AND t.TASK_DEF_KEY_ != 'usertask1' 
+    	AND t.END_TIME_ IS NOT NULL 
+    	AND t.PROC_DEF_ID_ LIKE '%removeSubAbsence%'	
+		<if test="empName != null and empName != ''" >
+		  and be.cn_name like concat('%',#{empName,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="empCode != null and empCode != ''" >
+		  and be.code  like concat('%',#{empCode,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="leaderName != null and leaderName != ''" >
+		  and (select cn_name from base_employee where id=be.report_to_leader)  like concat('%',#{leaderName,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="departId != null and departId!=''" >
+	        and  bd.id = #{departId,jdbcType=BIGINT}
+	    </if>
+	    <if test="submitterId != null">
+  			and be.report_to_leader = #{submitterId,jdbcType=BIGINT}
+  		</if>
+		<if test="startTime != null and startTime!=''" >
+	        and DATE_FORMAT(attendance_date,'%Y-%m-%d') &gt;= #{startTime,jdbcType=DATE}
+	    </if>
+	    <if test="endTime != null and endTime!=''" >
+	        and DATE_FORMAT(attendance_date,'%Y-%m-%d') &lt;= #{endTime,jdbcType=DATE}
+	    </if>
+	  	<if test="attendanceDate !=null and attendanceDate!=''">
+	  	  and DATE_FORMAT(attendance_date,'%Y-%m-%d') = #{attendanceDate,jdbcType=DATE}
+	  	</if>
+	  	<if test="approalStatus !=null and approalStatus!=''">
+	  	  and approal_status = #{approalStatus,jdbcType=BIGINT}
+	  	</if>
+	  	<if test="approalStatusList != null and approalStatusList.size > 0">
+			and rsa.approal_status in
+			<foreach collection="approalStatusList" item="ids" open="(" separator="," close=")">
+				#{ids,jdbcType=BIGINT}
+			</foreach>
+		</if>
+        <if test="currentUserDepart != null and currentUserDepart.size > 0">
+			and be.id in
+			<foreach collection="currentUserDepart" item="ids" open="(" separator="," close=")">
+				#{ids,jdbcType=BIGINT}
+			</foreach>
+		</if>
+		<if test="subEmployeeIdList != null and subEmployeeIdList.size > 0">
+			and be.id in
+			<foreach collection="subEmployeeIdList" item="ids" open="(" separator="," close=")">
+				#{ids,jdbcType=BIGINT}
+			</foreach>
+		</if>
+		<if test="offset != null and limit != null">
+			limit #{offset},#{limit}
+		</if>
+  </select>
+  
+ <select id="getListByEmployIdsandDate" parameterType="com.ule.oa.base.po.RemoveSubordinateAbsence" resultType="com.ule.oa.base.po.RemoveSubordinateAbsence">
+  	select <include refid="Base_Column_List"/>
+  	from remove_subordinate_absence
+  	  where del_flag = 0 and attendance_date  &gt;= #{startDate,jdbcType=DATE} and attendance_date &lt;=  #{endDate,jdbcType=DATE} 
+	  <if test="employIdList != null"> 
+	      and employee_id in 
+	      <foreach collection="employIdList" index="index" item="item" open="(" separator="," close=")">
+	              #{item}
+	         </foreach>
+	   </if>
+  </select>
+  
+  <select id="getAbsenceHoursCount" resultType="com.ule.oa.base.po.RemoveSubordinateAbsence">
+  	select sum(remove_absence_hours) as removeAbsenceHours
+  	from remove_subordinate_absence
+  	  where del_flag = 0 and attendance_date  &gt;= #{startDate,jdbcType=DATE} and attendance_date &lt;=  #{endDate,jdbcType=DATE} 
+	        and employee_id = #{employId,jdbcType=BIGINT} and approal_status in(200,600)
+  </select>
+  
+  <select id="getAbsenceHoursList" resultType="com.ule.oa.base.po.RemoveSubordinateAbsence">
+  	select remove_absence_hours removeAbsenceHours,attendance_date attendanceDate
+  	from remove_subordinate_absence
+  	  where del_flag = 0 and attendance_date  &gt;= #{startDate,jdbcType=DATE} and attendance_date &lt;=  #{endDate,jdbcType=DATE} 
+	        and employee_id = #{employId,jdbcType=BIGINT} and approal_status in(200,600)
+  </select>
+  
+  <select id="queryByProcessId" resultType="com.ule.oa.base.po.RemoveSubordinateAbsence">
+  	select be.`code` as empCode,be.cn_name as empName,bd.name as departName,(select cn_name from base_employee where id=rsa.submitter_id)as leaderName,
+	rsa.yesterday_off_time,rsa.attendance_date,rsa.remove_absence_hours,rsa.remove_absence_reason,rsa.approal_status,rsa.update_user,
+	rsa.overHoursOfAttendance,rsa.attendance_hour
+	  	from remove_subordinate_absence rsa
+	left JOIN  base_employee be on rsa.employee_id=be.id
+	left join base_emp_depart ed
+		on (be.id = ed.employee_id and ed.del_flag = 0)
+		left join base_depart bd
+		on (ed.depart_id = bd.id and be.company_id = bd.company_id and bd.del_flag = 0)
+	where rsa.del_flag = 0	 and  rsa.processinstance_id = #{processinstanceId,jdbcType=BIGINT}
+  </select>
+  
+  <select id="getLastMonthTotalUsedHours" resultType="Map">
+	 SELECT  a.code,temp.usedHours FROM
+			(SELECT 
+			  any_value (employee_id) AS employeeId,
+			  SUM(remove_absence_hours) AS usedHours
+			FROM
+			  remove_subordinate_absence 
+			WHERE del_flag = 0 
+			  AND attendance_date &gt;= #{startMonth} 
+			  AND attendance_date &lt; #{endMonth}
+				AND approal_status in(100,200,500,600)
+			  GROUP BY employee_id) temp LEFT JOIN base_employee a ON temp.employeeId = a.id LEFT JOIN base_emp_depart b ON a.id = b.employee_id
+		WHERE a.del_flag = 0 and b.del_flag= 0 
+		        <if test="departId != null"> 
+				   and b.depart_id= #{departId}
+				</if>
+  </select>
+ 
+</mapper>

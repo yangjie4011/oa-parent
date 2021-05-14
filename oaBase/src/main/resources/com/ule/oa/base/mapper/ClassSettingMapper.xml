@@ -1,0 +1,334 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ule.oa.base.mapper.ClassSettingMapper" >
+  <resultMap id="BaseResultMap" type="com.ule.oa.base.po.ClassSetting" >
+    <id column="ID" property="id" jdbcType="BIGINT" />
+    <result column="company_id" property="companyId" jdbcType="BIGINT" />
+    <result column="depart_id" property="departId" jdbcType="BIGINT" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="start_time" property="startTime" jdbcType="TIME" />
+    <result column="end_time" property="endTime" jdbcType="TIME" />
+    <result column="is_Inter_day" property="isInterDay" jdbcType="INTEGER" />
+    <result column="must_attn_time" property="mustAttnTime" jdbcType="DOUBLE" />
+    <result column="del_flag" property="delFlag" jdbcType="INTEGER" />
+    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="version" property="version" jdbcType="BIGINT" />
+    <result column="allow_late_time" property="allowLateTime" jdbcType="INTEGER" />
+    <result column="full_name" property="fullName" jdbcType="VARCHAR" />
+    <result column="is_enable" property="isEnable" jdbcType="INTEGER" />
+    <result column="group_ids" property="groupIds" jdbcType="VARCHAR" />
+    
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    ID, company_id,depart_id,name, start_time, end_time, is_Inter_day, must_attn_time, del_flag, 
+    create_user, create_time, update_user, update_time,version,allow_late_time,full_name,is_enable,group_ids
+  </sql>
+  
+  <select id="getById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+  	select <include refid="Base_Column_List"/> from attn_class_setting
+  	where id = #{id,jdbcType=BIGINT}
+  </select>
+  
+  <select id="getByName" resultMap="BaseResultMap">
+  	select <include refid="Base_Column_List"/> from attn_class_setting
+  	 where del_flag = 0 and is_enable = 0 and name = #{name} limit 0,1
+  </select>
+  
+  <select id="getCount" parameterType="com.ule.oa.base.po.ClassSetting" resultType="java.lang.Integer">
+  	  select count(1) from attn_class_setting
+  	  where del_flag = 0
+  	  <if test="companyId != null" >
+        and company_id = #{companyId,jdbcType=BIGINT}
+      </if>
+      <if test="departId != null" >
+        and depart_id = #{departId,jdbcType=BIGINT}
+      </if>
+      <if test="name != null" >
+        and name = #{name,jdbcType=VARCHAR}
+      </if>
+  </select>
+  
+  <select id="getPageCount" parameterType="com.ule.oa.base.po.ClassSetting" resultType="java.lang.Integer">
+  	  select count(1) from attn_class_setting
+  	  where del_flag = 0
+  	  <if test="companyId != null" >
+        and company_id = #{companyId,jdbcType=BIGINT}
+      </if>
+      <if test="departId != null" >
+        and depart_id = #{departId,jdbcType=BIGINT}
+      </if>
+      <if test="name != null" >
+        and name = #{name,jdbcType=VARCHAR}
+      </if>
+  </select>
+  
+  <select id="getListByCondition" resultType="com.ule.oa.base.po.ClassSetting" parameterType="com.ule.oa.base.po.ClassSetting" >
+    select 
+   		a.ID, a.company_id,a.depart_id,a.name, a.start_time, a.end_time, a.is_Inter_day, a.must_attn_time, a.del_flag, 
+		a.create_user,a.create_time,a.update_user, a.update_time,a.version,a.allow_late_time,a.full_name,a.is_enable,
+		a.group_ids,GROUP_CONCAT(b.`name`) AS groupNames
+    from attn_class_setting a
+	left join base_schedule_group b		
+			on INSTR(a.group_ids,b.id)>0 
+    where a.del_flag = 0 and a.is_enable = 0
+   	  <if test="companyId != null" >
+        and a.company_id = #{companyId,jdbcType=BIGINT}
+      </if>
+      <if test="departId != null" >
+        and a.depart_id = #{departId,jdbcType=BIGINT}
+      </if>
+      <if test="startTime != null" >
+        and a.start_time = #{startTime,jdbcType=TIME}
+      </if>
+      <if test="endTime != null" >
+        and a.end_time = #{endTime,jdbcType=TIME}
+      </if>
+      <if test="groupId != null" >
+        and b.id  = #{groupId,jdbcType=BIGINT}
+      </if>
+       group by a.id
+       ORDER BY a.is_enable,a.start_time,a.must_attn_time desc
+      <if test="offset != null and limit != null">
+			limit #{offset},#{limit}
+		</if>
+  </select>
+  
+  
+  <select id="getPageListByCondition" resultType="com.ule.oa.base.po.ClassSetting" parameterType="com.ule.oa.base.po.ClassSetting" >
+    select 
+		
+    <include refid="Base_Column_List" />
+    
+	from attn_class_setting a 	
+	where a.del_flag = 0
+   	  <if test="companyId != null" >
+        and a.company_id = #{companyId,jdbcType=BIGINT}
+      </if>
+      <if test="departId != null" >
+        and a.depart_id = #{departId,jdbcType=BIGINT}
+      </if>
+      <if test="startTime != null" >
+        and a.start_time = #{startTime,jdbcType=TIME}
+      </if>
+      <if test="endTime != null" >
+        and a.end_time = #{endTime,jdbcType=TIME}
+      </if>
+       group by a.id
+       ORDER BY is_enable ASC,start_time ASC,must_attn_time desc
+      <if test="offset != null and limit != null">
+			limit #{offset},#{limit}
+	 </if>
+	
+  </select>
+  
+  <select id="getByEmpAndDate" resultMap="BaseResultMap" parameterType="com.ule.oa.base.po.ApplicationEmployeeClassDetail" >
+    select 
+    <include refid="Base_Column_List" />
+    from attn_class_setting
+    where del_flag = 0 and id = (SELECT class_setting_id FROM attn_employ_class where 
+       del_flag = 0 and employ_id=#{employId,jdbcType=BIGINT} and class_date=#{classDate,jdbcType=DATE} limit 0,1)
+  </select>
+  
+  <select id="getByEmpAndDate1" resultMap="BaseResultMap" parameterType="com.ule.oa.base.po.ApplicationEmployeeClassDetail" >
+    select 
+    <include refid="Base_Column_List" />
+    from attn_class_setting
+    where del_flag = 0 and id = (SELECT class_setting_id FROM attn_application_employ_class_detail where 
+       del_flag = 0 and employ_id=#{employId,jdbcType=BIGINT} and class_date=#{classDate,jdbcType=DATE} order by create_time desc limit 0,1)
+  </select>
+  
+  <select id="getList" resultMap="BaseResultMap" parameterType="com.ule.oa.base.po.ClassSetting">
+    select 
+    	<include refid="Base_Column_List" />
+    from attn_class_setting where del_flag = 0
+  </select>
+  
+  <select id="getByIds" resultMap="BaseResultMap" parameterType="java.util.List">
+    select 
+    	<include refid="Base_Column_List" />
+    from attn_class_setting
+    where del_flag = 0 and id  in
+    <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+               #{item}
+     </foreach>
+  </select>
+  
+  <!-- 保存班次信息 -->
+  <insert id="save" parameterType="com.ule.oa.base.po.ClassSetting">
+  		<selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">
+			SELECT LAST_INSERT_ID() AS id
+		</selectKey>
+		
+		insert into attn_class_setting
+		<trim prefix="(" suffix=")" suffixOverrides="," >
+			<if test="companyId != null" >
+		       company_id,
+		    </if>
+		    <if test="departId != null" >
+		       depart_id,
+		    </if>
+		    <if test="fullName != null" >
+		       full_name,
+		    </if>
+		    <if test="name != null" >
+		       name,
+		    </if>
+		    <if test="startTime != null" >
+		       start_time,
+		    </if>
+		     <if test="endTime != null" >
+		       end_time,
+		    </if>
+		    <if test="isInterDay != null" >
+		       is_Inter_day,
+		    </if>
+		    <if test="mustAttnTime != null" >
+		       must_attn_time,
+		    </if>
+		    <if test="delFlag != null" >
+		       del_flag,
+		    </if>
+		    <if test="createUser != null" >
+		       create_user,
+		    </if>
+		    <if test="createTime != null" >
+		       create_time,
+		    </if>
+		    <if test="updateUser != null" >
+		       update_user,
+		    </if>
+		    <if test="updateTime != null" >
+		       update_time,
+		    </if>
+		    <if test="isEnable != null" >
+		        is_enable,
+		     </if>
+		     <if test="groupIds != null">
+		    	group_ids,
+		    </if>
+		    <if test="version != null">
+		    	version,
+		    </if>
+		    <if test="allowLateTime != null">
+		    	ALLOW_LATE_TIME,
+		    </if>
+		    
+		     
+		</trim>
+		<trim prefix="values(" suffix=")" suffixOverrides=",">
+			<if test="companyId != null" >
+		       #{companyId,jdbcType=BIGINT},
+		    </if>
+		    <if test="departId != null" >
+		       #{departId,jdbcType=BIGINT},
+		    </if>
+		    <if test="fullName != null" >
+		       #{fullName,jdbcType=VARCHAR},
+		    </if>
+		    <if test="name != null" >
+		       #{name,jdbcType=VARCHAR},
+		    </if>
+		    <if test="startTime != null" >
+		       #{startTime,jdbcType=TIME},
+		    </if>
+		     <if test="endTime != null" >
+		       #{endTime,jdbcType=TIME},
+		    </if>
+		    <if test="isInterDay != null" >
+		       #{isInterDay,jdbcType=INTEGER},
+		    </if>
+		    <if test="mustAttnTime != null" >
+		       #{mustAttnTime,jdbcType=DOUBLE},
+		    </if>
+		    <if test="delFlag != null" >
+		       #{delFlag,jdbcType=INTEGER},
+		    </if>
+		    <if test="createUser != null" >
+		       #{createUser,jdbcType=VARCHAR},
+		    </if>
+		    <if test="createTime != null" >
+		       #{createTime,jdbcType=TIMESTAMP},
+		    </if>
+		    <if test="updateUser != null" >
+		       #{updateUser,jdbcType=VARCHAR},
+		    </if>
+		    <if test="updateTime != null" >
+		       #{updateTime,jdbcType=TIMESTAMP},
+		    </if>
+		    <if test="isEnable != null" >
+		       #{isEnable,jdbcType=INTEGER},
+		    </if>
+		    <if test="groupIds != null">
+		    	#{groupIds,jdbcType=VARCHAR},
+		    </if>
+		    <if test="version != null">
+		    	#{version,jdbcType=BIGINT},
+		    </if>
+		    <if test="allowLateTime != null">
+		       #{allowLateTime,jdbcType=INTEGER},
+		    </if>
+		    
+		</trim>
+  </insert>
+  
+  <update id="updateById" parameterType="com.ule.oa.base.po.ClassSetting" >
+    update attn_class_setting
+    <set >
+      <if test="companyId != null" >
+        company_id = #{companyId,jdbcType=BIGINT},
+      </if>
+      <if test="departId != null" >
+        depart_id = #{departId,jdbcType=BIGINT},
+      </if>
+      <if test="name != null" >
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="startTime != null" >
+        start_time = #{startTime,jdbcType=TIME},
+      </if>
+      <if test="endTime != null" >
+        end_time = #{endTime,jdbcType=TIME},
+      </if>
+      <if test="isInterDay != null" >
+        is_Inter_day = #{isInterDay,jdbcType=INTEGER},
+      </if>
+      <if test="mustAttnTime != null" >
+        must_attn_time = #{mustAttnTime,jdbcType=DOUBLE},
+      </if>
+      <if test="delFlag != null" >
+        del_flag = #{delFlag,jdbcType=INTEGER},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isEnable != null" >
+        is_enable = #{isEnable,jdbcType=INTEGER},
+      </if>
+      <if test="allowLateTime != null" >
+        allow_late_time = #{allowLateTime,jdbcType=INTEGER},
+      </if>
+      <if test="fullName != null" >
+        full_name = #{fullName,jdbcType=VARCHAR},
+      </if>
+      <if test="groupIds != null">
+		group_ids=#{groupIds,jdbcType=VARCHAR},
+	  </if>
+      
+      version = version + 1
+    </set>
+    where ID = #{id,jdbcType=BIGINT}
+  </update>
+	<select id="getIdByName" resultType="long">
+	   select ID
+	   from attn_class_setting
+	   where del_flag = 0 and is_enable = 0
+	   and name = #{name};
+	</select>
+</mapper>

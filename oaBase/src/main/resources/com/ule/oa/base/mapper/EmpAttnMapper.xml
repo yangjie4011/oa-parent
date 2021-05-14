@@ -1,0 +1,943 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ule.oa.base.mapper.EmpAttnMapper" >
+  <resultMap id="BaseResultMap" type="com.ule.oa.base.po.EmpAttn" >
+    <id column="ID" property="id" jdbcType="BIGINT" />
+    <result column="company_id" property="companyId" jdbcType="BIGINT" />
+    <result column="employ_id" property="employId" jdbcType="BIGINT" />
+    <result column="attn_date" property="attnDate" jdbcType="DATE" />
+    <result column="start_work_time" property="startWorkTime" jdbcType="TIMESTAMP" />
+    <result column="end_work_time" property="endWorkTime" jdbcType="TIMESTAMP" />
+    <result column="come_late_time" property="comeLateTime" jdbcType="INTEGER" />
+    <result column="left_early_time" property="leftEarlyTime" jdbcType="INTEGER" />
+    <result column="absenteeism_time" property="absenteeismTime" jdbcType="INTEGER" />
+    <result column="must_attn_time" property="mustAttnTime" jdbcType="DOUBLE" />
+    <result column="all_attn_time" property="allAttnTime" jdbcType="DOUBLE" />
+    <result column="lack_attn_time" property="lackAttnTime" jdbcType="DOUBLE" />
+    <result column="attn_status" property="attnStatus" jdbcType="INTEGER" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="del_flag" property="delFlag" jdbcType="INTEGER" />
+    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    ID, company_id, employ_id, attn_date, start_work_time, end_work_time, come_late_time, 
+    left_early_time, absenteeism_time, must_attn_time, all_attn_time, lack_attn_time, 
+    attn_status, remark, del_flag, create_user, create_time, update_time, 
+    update_user
+  </sql>
+  
+  <select id="getAttnReportCount" resultType="java.lang.Integer" parameterType="com.ule.oa.base.po.EmpAttn" >
+    SELECT count(0)
+	FROM attn_statistics ats
+	INNER JOIN base_employee be on ats.employ_id = be.id and be.del_flag = 0
+	LEFT JOIN base_emp_depart bed on be.id = bed.employee_id and bed.del_flag = 0 
+	where ats.del_flag = 0
+    <if test="startTime != null" >
+        and ats.attn_date &gt;= #{startTime,jdbcType=DATE}
+    </if>
+    <if test="endTime != null" >
+        and ats.attn_date &lt;= #{endTime,jdbcType=DATE}
+    </if>
+  	<if test="code != null and code != ''">
+  		and be.code like concat('%',#{code,jdbcType=VARCHAR},'%')
+  	</if>
+	<if test="cnName != null and cnName != ''">
+		and be.cn_name like concat('%',#{cnName,jdbcType=VARCHAR},'%')
+	</if>
+	<if test="departId != null">
+		and bed.depart_id = #{departId,jdbcType=BIGINT}
+	</if>
+	<if test="departList != null">
+		and bed.depart_id in
+		<foreach collection="departList" item="departId" open="(" separator="," close=")">
+			#{departId,jdbcType=BIGINT}
+		</foreach>
+	</if>
+	<if test="workType != null and workType != ''">
+		and be.work_type = #{workType,jdbcType=BIGINT}
+	</if>
+	<if test="empTypeId != null">
+		and be.emp_type_id = #{empTypeId,jdbcType=BIGINT}
+	</if>
+	<if test="whetherScheduling != null">
+		and be.whether_scheduling = #{whetherScheduling,jdbcType=BIGINT}
+	</if>
+	<if test="attnStatus != null">
+		and ats.attn_status = #{attnStatus,jdbcType=BIGINT}
+	</if>
+	<if test="currentUserDepart != null and currentUserDepart.size > 0">
+		and be.id in
+		<foreach collection="currentUserDepart" item="ids" open="(" separator="," close=")">
+			#{ids,jdbcType=BIGINT}
+		</foreach>
+	</if>
+	<if test="subEmployeeIdList != null and subEmployeeIdList.size > 0">
+		and be.id in
+		<foreach collection="subEmployeeIdList" item="ids" open="(" separator="," close=")">
+			#{ids,jdbcType=BIGINT}
+		</foreach>
+	</if>
+	<if test="empTypeIdList != null and empTypeIdList.size > 0" >
+        and be.emp_type_id in
+           <foreach collection="empTypeIdList" index="index" item="item" open="(" separator="," close=")">
+	           #{item}
+	       </foreach>
+    </if>
+	
+  </select>
+  
+  <select id="getAttnReportPageList" resultType="Map" parameterType="com.ule.oa.base.po.EmpAttn" >
+    SELECT ats.employ_id employId,be.code,be.cn_name cnName,be.work_type workType,be.whether_scheduling whetherScheduling,bd.name departName,bp.position_name positionName,ats.attn_date attnDate,
+	CASE dayofweek(ats.attn_date) 
+	WHEN 1 THEN '星期日' WHEN 2 THEN '星期一' WHEN 3 THEN '星期二' WHEN 4 THEN '星期三'
+	WHEN 5 THEN '星期四' WHEN 6 THEN '星期五' WHEN 7 THEN '星期六' END dayofweek,
+    ats.start_work_time classStartTime,ats.end_work_time classEndTime,
+	ats.come_late_time comeLateTime,ats.left_early_time leftEarlyTime,ats.absenteeism_time absenteeismTime,
+	ats.lack_attn_time lackAttnTime,ats.must_attn_time mustAttnTime,
+	ats.all_attn_time allAttnTime,
+	CASE ats.attn_status 
+	WHEN 0 THEN '正常' ELSE '异常' END attnStatus
+	FROM attn_statistics ats
+	LEFT JOIN base_employee be on ats.employ_id = be.id and be.del_flag = 0 
+	LEFT JOIN base_emp_depart bed on be.id = bed.employee_id and bed.del_flag = 0 
+	LEFT JOIN base_depart bd on bd.id = bed.depart_id and bd.del_flag = 0 
+	LEFT JOIN base_emp_position bep on be.id = bep.employee_id and bep.del_flag = 0 
+	LEFT JOIN base_position bp on bp.id = bep.position_id and bp.del_flag = 0 
+	where ats.del_flag = 0
+    <if test="startTime != null" >
+        and ats.attn_date &gt;= #{startTime,jdbcType=DATE}
+    </if>
+    <if test="endTime != null" >
+        and ats.attn_date &lt;= #{endTime,jdbcType=DATE}
+    </if>
+  	<if test="code != null and code != ''">
+  		and be.code like concat('%',#{code,jdbcType=VARCHAR},'%')
+  	</if>
+	<if test="cnName != null and cnName != ''">
+		and be.cn_name like concat('%',#{cnName,jdbcType=VARCHAR},'%')
+	</if>
+	<if test="departId != null">
+		and bed.depart_id = #{departId,jdbcType=BIGINT}
+	</if>
+	<if test="departList != null">
+		and bed.depart_id in
+		<foreach collection="departList" item="departId" open="(" separator="," close=")">
+			#{departId,jdbcType=BIGINT}
+		</foreach>
+	</if>
+	<if test="workType != null and workType != ''">
+		and be.work_type = #{workType,jdbcType=BIGINT}
+	</if>
+	<if test="empTypeId != null">
+		and be.emp_type_id = #{empTypeId,jdbcType=BIGINT}
+	</if>
+	<if test="whetherScheduling != null">
+		and be.whether_scheduling = #{whetherScheduling,jdbcType=BIGINT}
+	</if>
+	<if test="attnStatus != null">
+		and ats.attn_status = #{attnStatus,jdbcType=BIGINT}
+	</if>
+	<if test="currentUserDepart != null and currentUserDepart.size > 0">
+		and be.id in
+		<foreach collection="currentUserDepart" item="ids" open="(" separator="," close=")">
+			#{ids,jdbcType=BIGINT}
+		</foreach>
+	</if>
+	<if test="subEmployeeIdList != null and subEmployeeIdList.size > 0">
+		and be.id in
+		<foreach collection="subEmployeeIdList" item="ids" open="(" separator="," close=")">
+			#{ids,jdbcType=BIGINT}
+		</foreach>
+	</if>
+	<if test="empTypeIdList != null and empTypeIdList.size > 0" >
+        and be.emp_type_id in
+           <foreach collection="empTypeIdList" index="index" item="item" open="(" separator="," close=")">
+	           #{item}
+	       </foreach>
+    </if>
+
+	ORDER BY convert(be.cn_name using gbk) collate gbk_chinese_ci asc,ats.attn_date desc
+	<if test="offset != null and limit != null">
+		limit #{offset},#{limit}
+	</if>
+  </select>
+  
+  <select id="getSignWorkHoursList" resultType="Map" >
+	 SELECT work_date,start_time,end_time,employ_id,work_hours
+		FROM attn_work_hours  
+		WHERE data_type = 0 and del_flag = 0
+		    <if test="startTime != null" >
+		        and work_date &gt;= #{startTime,jdbcType=DATE}
+		    </if>
+		    <if test="endTime != null" >
+		        and work_date &lt;= #{endTime,jdbcType=DATE}
+		    </if>
+  </select>
+  
+  <select id="getNotSignWorkHoursList" resultType="Map" >
+  	SELECT work_date,employ_id,group_concat(data_type) data_type,group_concat(leave_type) leave_type
+		FROM attn_work_hours  
+		WHERE data_type &lt;&gt; 0 and del_flag = 0
+		    <if test="startTime != null" >
+		        and work_date &gt;= #{startTime,jdbcType=DATE}
+		    </if>
+		    <if test="endTime != null" >
+		        and work_date &lt;= #{endTime,jdbcType=DATE}
+		    </if>
+		GROUP BY work_date,employ_id
+  </select>
+  
+  <select id="getSignRecordReportCount" resultType="java.lang.Integer" parameterType="com.ule.oa.base.po.EmpAttn" >
+    SELECT count(0)
+	FROM attn_sign_record asr
+	INNER JOIN base_employee be on asr.employee_id = be.id and be.del_flag = 0
+	LEFT JOIN base_emp_depart bed on be.id = bed.employee_id and bed.del_flag = 0
+	where asr.del_flag = 0 and asr.type = 0
+    <if test="startTime != null" >
+        and asr.sign_time &gt;= #{startTime}
+    </if>
+    <if test="endTime != null" >
+        and asr.sign_time &lt;= #{endTime}
+    </if>
+  	<if test="code != null and code != ''">
+  		and be.code like concat('%',#{code,jdbcType=VARCHAR},'%')
+  	</if>
+	<if test="cnName != null and cnName != ''">
+		and be.cn_name like concat('%',#{cnName,jdbcType=VARCHAR},'%')
+	</if>
+	<if test="departId != null">
+		and bed.depart_id = #{departId,jdbcType=BIGINT}
+	</if>
+	<if test="departList != null">
+		and bed.depart_id in
+		<foreach collection="departList" item="departId" open="(" separator="," close=")">
+			#{departId,jdbcType=BIGINT}
+		</foreach>
+	</if>
+	<if test="workType != null and workType != ''">
+		and be.work_type = #{workType,jdbcType=BIGINT}
+	</if>
+	<if test="empTypeId != null">
+		and be.emp_type_id = #{empTypeId,jdbcType=BIGINT}
+	</if>
+	<if test="whetherScheduling != null">
+		and be.whether_scheduling = #{whetherScheduling,jdbcType=BIGINT}
+	</if>
+	<if test="currentUserDepart != null and currentUserDepart.size > 0">
+		and be.id in
+		<foreach collection="currentUserDepart" item="ids" open="(" separator="," close=")">
+			#{ids,jdbcType=BIGINT}
+		</foreach>
+	</if>
+	<if test="subEmployeeIdList != null and subEmployeeIdList.size > 0">
+		and be.id in
+		<foreach collection="subEmployeeIdList" item="ids" open="(" separator="," close=")">
+			#{ids,jdbcType=BIGINT}
+		</foreach>
+	</if>
+	<if test="empTypeIdList != null and empTypeIdList.size > 0" >
+        and be.emp_type_id in
+           <foreach collection="empTypeIdList" index="index" item="item" open="(" separator="," close=")">
+	           #{item}
+	       </foreach>
+    </if>
+  </select>
+  
+  <select id="getSignRecordReportList" resultType="Map" parameterType="com.ule.oa.base.po.EmpAttn">
+	select re.* from 
+		(SELECT
+			asr.employee_id employeeId,
+			be.code,
+			be.cn_name cnName,
+			be.work_type workType,
+			be.emp_type_id empTypeId,
+			be.whether_scheduling whetherScheduling,
+			bed.depart_id departId,
+			DATE_FORMAT( asr.sign_time, '%Y-%m-%d' ) attnDate,
+		CASE
+			dayofweek( asr.sign_time ) 
+			WHEN 1 THEN
+			'星期日' 
+			WHEN 2 THEN
+			'星期一' 
+			WHEN 3 THEN
+			'星期二' 
+			WHEN 4 THEN
+			'星期三' 
+			WHEN 5 THEN
+			'星期四' 
+			WHEN 6 THEN
+			'星期五' 
+			WHEN 7 THEN
+			'星期六' 
+			END dayofweek,
+			DATE_FORMAT( asr.sign_time, '%T' ) signTime 
+		FROM
+			(
+		SELECT
+			s.id,s.sign_time,s.employee_name 
+		FROM
+			attn_sign_record s 
+		WHERE
+			s.del_flag = 0 
+			AND s.type = 0 
+			<if test="startTime != null" >
+      			and s.sign_time &gt;= #{startTime}
+    		</if>
+   			<if test="endTime != null" >
+       			 and s.sign_time &lt;= #{endTime}
+    		</if>
+    		) temp
+			INNER JOIN attn_sign_record asr ON temp.id = asr.id
+			LEFT JOIN base_employee be ON asr.employee_id = be.id 
+			AND be.del_flag = 0
+			LEFT JOIN base_emp_depart bed ON be.id = bed.employee_id 
+			AND bed.del_flag = 0) re
+			<where>
+				<if test="code != null and code != ''">
+	  				and re.code like concat('%',#{code,jdbcType=VARCHAR},'%')
+	  			</if>
+	  			<if test="cnName != null and cnName != ''">
+					and re.cnName like concat('%',#{cnName,jdbcType=VARCHAR},'%')
+				</if>
+				<if test="departId != null">
+					and re.departId = #{departId,jdbcType=BIGINT}
+				</if>
+				<if test="departList != null">
+					and re.departId in
+					<foreach collection="departList" item="departId" open="(" separator="," close=")">
+						#{departId,jdbcType=BIGINT}
+					</foreach>
+				</if>
+				<if test="workType != null and workType != ''">
+					and re.workType = #{workType,jdbcType=BIGINT}
+				</if>
+				<if test="empTypeId != null">
+					and re.empTypeId = #{empTypeId,jdbcType=BIGINT}
+				</if>
+				<if test="whetherScheduling != null">
+					and re.whetherScheduling = #{whetherScheduling,jdbcType=BIGINT}
+				</if>
+				<if test="currentUserDepart != null and currentUserDepart.size > 0">
+					and re.employeeId in
+					<foreach collection="currentUserDepart" item="ids" open="(" separator="," close=")">
+						#{ids,jdbcType=BIGINT}
+					</foreach>
+				</if>
+				<if test="subEmployeeIdList != null and subEmployeeIdList.size > 0">
+					and re.employeeId in
+					<foreach collection="subEmployeeIdList" item="ids" open="(" separator="," close=")">
+						#{ids,jdbcType=BIGINT}
+					</foreach>
+				</if>
+				<if test="empTypeIdList != null and empTypeIdList.size > 0" >
+			        and re.empTypeId in
+			           <foreach collection="empTypeIdList" index="index" item="item" open="(" separator="," close=")">
+				           #{item}
+				       </foreach>
+			    </if> 
+			</where> 
+			ORDER BY re.attnDate desc,re.signTime desc,convert(re.cnName using gbk) collate gbk_chinese_ci asc 
+			<if test="offset != null and limit != null">
+				limit #{offset},#{limit}
+			</if>
+  </select>
+  
+  <select id="getEmployeeSignReportCount" resultType="java.lang.Integer" parameterType="com.ule.oa.base.po.EmpAttn" >
+    SELECT count(0)
+	FROM attn_sign_record asr
+	INNER JOIN base_employee be on asr.employee_id = be.id and be.del_flag = 0
+	LEFT JOIN base_emp_depart bed on be.id = bed.employee_id and bed.del_flag = 0
+	where asr.del_flag = 0 and asr.type = 4
+    <if test="startTime != null" >
+        and DATE_FORMAT(asr.sign_time,'%Y-%m-%d') &gt;= #{startTime,jdbcType=DATE}
+    </if>
+    <if test="endTime != null" >
+        and DATE_FORMAT(asr.sign_time,'%Y-%m-%d') &lt;= #{endTime,jdbcType=DATE}
+    </if>
+  	<if test="code != null and code != ''">
+  		and be.code like concat('%',#{code,jdbcType=VARCHAR},'%')
+  	</if>
+	<if test="cnName != null and cnName != ''">
+		and be.cn_name like concat('%',#{cnName,jdbcType=VARCHAR},'%')
+	</if>
+	<if test="departId != null">
+		and bed.depart_id = #{departId,jdbcType=BIGINT}
+	</if>
+	<if test="departList != null">
+		and bed.depart_id in
+		<foreach collection="departList" item="departId" open="(" separator="," close=")">
+			#{departId,jdbcType=BIGINT}
+		</foreach>
+	</if>
+	<if test="workType != null and workType != ''">
+		and be.work_type = #{workType,jdbcType=BIGINT}
+	</if>
+	<if test="empTypeId != null">
+		and be.emp_type_id = #{empTypeId,jdbcType=BIGINT}
+	</if>
+	<if test="whetherScheduling != null">
+		and be.whether_scheduling = #{whetherScheduling,jdbcType=BIGINT}
+	</if>
+	<if test="currentUserDepart != null and currentUserDepart.size > 0">
+		and be.id in
+		<foreach collection="currentUserDepart" item="ids" open="(" separator="," close=")">
+			#{ids,jdbcType=BIGINT}
+		</foreach>
+	</if>
+	<if test="subEmployeeIdList != null and subEmployeeIdList.size > 0">
+		and be.id in
+		<foreach collection="subEmployeeIdList" item="ids" open="(" separator="," close=")">
+			#{ids,jdbcType=BIGINT}
+		</foreach>
+	</if>
+	<if test="empTypeIdList != null and empTypeIdList.size > 0" >
+        and be.emp_type_id in
+           <foreach collection="empTypeIdList" index="index" item="item" open="(" separator="," close=")">
+	           #{item}
+	       </foreach>
+    </if>
+	
+  </select>
+  
+  <select id="getEmployeeSignReportList" resultType="Map" parameterType="com.ule.oa.base.po.EmpAttn">
+    select re.* from 
+		(SELECT
+			asr.employee_id employeeId,
+			be.code,
+			be.cn_name cnName,
+			be.work_type workType,
+			be.emp_type_id empTypeId,
+			be.whether_scheduling whetherScheduling,
+			bed.depart_id departId,
+			DATE_FORMAT( asr.sign_time, '%Y-%m-%d' ) attnDate,
+		CASE
+			dayofweek( asr.sign_time ) 
+			WHEN 1 THEN
+			'星期日' 
+			WHEN 2 THEN
+			'星期一' 
+			WHEN 3 THEN
+			'星期二' 
+			WHEN 4 THEN
+			'星期三' 
+			WHEN 5 THEN
+			'星期四' 
+			WHEN 6 THEN
+			'星期五' 
+			WHEN 7 THEN
+			'星期六' 
+			END dayofweek,
+			DATE_FORMAT( asr.sign_time, '%T' ) signTime 
+		FROM
+			(
+		SELECT
+			s.id,s.sign_time,s.employee_name 
+		FROM
+			attn_sign_record s 
+		WHERE
+			s.del_flag = 0 
+			AND s.type = 4 
+			<if test="startTime != null" >
+      			and s.sign_time &gt;= #{startTime}
+    		</if>
+   			<if test="endTime != null" >
+       			 and s.sign_time &lt;= #{endTime}
+    		</if>
+    		) temp
+			INNER JOIN attn_sign_record asr ON temp.id = asr.id
+			LEFT JOIN base_employee be ON asr.employee_id = be.id 
+			AND be.del_flag = 0
+			LEFT JOIN base_emp_depart bed ON be.id = bed.employee_id 
+			AND bed.del_flag = 0) re 
+			<where>
+				<if test="code != null and code != ''">
+	  				and re.code like concat('%',#{code,jdbcType=VARCHAR},'%')
+	  			</if>
+	  			<if test="cnName != null and cnName != ''">
+					and re.cnName like concat('%',#{cnName,jdbcType=VARCHAR},'%')
+				</if>
+				<if test="departId != null">
+					and re.departId = #{departId,jdbcType=BIGINT}
+				</if>
+				<if test="departList != null">
+					and re.departId in
+					<foreach collection="departList" item="departId" open="(" separator="," close=")">
+						#{departId,jdbcType=BIGINT}
+					</foreach>
+				</if>
+				<if test="workType != null and workType != ''">
+					and re.workType = #{workType,jdbcType=BIGINT}
+				</if>
+				<if test="empTypeId != null">
+					and re.empTypeId = #{empTypeId,jdbcType=BIGINT}
+				</if>
+				<if test="whetherScheduling != null">
+					and re.whetherScheduling = #{whetherScheduling,jdbcType=BIGINT}
+				</if>
+				<if test="currentUserDepart != null and currentUserDepart.size > 0">
+					and re.employeeId in
+					<foreach collection="currentUserDepart" item="ids" open="(" separator="," close=")">
+						#{ids,jdbcType=BIGINT}
+					</foreach>
+				</if>
+				<if test="subEmployeeIdList != null and subEmployeeIdList.size > 0">
+					and re.employeeId in
+					<foreach collection="subEmployeeIdList" item="ids" open="(" separator="," close=")">
+						#{ids,jdbcType=BIGINT}
+					</foreach>
+				</if>
+				<if test="empTypeIdList != null and empTypeIdList.size > 0" >
+			        and re.empTypeId in
+			           <foreach collection="empTypeIdList" index="index" item="item" open="(" separator="," close=")">
+				           #{item}
+				       </foreach>
+			    </if> 
+			</where> 
+			ORDER BY re.attnDate desc,re.signTime desc,convert(re.cnName using gbk) collate gbk_chinese_ci asc
+			<if test="offset != null and limit != null">
+				limit #{offset},#{limit}
+			</if>
+  </select>
+  
+  <select id="getClassSettingCount" resultType="java.lang.Integer" parameterType="com.ule.oa.base.po.ClassSetting" >
+    SELECT count(0)
+    FROM attn_class_setting acs
+	LEFT JOIN base_depart bd on acs.depart_id = bd.id AND bd.del_flag =0
+	WHERE acs.del_flag = 0
+  </select>
+  
+  <select id="getClassSettingList"  resultType="com.ule.oa.base.po.ClassSetting" parameterType="com.ule.oa.base.po.ClassSetting">
+    SELECT acs.id,IFNULL(bd.name,'非排班全体部门') departName,acs.name,acs.start_time startTime,acs.end_time endTime,
+	acs.must_attn_time mustAttnTime,acs.allow_late_time allowLateTime 
+	FROM attn_class_setting acs
+	LEFT JOIN base_depart bd on acs.depart_id = bd.id AND bd.del_flag =0
+	WHERE acs.del_flag = 0
+	<if test="offset != null and limit != null">
+	    limit #{offset},#{limit}
+	</if>
+  </select>
+  
+  <select id="getMonthLackDetailCount" resultType="java.lang.Integer" parameterType="com.ule.oa.base.po.EmpAttn">
+		SELECT
+			count(0)
+		FROM
+			(
+		SELECT
+			any_value ( temp.employ_id ) employId,
+			SUM( temp.lateAndEarly ) lateAndEarly,
+			SUM( temp.absenteeism_time ) absenteeismTime,
+			SUM( temp.lack_attn_time ) lackAttnTime,
+			SUM( temp.must_attn_time ) mustAttnTime 
+		FROM
+			(
+		SELECT
+			employ_id,
+			( ats.come_late_time + ats.left_early_time ) lateAndEarly,
+		CASE
+			WHEN ats.must_attn_time &gt;= 8 THEN
+			( ats.absenteeism_time / 480 ) 
+			WHEN ats.must_attn_time &lt; 8 AND ats.must_attn_time &gt; 0 THEN
+			( ats.absenteeism_time / ( ats.must_attn_time * 60 ) ) ELSE ( ats.absenteeism_time / 480 ) 
+			END absenteeism_time,
+			ats.lack_attn_time,
+			ats.must_attn_time 
+		FROM
+			attn_statistics ats 
+		WHERE
+			ats.del_flag = 0 
+			AND ats.must_attn_time &lt;&gt; 0 
+			AND ats.attn_date &gt;= #{startTime,jdbcType=DATE}
+			AND ats.attn_date &lt;= #{endTime,jdbcType=DATE} 
+			) temp 
+		GROUP BY
+			temp.employ_id 
+			) temp1
+			LEFT JOIN base_employee be ON be.id = temp1.employId 
+			left join base_emp_depart bed on bed.employee_id=be.id
+            <where>
+            	<if test="departId != null" >
+			        and bed.depart_id = #{departId,jdbcType=BIGINT}
+			    </if>
+				<if test="departList != null">
+					and bed.depart_id in
+					<foreach collection="departList" item="departId" open="(" separator="," close=")">
+						#{departId,jdbcType=BIGINT}
+					</foreach>
+				</if>
+				<if test="code != null and code != ''">
+			  		and be.code like concat('%',#{code,jdbcType=VARCHAR},'%')
+			  	</if>
+				<if test="cnName != null and cnName != ''">
+					and be.cn_name like concat('%',#{cnName,jdbcType=VARCHAR},'%')
+				</if>
+				<if test="workType != null and workType != ''">
+					and be.work_type = #{workType,jdbcType=BIGINT}
+				</if>
+				<if test="empTypeId != null">
+					and be.emp_type_id = #{empTypeId,jdbcType=BIGINT}
+				</if>
+				<if test="whetherScheduling != null">
+					and be.whether_scheduling = #{whetherScheduling,jdbcType=BIGINT}
+				</if>
+           		<if test="currentUserDepart != null and currentUserDepart.size > 0">
+		  			and be.id in
+		  			<foreach collection="currentUserDepart" item="ids" open="(" separator="," close=")">
+		  				#{ids,jdbcType=BIGINT}
+		  			</foreach>
+		  		</if>
+		  		<if test="subEmployeeIdList != null and subEmployeeIdList.size > 0">
+					and be.id in
+					<foreach collection="subEmployeeIdList" item="ids" open="(" separator="," close=")">
+						#{ids,jdbcType=BIGINT}
+					</foreach>
+				</if>
+				<if test="empTypeIdList != null and empTypeIdList.size > 0" >
+		           and be.emp_type_id in
+		           <foreach collection="empTypeIdList" index="index" item="item" open="(" separator="," close=")">
+			           #{item}
+			       </foreach>
+		        </if> 						
+            </where>
+  </select>
+  
+  <select id="getMonthLackDetailList" resultType="Map" parameterType="com.ule.oa.base.po.EmpAttn">
+		SELECT
+			be.cn_name cnName,
+			be.code,
+			bd.name departName,
+			bp.position_name positionName,
+			be.WORK_TYPE workType,
+			temp1.*
+		FROM
+			(
+		SELECT
+			any_value ( temp.employ_id ) employId,
+			SUM( temp.lateAndEarly ) lateAndEarly,
+			SUM( temp.absenteeism_time ) absenteeismTime,
+			SUM( temp.lack_attn_time ) lackAttnTime,
+			SUM( temp.must_attn_time ) mustAttnTime ,
+			SUM( temp.all_attn_time ) allAttnTime
+		FROM
+			(
+		SELECT
+			employ_id,
+			( ats.come_late_time + ats.left_early_time ) lateAndEarly,
+		CASE
+			WHEN ats.must_attn_time &gt;= 8 THEN
+			( ats.absenteeism_time / 480 ) 
+			WHEN ats.must_attn_time &lt; 8 AND ats.must_attn_time &gt; 0 THEN
+			( ats.absenteeism_time / ( ats.must_attn_time * 60 ) ) ELSE ( ats.absenteeism_time / 480 ) 
+			END absenteeism_time,
+			ats.lack_attn_time,
+			ats.must_attn_time ,
+			ats.all_attn_time 
+		FROM
+			attn_statistics ats 
+		WHERE
+			ats.del_flag = 0 
+			AND ats.must_attn_time &lt;&gt; 0 
+			AND ats.attn_date &gt;= #{startTime,jdbcType=DATE} 
+			AND ats.attn_date &lt;= #{endTime,jdbcType=DATE} 
+			) temp 
+		GROUP BY
+			temp.employ_id 
+			) temp1
+			LEFT JOIN base_employee be ON be.id = temp1.employId 
+			left join base_emp_depart bed on bed.employee_id=be.id
+			left join base_depart bd on bed.depart_id = bd.id
+			left join base_emp_position bep on bep.employee_id = be.id
+			left join base_position bp on bp.id = bep.position_id
+			<where>
+            	<if test="departId != null" >
+			        and bed.depart_id = #{departId,jdbcType=BIGINT}
+			    </if>
+				<if test="departList != null">
+					and bed.depart_id in
+					<foreach collection="departList" item="departId" open="(" separator="," close=")">
+						#{departId,jdbcType=BIGINT}
+					</foreach>
+				</if>
+				<if test="code != null and code != ''">
+			  		and be.code like concat('%',#{code,jdbcType=VARCHAR},'%')
+			  	</if>
+				<if test="cnName != null and cnName != ''">
+					and be.cn_name like concat('%',#{cnName,jdbcType=VARCHAR},'%')
+				</if>
+				<if test="workType != null and workType != ''">
+					and be.work_type = #{workType,jdbcType=BIGINT}
+				</if>
+				<if test="empTypeId != null">
+					and be.emp_type_id = #{empTypeId,jdbcType=BIGINT}
+				</if>
+				<if test="whetherScheduling != null">
+					and be.whether_scheduling = #{whetherScheduling,jdbcType=BIGINT}
+				</if>
+           		<if test="currentUserDepart != null and currentUserDepart.size > 0">
+		  			and be.id in
+		  			<foreach collection="currentUserDepart" item="ids" open="(" separator="," close=")">
+		  				#{ids,jdbcType=BIGINT}
+		  			</foreach>
+		  		</if>
+		  		<if test="subEmployeeIdList != null and subEmployeeIdList.size > 0">
+					and be.id in
+					<foreach collection="subEmployeeIdList" item="ids" open="(" separator="," close=")">
+						#{ids,jdbcType=BIGINT}
+					</foreach>
+				</if>
+				<if test="empTypeIdList != null and empTypeIdList.size > 0" >
+		           and be.emp_type_id in
+		           <foreach collection="empTypeIdList" index="index" item="item" open="(" separator="," close=")">
+			           #{item}
+			       </foreach>
+		        </if> 						
+            </where>
+			order by bed.depart_id,be.code
+			<if test="offset != null and limit != null">
+				limit #{offset},#{limit}
+			</if>
+  </select>
+  
+  <select id="getMonthLackTotalCount" resultType="java.lang.Integer" parameterType="com.ule.oa.base.po.EmpAttn">
+	 select count(0) from (SELECT be.code,be.cn_name cnName,bd.id departId,bd.name departName,bp.position_name positionName,
+		DATE_FORMAT(awh.work_date,'%Y-%m') workDate,count(awh.work_date) total 
+		FROM base_employee be LEFT JOIN 
+		(SELECT DISTINCT employ_id,work_date FROM(
+		SELECT employ_id,work_date  <!-- 查询出每个员工每天请假的小时数 -->
+		from (SELECT employ_id,work_date, SUM(work_hours) work_hours FROM attn_work_hours where 
+		data_type not in (0,40,70) and del_flag = 0    <!-- 周园园提出，其中不包括外出的次数,异常申诉次数，类型70为外出 -->
+			    <if test="startTime != null" >
+			        and work_date &gt;= #{startTime,jdbcType=DATE}
+			    </if>
+			    <if test="endTime != null" >
+			        and work_date &lt;= #{endTime,jdbcType=DATE}
+			    </if>
+		GROUP BY employ_id,work_date
+		) a where work_hours &gt;= 3
+		UNION
+		SELECT employ_id,attn_date work_date FROM attn_statistics <!--  查询出每个员工每天旷工的小时数 -->
+		where absenteeism_time &gt; 0 and del_flag = 0
+			    <if test="startTime != null" >
+			        and attn_date &gt;= #{startTime,jdbcType=DATE}
+			    </if>
+			    <if test="endTime != null" >
+			        and attn_date &lt;= #{endTime,jdbcType=DATE}
+			    </if>)tbl )awh
+		ON be.id = awh.employ_id
+		LEFT JOIN base_emp_depart bed on be.id = bed.employee_id and bed.del_flag = 0
+		LEFT JOIN base_depart bd on bed.depart_id = bd.id and bd.del_flag = 0
+		LEFT JOIN base_emp_position bep on be.id = bep.employee_id and bep.del_flag = 0
+		LEFT JOIN base_position bp on bep.position_id = bp.id and bp.del_flag = 0
+		where be.del_flag = 0
+		    <if test="departId != null" >
+		        and bed.depart_id = #{departId,jdbcType=BIGINT}
+		    </if>
+			<if test="departList != null">
+				and bed.depart_id in
+				<foreach collection="departList" item="departId" open="(" separator="," close=")">
+					#{departId,jdbcType=BIGINT}
+				</foreach>
+			</if>
+		  	<if test="code != null and code != ''">
+		  		and be.code like concat('%',#{code,jdbcType=VARCHAR},'%')
+		  	</if>
+			<if test="cnName != null and cnName != ''">
+				and be.cn_name like concat('%',#{cnName,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="workType != null and workType != ''">
+				and be.work_type = #{workType,jdbcType=BIGINT}
+			</if>
+			<if test="empTypeId != null">
+				and be.emp_type_id = #{empTypeId,jdbcType=BIGINT}
+			</if>
+			<if test="whetherScheduling != null">
+				and be.whether_scheduling = #{whetherScheduling,jdbcType=BIGINT}
+			</if>
+			<if test="currentUserDepart != null and currentUserDepart.size > 0">
+	  			and be.id in
+	  			<foreach collection="currentUserDepart" item="ids" open="(" separator="," close=")">
+	  				#{ids,jdbcType=BIGINT}
+	  			</foreach>
+	  		</if>
+	  		<if test="subEmployeeIdList != null and subEmployeeIdList.size > 0">
+				and be.id in
+				<foreach collection="subEmployeeIdList" item="ids" open="(" separator="," close=")">
+					#{ids,jdbcType=BIGINT}
+				</foreach>
+			</if>
+			<if test="empTypeIdList != null and empTypeIdList.size > 0" >
+	           and be.emp_type_id in
+	           <foreach collection="empTypeIdList" index="index" item="item" open="(" separator="," close=")">
+		           #{item}
+		       </foreach>
+	        </if>
+		GROUP BY be.code,be.cn_name,bd.id,bd.name,bp.position_name,DATE_FORMAT(awh.work_date,'%Y-%m')) detail
+  </select>
+  
+  <select id="getMonthLackTotalList" resultType="Map" parameterType="com.ule.oa.base.po.EmpAttn">
+	  
+	SELECT be.code,be.cn_name cnName,bd.id departId,bd.name departName,bp.position_name positionName,
+	DATE_FORMAT(awh.work_date,'%Y-%m') workDate,count(awh.work_date) total 
+	FROM base_employee be LEFT JOIN 
+	(SELECT DISTINCT employ_id,work_date FROM(
+	SELECT employ_id,work_date  <!-- 查询出每个员工每天请假的小时数 -->
+	from (SELECT employ_id,work_date, SUM(work_hours) work_hours FROM attn_work_hours where 
+	data_type not in (0,40,70) and del_flag = 0    <!-- 周园园提出，其中不包括外出的次数,异常申诉次数，类型70为外出 -->
+		    <if test="startTime != null" >
+		        and work_date &gt;= #{startTime,jdbcType=DATE}
+		    </if>
+		    <if test="endTime != null" >
+		        and work_date &lt;= #{endTime,jdbcType=DATE}
+		    </if>
+	GROUP BY employ_id,work_date
+	) a where work_hours &gt;= 3
+	UNION
+	SELECT employ_id,attn_date work_date FROM attn_statistics <!--  查询出每个员工每天旷工的小时数 -->
+	where absenteeism_time &gt; 0 and del_flag = 0
+		    <if test="startTime != null" >
+		        and attn_date &gt;= #{startTime,jdbcType=DATE}
+		    </if>
+		    <if test="endTime != null" >
+		        and attn_date &lt;= #{endTime,jdbcType=DATE}
+		    </if>)tbl )awh
+	ON be.id = awh.employ_id
+	LEFT JOIN base_emp_depart bed on be.id = bed.employee_id and bed.del_flag = 0
+	LEFT JOIN base_depart bd on bed.depart_id = bd.id and bd.del_flag = 0
+	LEFT JOIN base_emp_position bep on be.id = bep.employee_id and bep.del_flag = 0
+	LEFT JOIN base_position bp on bep.position_id = bp.id and bp.del_flag = 0
+	where be.del_flag = 0
+	    <if test="departId != null" >
+	        and bed.depart_id = #{departId,jdbcType=BIGINT}
+	    </if>
+		<if test="departList != null">
+			and bed.depart_id in
+			<foreach collection="departList" item="departId" open="(" separator="," close=")">
+				#{departId,jdbcType=BIGINT}
+			</foreach>
+		</if>
+	  	<if test="code != null and code != ''">
+	  		and be.code like concat('%',#{code,jdbcType=VARCHAR},'%')
+	  	</if>
+		<if test="cnName != null and cnName != ''">
+			and be.cn_name like concat('%',#{cnName,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="workType != null and workType != ''">
+			and be.work_type = #{workType,jdbcType=BIGINT}
+		</if>
+		<if test="empTypeId != null">
+			and be.emp_type_id = #{empTypeId,jdbcType=BIGINT}
+		</if>
+		<if test="whetherScheduling != null">
+			and be.whether_scheduling = #{whetherScheduling,jdbcType=BIGINT}
+		</if>
+		<if test="currentUserDepart != null and currentUserDepart.size > 0">
+  			and be.id in
+  			<foreach collection="currentUserDepart" item="ids" open="(" separator="," close=")">
+  				#{ids,jdbcType=BIGINT}
+  			</foreach>
+  		</if>
+  		<if test="subEmployeeIdList != null and subEmployeeIdList.size > 0">
+			and be.id in
+			<foreach collection="subEmployeeIdList" item="ids" open="(" separator="," close=")">
+				#{ids,jdbcType=BIGINT}
+			</foreach>
+		</if>
+		<if test="empTypeIdList != null and empTypeIdList.size > 0" >
+           and be.emp_type_id in
+           <foreach collection="empTypeIdList" index="index" item="item" open="(" separator="," close=")">
+	           #{item}
+	       </foreach>
+        </if>
+	GROUP BY be.code,be.cn_name,bd.id,bd.name,bp.position_name,DATE_FORMAT(awh.work_date,'%Y-%m')
+	ORDER BY bd.name,be.code
+	<if test="offset != null and limit != null">
+		limit #{offset},#{limit}
+	</if>
+  </select>
+  
+  <!-- 通过id和考情时间 来查询员工当天的上下班打卡时间 -->
+  <select id="getAttnTimeByIdAndAttnTime" resultMap="BaseResultMap" parameterType="com.ule.oa.base.po.EmpAttn">
+  	
+	select <include refid="Base_Column_List"/> from attn_statistics 
+	<where>
+		 <if test="employId != null" >
+      	  and employ_id = #{employId,jdbcType=BIGINT}
+    	</if>
+    	<if test="attnDate != null" >
+       	 and DATE_FORMAT(attn_date,'%Y-%m-%d') = #{attnDate,jdbcType=DATE}
+    	</if>
+	</where>
+  </select>
+  
+  <select id="getAbnormalAttnList" resultType="com.ule.oa.base.po.EmpAttn">
+		select <include refid="Base_Column_List"/>  from attn_statistics
+			where del_flag = 0 and attn_status =1 and must_attn_time&gt;0
+			and attn_date  &gt;= #{startDate,jdbcType=DATE} and attn_date &lt;=  #{endDate,jdbcType=DATE} 
+		    <if test="employIdList != null"> 
+		      and employ_id in 
+		      <foreach collection="employIdList" index="index" item="item" open="(" separator="," close=")">
+	               #{item}
+	          </foreach>
+		   </if>
+  </select>
+  
+  <select id="getLocationCheckInDataCount" resultType="java.lang.Integer" parameterType="com.ule.oa.base.po.EmpAttn" >
+    SELECT count(0)
+	FROM attn_sign_record asr
+	where asr.type = 5
+    <if test="delFlag != null" >
+        and asr.del_flag = #{delFlag,jdbcType=INTEGER}
+    </if>
+    <if test="startTime != null" >
+        and DATE_FORMAT(asr.sign_time,'%Y-%m-%d') &gt;= #{startTime,jdbcType=DATE}
+    </if>
+    <if test="endTime != null" >
+        and DATE_FORMAT(asr.sign_time,'%Y-%m-%d') &lt;= #{endTime,jdbcType=DATE}
+    </if>
+	<if test="employeeIdList != null and employeeIdList.size > 0">
+		and asr.employee_id in
+		<foreach collection="employeeIdList" item="id" open="(" separator="," close=")">
+			#{id,jdbcType=BIGINT}
+		</foreach>
+	</if>
+  </select>
+  
+  <select id="getLocationCheckInDataList" resultType="Map" parameterType="com.ule.oa.base.po.EmpAttn">
+    SELECT asr.employee_id employeeId,DATE_FORMAT(asr.sign_time,'%Y-%m-%d') attnDate,
+	CASE dayofweek(asr.sign_time) 
+	WHEN 1 THEN '星期日' WHEN 2 THEN '星期一' WHEN 3 THEN '星期二' WHEN 4 THEN '星期三'
+	WHEN 5 THEN '星期四' WHEN 6 THEN '星期五' WHEN 7 THEN '星期六' END dayofweek,
+    DATE_FORMAT(asr.sign_time,'%T') signTime,
+    asr.address,
+    asr.ip, 
+    asr.distance,
+    asr.del_flag delFlag
+	FROM attn_sign_record asr
+	where  asr.type = 5
+	<if test="delFlag != null" >
+        and asr.del_flag = #{delFlag,jdbcType=INTEGER}
+    </if>
+    <if test="startTime != null" >
+        and asr.sign_time &gt;= #{startTime}
+    </if>
+    <if test="endTime != null" >
+        and asr.sign_time &lt;= #{endTime}
+    </if>
+	<if test="employeeIdList != null and employeeIdList.size > 0">
+		and asr.employee_id in
+		<foreach collection="employeeIdList" item="id" open="(" separator="," close=")">
+			#{id,jdbcType=BIGINT}
+		</foreach>
+	</if>
+	
+    ORDER BY DATE_FORMAT(asr.sign_time,'%Y-%m-%d') desc,DATE_FORMAT(asr.sign_time,'%H:%i:%s') desc
+	<if test="offset != null and limit != null">
+		limit #{offset},#{limit}
+	</if>
+  </select>
+  
+</mapper>

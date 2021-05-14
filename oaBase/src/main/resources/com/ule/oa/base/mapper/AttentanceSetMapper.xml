@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ule.oa.base.mapper.AttentanceSetMapper" >
+  
+  
+  <select id="getEmployeeList" parameterType="com.ule.oa.base.po.AttentanceSetDTO" resultType="com.ule.oa.base.po.AttentanceSetDTO">
+	  	SELECT 
+		  a.id as employeeId,a.code,a.cn_name AS cnName,c.name AS departName,a.work_type AS workType,(SELECT cn_name FROM base_employee WHERE id=a.report_to_leader) AS reportToLeaderName
+		FROM
+		  base_employee a 
+		  LEFT JOIN base_emp_depart b 
+		    ON a.id = b.employee_id 
+		  LEFT JOIN base_depart c 
+		    ON b.depart_id = c.id 
+		WHERE a.del_flag = 0 
+		  AND b.del_flag = 0 
+		  AND c.del_flag = 0 and c.code!='140' and a.whether_scheduling=#{whetherScheduling,jdbcType=BIGINT}
+		<if test="cnName != null and cnName != ''" >
+		  and a.cn_name like concat('%',#{cnName,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="code != null and code != ''" >
+		  and a.code  like concat('%',#{code,jdbcType=VARCHAR},'%')
+		</if>
+  		<if test="departId != null and departId!=''" >
+	        and  c.id = #{departId,jdbcType=BIGINT}
+	    </if>
+  		<if test="reportToLeader != null">
+  			and a.report_to_leader = #{reportToLeader,jdbcType=BIGINT}
+  		</if>
+  		<if test="workType != null">
+  			and a.work_type = #{workType,jdbcType=BIGINT}
+  		</if>
+  		<if test="jobStatus != null">
+  			and a.job_status = #{jobStatus,jdbcType=INTEGER}
+  		</if>
+  		<if test="jobStatusList != null"> 
+	      and a.job_status in 
+	      <foreach collection="jobStatusList" index="index" item="item" open="(" separator="," close=")">
+               #{item}
+          </foreach>
+	    </if>
+		
+  		ORDER BY a.emp_type_id,CAST(SUBSTRING(a.CODE, 3) AS SIGNED)
+  		<if test="offset != null and limit != null">
+			limit #{offset},#{limit}
+		</if>
+  </select>
+  
+  <select id="getEmployeeCount" parameterType="com.ule.oa.base.po.AttentanceSetDTO" resultType="java.lang.Integer">
+	  	SELECT 
+		  count(1)
+		FROM
+		  base_employee a 
+		  LEFT JOIN base_emp_depart b 
+		    ON a.id = b.employee_id 
+		  LEFT JOIN base_depart c 
+		    ON b.depart_id = c.id 
+		WHERE a.del_flag = 0 
+		  AND b.del_flag = 0 
+		  AND c.del_flag = 0 and c.code!='140' and a.whether_scheduling=#{whetherScheduling,jdbcType=BIGINT}
+		<if test="cnName != null and cnName != ''" >
+		  and a.cn_name like concat('%',#{cnName,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="code != null and code != ''" >
+		  and a.code  like concat('%',#{code,jdbcType=VARCHAR},'%')
+		</if>
+  		<if test="departId != null and departId!=''" >
+	        and  c.id = #{departId,jdbcType=BIGINT}
+	    </if>
+  		<if test="reportToLeader != null">
+  			and a.report_to_leader = #{reportToLeader,jdbcType=BIGINT}
+  		</if>
+  		<if test="workType != null">
+  			and a.work_type = #{workType,jdbcType=BIGINT}
+  		</if>
+  		<if test="jobStatus != null">
+  			and a.job_status = #{jobStatus,jdbcType=INTEGER}
+  		</if>
+  		<if test="jobStatusList != null"> 
+	      and a.job_status in 
+	      <foreach collection="jobStatusList" index="index" item="item" open="(" separator="," close=")">
+               #{item}
+          </foreach>
+	    </if>
+  </select>
+  
+  <select id="getEmployeeClassInfo" resultType="com.ule.oa.base.po.AttentanceSetDTO">
+	 SELECT 
+		 a.class_setting_id as classSettingId,any_value(b.name) as className,any_value(b.start_time) as startTime,any_value(b.end_time) as endTime,COUNT(1) as count
+		FROM
+		  attn_employ_class a 
+		  LEFT JOIN attn_class_setting b 
+		    ON a.class_setting_id = b.id 
+		WHERE a.employ_id = #{employId,jdbcType=BIGINT}
+		  AND a.del_flag = 0 
+		  AND a.class_date &gt;= #{startDate,jdbcType=DATE}
+  	      AND a.class_date &lt;= #{endDate,jdbcType=DATE}
+		  GROUP BY  a.class_setting_id HAVING COUNT(1)>0 ORDER BY COUNT(1) DESC LIMIT 0,1
+  </select>
+
+</mapper>

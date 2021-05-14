@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ule.oa.base.mapper.SurplusWorkhoursMapper" >
+  <resultMap id="BaseResultMap" type="com.ule.oa.base.po.SurplusWorkhours" >
+    <id column="ID" property="id" jdbcType="BIGINT" />
+    <result column="company_id" property="companyId" jdbcType="BIGINT" />
+    <result column="employee_id" property="employeeId" jdbcType="BIGINT" />
+    <result column="employee_name" property="employeeName" jdbcType="VARCHAR" />
+    <result column="month" property="month" jdbcType="VARCHAR" />
+    <result column="surplus_hours" property="surplusHours" jdbcType="DOUBLE" />
+    <result column="del_flag" property="delFlag" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    ID, company_id,employee_id, employee_name, month, surplus_hours, del_flag, create_time, create_user, update_user, update_time
+  </sql>
+
+  <select id="selectByCondition" resultMap="BaseResultMap" parameterType="com.ule.oa.base.po.SurplusWorkhours" >
+    select 
+    <include refid="Base_Column_List" /> from attn_employ_surplus_workhours 
+    where del_flag=0 and employee_id = #{employeeId,jdbcType=BIGINT} and month = #{month,jdbcType=VARCHAR}
+  </select>
+  
+  <insert id="batchSave" parameterType="java.util.List">
+  	insert into attn_employ_surplus_workhours (
+  	  company_id,employee_id, employee_name,month,
+  	  surplus_hours,create_time,create_user,del_flag
+      )
+    select tmp.* from (
+    	<foreach collection="list" item="item" separator="UNION">
+    		select 
+    		#{item.companyId,jdbcType=BIGINT} as company_id,
+    		#{item.employeeId,jdbcType=BIGINT} as employee_id,
+    		#{item.employeeName,jdbcType=VARCHAR} as employee_name,
+    		#{item.month,jdbcType=VARCHAR} as month,
+    		#{item.surplusHours,jdbcType=DOUBLE} as surplus_hours,
+    		#{item.createTime,jdbcType=TIMESTAMP} as create_time,
+    		#{item.createUser,jdbcType=VARCHAR} as create_user,
+    		#{item.delFlag,jdbcType=INTEGER} as del_flag
+    		from dual
+    	</foreach>
+    )tmp
+  </insert>
+  
+  <update id="updateById" parameterType="com.ule.oa.base.po.SurplusWorkhours" >
+    update attn_employ_surplus_workhours
+    <set>
+      <if test="surplusHours != null" >
+        surplus_hours = #{surplusHours,jdbcType=DOUBLE},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP}
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+</mapper>

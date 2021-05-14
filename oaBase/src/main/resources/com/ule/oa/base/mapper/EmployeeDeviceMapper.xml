@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ule.oa.base.mapper.EmployeeDeviceMapper" >
+
+  <resultMap id="BaseResultMap" type="com.ule.oa.base.po.EmployeeDevice" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="employee_id" property="employeeId" jdbcType="BIGINT" />
+    <result column="info" property="info" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+     id,employee_id,info,create_time,update_time,create_user,update_user
+  </sql>
+  
+  <select id="getByEmployeeId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+  	select <include refid="Base_Column_List"/> from base_emp_ext_info
+  	where employee_id = #{employeeId,jdbcType=BIGINT}
+  </select>
+  
+  <insert id="save" parameterType="com.ule.oa.base.po.EmployeeDevice" useGeneratedKeys="true" keyProperty="id">
+    insert into base_emp_ext_info (
+      employee_id,info,create_time,create_user
+      )
+    values (
+      #{employeeId,jdbcType=BIGINT},
+      #{info,jdbcType=VARCHAR},
+      #{createTime,jdbcType=TIMESTAMP}, 
+      #{createUser,jdbcType=VARCHAR}
+      )
+      <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">
+            SELECT LAST_INSERT_ID() AS id
+       </selectKey> 
+  </insert>
+  
+   <update id="update" parameterType="com.ule.oa.base.po.EmployeeDevice">
+		update base_emp_ext_info
+		<set>
+			<if test="info != null">info=#{info,jdbcType=VARCHAR},</if>
+			<if test="updateTime != null">update_time=#{updateTime,jdbcType=TIMESTAMP},</if>
+			<if test="updateUser != null">update_user=#{updateUser,jdbcType=VARCHAR}</if>
+	    </set>
+		where employee_id = #{employeeId,jdbcType=BIGINT}
+	</update>
+  
+</mapper>

@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ule.oa.base.mapper.EmpAchievementMapper" >
+  <resultMap id="BaseResultMap" type="com.ule.oa.base.po.EmpAchievement" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="employee_id" property="employeeId" jdbcType="BIGINT" />
+    <result column="process_time" property="processTime" jdbcType="TIMESTAMP" />
+    <result column="content" property="content" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="del_flag" property="delFlag" jdbcType="INTEGER" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="version" property="version" jdbcType="BIGINT" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    id, employee_id, process_time, content, create_time, create_user, update_time, update_user, 
+    del_flag, remark ,version
+  </sql>
+  
+  <select id="selectById" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from base_emp_achievement
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  
+  <select id="getListByCondition" parameterType="com.ule.oa.base.po.EmpAchievement" resultMap="BaseResultMap">
+  	select <include refid="Base_Column_List"/> from base_emp_achievement
+  	where del_flag = 0
+  	<if test="employeeId != null and employeeId != ''" >
+  		and employee_id = #{employeeId,jdbcType=BIGINT }
+  	</if>
+  </select>
+  
+  <select id="getListByEmployeeId" resultMap="BaseResultMap">
+  	select <include refid="Base_Column_List"/> from base_emp_achievement
+  	where del_flag = 0 and employee_id = #{employeeId,jdbcType=BIGINT}
+  </select>
+  
+  <insert id="save" parameterType="com.ule.oa.base.po.EmpAchievement" >
+    insert into base_emp_achievement
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="employeeId != null" >
+        employee_id,
+      </if>
+      <if test="processTime != null" >
+        process_time,
+      </if>
+      <if test="content != null" >
+        content,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="createUser != null" >
+        create_user,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+      <if test="updateUser != null" >
+        update_user,
+      </if>
+      <if test="delFlag != null" >
+        del_flag,
+      </if>
+      <if test="remark != null" >
+        remark,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="employeeId != null" >
+        #{employeeId,jdbcType=BIGINT},
+      </if>
+      <if test="processTime != null" >
+        #{processTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="content != null" >
+        #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUser != null" >
+        #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUser != null" >
+        #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="delFlag != null" >
+        #{delFlag,jdbcType=INTEGER},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  <update id="updateById" parameterType="com.ule.oa.base.po.EmpAchievement" >
+    update base_emp_achievement
+    <set >
+      <if test="employeeId != null" >
+        employee_id = #{employeeId,jdbcType=BIGINT},
+      </if>
+      <if test="processTime != null" >
+        process_time = #{processTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="content != null" >
+        content = #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUser != null" >
+        create_user = #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="delFlag != null" >
+        del_flag = #{delFlag,jdbcType=INTEGER},
+      </if>
+      <if test="remark != null" >
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+	  version = version + 1
+    </set>
+    where id = #{id,jdbcType=BIGINT} and version = #{version,jdbcType=BIGINT}
+  </update>
+  
+  <insert id="saveBatch" parameterType="com.ule.oa.base.po.EmpAchievement" >
+      insert into base_emp_achievement (employee_id, process_time, 
+      content,create_time, create_user, update_time, update_user, 
+      del_flag, remark)
+      values
+      <foreach collection ="list" item="item" index= "index" separator =",">
+	      (#{item.employeeId,jdbcType=BIGINT}, #{item.processTime,jdbcType=TIMESTAMP}, 
+	       #{item.content,jdbcType=VARCHAR}, #{item.createTime,jdbcType=TIMESTAMP}, 
+	       #{item.createUser,jdbcType=VARCHAR}, #{item.updateTime,jdbcType=TIMESTAMP},#{item.updateUser,jdbcType=VARCHAR}, 
+	       #{item.delFlag,jdbcType=INTEGER}, #{item.remark,jdbcType=VARCHAR})
+      </foreach >
+  </insert>
+  
+  <update id="deleteByEmployeeId">
+	    update base_emp_achievement set del_flag = 1,update_time=#{updateTime,jdbcType=TIMESTAMP}
+	    ,update_user = #{updateUser,jdbcType=VARCHAR}
+	    where del_flag=0 and employee_id = #{employeeId,jdbcType=BIGINT} 
+  </update>
+  
+</mapper>

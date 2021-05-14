@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ule.oa.base.mapper.AttnWorkHoursMapper" >
+  <resultMap id="BaseResultMap" type="com.ule.oa.base.po.AttnWorkHours" >
+    <id column="ID" property="id" jdbcType="BIGINT" />
+    <result column="company_id" property="companyId" jdbcType="BIGINT" />
+    <result column="employ_id" property="employeeId" jdbcType="BIGINT" />
+    <result column="work_date" property="workDate" jdbcType="DATE" />
+    <result column="attn_status" property="attnStatus" jdbcType="INTEGER" />
+    <result column="data_type" property="dataType" jdbcType="INTEGER" />
+    <result column="leave_type" property="leaveType" jdbcType="INTEGER" />
+    <result column="start_time" property="startTime" jdbcType="TIMESTAMP" />
+    <result column="end_time" property="endTime" jdbcType="TIMESTAMP" />
+    <result column="work_hours" property="workHours" jdbcType="DOUBLE" />
+    <result column="del_flag" property="delFlag" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="data_reason" property="dataReason" jdbcType="VARCHAR" />
+    <result column="bill_id" property="billId" jdbcType="BIGINT" />
+  </resultMap>
+  
+  <resultMap id="TransCollectMap" type="com.ule.oa.base.po.AttnWorkHours" >
+    <result column="company_id" property="companyId" jdbcType="BIGINT" />
+    <result column="employee_id" property="employeeId" jdbcType="BIGINT" />
+    <result column="work_date" property="workDate" jdbcType="DATE" />
+    <result column="start_time" property="startTime" jdbcType="TIMESTAMP" />
+    <result column="end_time" property="endTime" jdbcType="TIMESTAMP" />
+    <result column="data_reason" property="dataReason" jdbcType="VARCHAR" />
+    <result column="data_type" property="dataType" jdbcType="INTEGER" />
+  </resultMap>
+  
+  <resultMap id="AttnWorkHoursGroupMap" type="com.ule.oa.base.po.AttnWorkHours" >
+    <result column="company_id" property="companyId" jdbcType="BIGINT" />
+    <result column="employ_id" property="employeeId" jdbcType="BIGINT" />
+    <result column="work_date" property="workDate" jdbcType="DATE" />
+    <result column="work_hours" property="workHours" jdbcType="DOUBLE" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    ID, company_id, employ_id, work_date, attn_status, data_type,leave_type, start_time, end_time, 
+    work_hours, del_flag, create_time, update_time, create_user, update_user,data_reason,bill_id
+  </sql>
+  
+  <select id="getAttnWorkHoursList" resultMap="BaseResultMap" parameterType="com.ule.oa.base.po.AttnWorkHours">
+    select 
+    <include refid="Base_Column_List" />
+    from attn_work_hours
+    where del_flag = 0
+     and employ_id = #{employeeId,jdbcType=BIGINT}
+     and work_date = #{workDate,jdbcType=DATE}
+     <if test="dataType != null" >
+       and data_type &lt;= #{dataType,jdbcType=INTEGER}
+     </if>
+     ORDER BY data_type 
+  </select>
+  
+  <select id="getListByDate" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from attn_work_hours
+    where del_flag = 0 and work_date &gt;= #{startDate,jdbcType=DATE} and work_date &lt;= #{endDate,jdbcType=DATE}
+  </select>
+  
+  <select id="getAbsoluteAttnWorkHoursList" resultMap="BaseResultMap" parameterType="com.ule.oa.base.po.AttnWorkHours">
+    select 
+    <include refid="Base_Column_List" />
+    from attn_work_hours
+    where del_flag = 0
+     and employ_id = #{employeeId,jdbcType=BIGINT}
+     and work_date = #{workDate,jdbcType=DATE}
+     and data_type = 3
+  </select>
+  
+  <select id="getListByCondition" resultMap="BaseResultMap" parameterType="com.ule.oa.base.po.AttnWorkHours">
+    select 
+    <include refid="Base_Column_List" />
+    from attn_work_hours
+    where del_flag = 0
+     and employ_id = #{employeeId,jdbcType=BIGINT}
+     and work_date = #{workDate,jdbcType=DATE}
+  </select>
+  
+  <select id="getNeedRepairList" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from attn_work_hours
+    where del_flag = 0 and data_type=60 and leave_type in(1,2,5,11,12)
+  </select>
+  
+  <select id="getClockedAttnWorkHoursList" resultMap="BaseResultMap" parameterType="com.ule.oa.base.po.AttnWorkHours">
+    select 
+    <include refid="Base_Column_List" />
+    from attn_work_hours
+    where del_flag = 0
+     and employ_id = #{employeeId,jdbcType=BIGINT}
+     and work_date = #{workDate,jdbcType=DATE}
+     and data_type in(0,2,4,5)
+  </select>
+  
+  <insert id="save" parameterType="com.ule.oa.base.po.AttnWorkHours" >
+    insert into attn_work_hours (company_id, employ_id, 
+      work_date, attn_status, data_type, leave_type,
+      start_time, end_time, work_hours, 
+      del_flag, create_time, update_time, 
+      create_user, update_user,data_reason,bill_id)
+    values (#{companyId,jdbcType=BIGINT}, #{employeeId,jdbcType=BIGINT}, 
+      #{workDate,jdbcType=DATE}, #{attnStatus,jdbcType=INTEGER}, #{dataType,jdbcType=INTEGER}, #{leaveType,jdbcType=INTEGER},
+      #{startTime,jdbcType=TIMESTAMP}, #{endTime,jdbcType=TIMESTAMP}, #{workHours,jdbcType=DOUBLE}, 
+      #{delFlag,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, 
+      #{createUser,jdbcType=VARCHAR}, #{updateUser,jdbcType=VARCHAR},#{dataReason,jdbcType=VARCHAR},#{billId,jdbcType=BIGINT})
+  </insert>
+  
+  <select id="getTransCollectByDate" resultMap="TransCollectMap"  parameterType="com.ule.oa.base.po.AttnWorkHours">
+		SELECT
+		    DATE_FORMAT(#{startTime,jdbcType=TIMESTAMP},'%Y-%m-%d') workDate,
+			min(sign_time) start_time,
+			max(sign_time) end_time,
+			company_id, employee_id
+		FROM
+			attn_sign_record a
+		WHERE
+		a.del_flag = 0
+		AND a.type in(0,4) 
+		AND a.sign_time &gt;= #{startTime,jdbcType=TIMESTAMP}
+		AND a.sign_time &lt;= #{endTime,jdbcType=TIMESTAMP}
+		AND a.employee_id = #{employeeId,jdbcType=BIGINT}
+		GROUP BY company_id, employee_id
+  </select>
+  
+  <select id="getTransListByDate" resultMap="TransCollectMap"  parameterType="com.ule.oa.base.po.AttnWorkHours">
+		SELECT
+		    DATE_FORMAT(#{startTime,jdbcType=TIMESTAMP},'%Y-%m-%d') workDate,
+			min(sign_time) start_time,
+			max(sign_time) end_time,
+			max(remark) AS data_reason,
+			max(type) AS data_type,
+			company_id, employee_id
+		FROM
+			attn_sign_record a
+		WHERE
+		a.del_flag = 0
+		AND a.type in(0,4,5)
+		AND a.sign_time &gt;= #{startTime,jdbcType=TIMESTAMP}
+		AND a.sign_time &lt;= #{endTime,jdbcType=TIMESTAMP}
+		<if test="employeeIds != null"> 
+		    and employee_id in 
+		    <foreach collection="employeeIds" index="index" item="item" open="(" separator="," close=")">
+              #{item}
+          	</foreach>
+	  	</if>
+		GROUP BY company_id, employee_id
+  </select>
+  
+  <select id="getAttnWorkHoursGroupByDate" resultMap="AttnWorkHoursGroupMap"  parameterType="com.ule.oa.base.po.AttnWorkHours">
+		SELECT
+		work_date,company_id,employ_id,sum(work_hours)work_hours
+		FROM
+			attn_work_hours a
+		WHERE
+		a.del_flag = 0
+		AND a.work_date = #{workDate,jdbcType=DATE}
+		AND a.employ_id = #{employeeId,jdbcType=BIGINT}
+		AND a.company_id = #{companyId,jdbcType=BIGINT}
+		GROUP BY work_date,company_id,employ_id
+  </select>
+  
+  <insert id="saveBatch" parameterType="com.ule.oa.base.po.AttnWorkHours">
+	      insert into attn_work_hours (company_id, employ_id, 
+	      work_date, attn_status, data_type, leave_type,
+	      start_time, end_time, work_hours, 
+	      del_flag, create_time, update_time, 
+	      create_user, update_user,data_reason,bill_id)
+	      values 
+	    <foreach collection ="list" item="item" index= "index" separator =",">
+	 	  (#{item.companyId,jdbcType=BIGINT}, #{item.employeeId,jdbcType=BIGINT}, 
+	       #{item.workDate,jdbcType=DATE}, #{item.attnStatus,jdbcType=INTEGER}, #{item.dataType,jdbcType=INTEGER}, #{leaveType,jdbcType=INTEGER},
+	       #{item.startTime,jdbcType=TIMESTAMP}, #{item.endTime,jdbcType=TIMESTAMP}, #{item.workHours,jdbcType=DOUBLE}, 
+	       #{item.delFlag,jdbcType=INTEGER}, #{item.createTime,jdbcType=TIMESTAMP}, #{item.updateTime,jdbcType=TIMESTAMP}, 
+	       #{item.createUser,jdbcType=VARCHAR}, #{item.updateUser,jdbcType=VARCHAR},#{item.dataReason,jdbcType=VARCHAR},#{item.billId,jdbcType=BIGINT})
+	    </foreach >
+  </insert>
+  
+  <update id="updateById" parameterType="com.ule.oa.base.po.AttnWorkHours" >
+    update attn_work_hours set
+        company_id = #{companyId,jdbcType=BIGINT},
+        employ_id = #{employeeId,jdbcType=BIGINT},
+        work_date = #{workDate,jdbcType=DATE},
+        attn_status = #{attnStatus,jdbcType=INTEGER},
+        data_type = #{dataType,jdbcType=INTEGER},
+        leave_type = #{leaveType,jdbcType=INTEGER},
+        start_time = #{startTime,jdbcType=TIMESTAMP},
+        end_time = #{endTime,jdbcType=TIMESTAMP},
+        work_hours = #{workHours,jdbcType=DOUBLE},
+        del_flag = #{delFlag,jdbcType=INTEGER},
+        <!-- create_time = #{createTime,jdbcType=TIMESTAMP}, -->
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+        <!-- create_user = #{createUser,jdbcType=VARCHAR}, -->
+        update_user = #{updateUser,jdbcType=VARCHAR},
+        data_reason = #{dataReason,jdbcType=VARCHAR}
+    where ID = #{id,jdbcType=BIGINT}
+  </update>
+  
+  <update id="updateById1" >
+    update attn_work_hours set
+        del_flag = #{delFlag,jdbcType=INTEGER}
+    where ID = #{id,jdbcType=BIGINT}
+  </update>
+  
+  <update id="repairDate" >
+    update attn_work_hours set
+        start_time = #{startTime,jdbcType=TIMESTAMP},
+        end_time = #{endTime,jdbcType=TIMESTAMP}
+    where ID = #{id,jdbcType=BIGINT}
+  </update>
+  
+  <update id="deleteByCondition" parameterType="com.ule.oa.base.po.AttnWorkHours" >
+    update attn_work_hours set
+        del_flag = #{delFlag,jdbcType=INTEGER},
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+        update_user = #{updateUser,jdbcType=VARCHAR},
+        data_reason = #{dataReason,jdbcType=VARCHAR}
+    where employ_id = #{employeeId,jdbcType=BIGINT} and work_date = #{workDate,jdbcType=DATE}
+  </update>
+  
+ <update id="deleteRemoteAbnormalRemoveDate" parameterType="com.ule.oa.base.po.AttnWorkHours" >
+    update attn_work_hours set
+        del_flag = 1,
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+        update_user = #{updateUser,jdbcType=VARCHAR},
+        data_reason = #{dataReason,jdbcType=VARCHAR}
+    where employ_id = #{employId,jdbcType=BIGINT} and work_date = #{workDate,jdbcType=DATE} and data_type=6
+  </update>
+  
+  <select id="getRemoteAbnormalRemoveDate" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List" />
+    from attn_work_hours
+    where del_flag = 0
+     and employ_id = #{employeeId,jdbcType=BIGINT}
+     and work_date = #{workDate,jdbcType=DATE}
+     and data_type = 6 limit 0,1
+  </select>
+  
+  <update id="deleteByBillId" parameterType="com.ule.oa.base.po.AttnWorkHours" >
+    update attn_work_hours set
+        del_flag = #{delFlag,jdbcType=INTEGER},
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+        update_user = #{updateUser,jdbcType=VARCHAR},
+        data_reason = #{dataReason,jdbcType=VARCHAR}
+    where bill_id = #{billId,jdbcType=BIGINT} and data_type=#{dataType,jdbcType=INTEGER}
+  </update>
+  
+  <select id="getExistIdWorkHours" parameterType="com.ule.oa.base.po.AttnWorkHours" resultType="java.lang.Long">
+	  select ID from
+	  attn_work_hours 
+	  where del_flag = 0
+	  and data_type in(0,5) 
+      <if test="employeeId != null" >
+        and employ_id = #{employeeId,jdbcType=BIGINT}
+      </if>
+      <if test="workDate != null" >
+        and work_date = #{workDate,jdbcType=DATE}
+      </if>
+  </select>
+  
+  <update id="cancelAttnWorkHours" parameterType="com.ule.oa.base.po.AttnWorkHours" >
+        update attn_work_hours a set del_flag = 1
+		WHERE
+		a.work_date = #{workDate,jdbcType=DATE}
+		AND a.start_time = #{startTime,jdbcType=DATE}
+		AND a.end_time = #{endTime,jdbcType=DATE}
+		AND a.data_type = #{item.dataType,jdbcType=INTEGER}
+		AND a.employ_id = #{employeeId,jdbcType=BIGINT}
+		AND a.company_id = #{companyId,jdbcType=BIGINT}
+  </update>
+</mapper>

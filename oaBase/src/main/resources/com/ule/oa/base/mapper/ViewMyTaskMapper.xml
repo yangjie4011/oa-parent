@@ -1,0 +1,1149 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ule.oa.base.mapper.ViewMyTaskMapper" >
+ 		<select id="queryMyTask" parameterType="java.util.Map" resultType="java.util.Map">
+ 		
+ 		       select a.processinstance_id taskId,CONCAT('/empApplicationLeaveBack/approve.htm?flag=no&amp;leaveAbolishId=',a.id) url,b.cn_name creator,DATE_FORMAT(a.create_time,'%Y-%m-%d %T') createTime,b.DEPART_NAME creatorDepart ,'销假申请' processName,a.approval_status processStatu
+				,130 reProcdefCode,'' subordinateName
+				from base_emp_application_leave_abolish a LEFT JOIN base_emp_application_leave b ON a.leave_id = b.id
+					where b.EMPLOYEE_ID = #{empId,jdbcType=BIGINT}
+						AND b.del_flag = 0
+						AND a.approval_status IS NOT NULL
+						<if test=" statu != null ">
+						AND
+				 		a.approval_status in
+				 		<foreach collection="statu" item="status" open="(" separator="," close=")">
+							#{status,jdbcType=BIGINT}
+						</foreach>
+						</if>	
+				UNION ALL			
+ 		
+ 			   select PROCESSINSTANCE_ID taskId,CONCAT('/empApplicationLeave/approval.htm?flag=no&amp;leaveId=',id) url,cn_name creator,DATE_FORMAT(CREATE_TIME,'%Y-%m-%d %T') createTime,DEPART_NAME creatorDepart ,'请假申请单' processName,APPROVAL_STATUS processStatu
+				,60 reProcdefCode,'' subordinateName
+				from base_emp_application_leave 
+					where EMPLOYEE_ID = #{empId,jdbcType=BIGINT}
+						and del_flag = 0
+					<if test=" statu != null ">
+						and
+				 		APPROVAL_STATUS in
+				 		<foreach collection="statu" item="status" open="(" separator="," close=")">
+							#{status,jdbcType=BIGINT}
+						</foreach>
+						</if>
+				UNION ALL
+				
+ 				select PROCESSINSTANCE_ID taskId,CONCAT('/empApplicationOutgoing/approval.htm?flag=no&amp;outgoingId=',id) url,cn_name creator,DATE_FORMAT(CREATE_TIME,'%Y-%m-%d %T') createTime,DEPART_NAME creatorDepart ,'外出申请单' processName,APPROVAL_STATUS processStatu
+				,70 reProcdefCode,'' subordinateName
+				from base_emp_application_outgoing 
+					where EMPLOYEE_ID = #{empId,jdbcType=BIGINT} 
+						and del_flag = 0
+						<if test=" statu != null ">
+						and
+				 		APPROVAL_STATUS in
+				 		<foreach collection="statu" item="status" open="(" separator="," close=")">
+							#{status,jdbcType=BIGINT}
+						</foreach>
+						</if>
+				UNION ALL
+				
+ 				select PROCESSINSTANCE_ID taskId,CONCAT('/empApplicationAbnormalAttendance/approval.htm?flag=no&amp;attendanceId=',id) url,create_user creator,DATE_FORMAT(CREATE_TIME,'%Y-%m-%d %T') createTime,DEPART_NAME creatorDepart ,(case when apply_type = 1 then '下属异常考勤单' else '异常考勤单' end) processName,APPROVAL_STATUS processStatu
+				,40 reProcdefCode,(case when apply_type = 1 then cn_name else '' end) subordinateName
+				from base_emp_application_abnormal_attendance 
+					where agent_id = #{empId,jdbcType=BIGINT} 
+						and del_flag = 0
+						<if test=" statu != null ">
+						and
+				 		APPROVAL_STATUS in
+				 		<foreach collection="statu" item="status" open="(" separator="," close=")">
+							#{status,jdbcType=BIGINT}
+						</foreach>
+						</if>
+				UNION ALL
+				select PROCESSINSTANCE_ID taskId,CONCAT('/empApplicationOvertime/approval.htm?flag=no&amp;overtimeId=',id) url,cn_name creator,DATE_FORMAT(CREATE_TIME,'%Y-%m-%d %T') createTime,DEPART_NAME creatorDepart ,'延时工作申请' processName,APPROVAL_STATUS processStatu
+				,30 reProcdefCode,'' subordinateName
+				from base_emp_application_overtime 
+					where EMPLOYEE_ID = #{empId,jdbcType=BIGINT} 
+						and del_flag = 0
+						<if test=" statu != null ">
+						and
+				 		APPROVAL_STATUS in
+				 		<foreach collection="statu" item="status" open="(" separator="," close=")">
+							#{status,jdbcType=BIGINT}
+						</foreach>
+						</if>
+				UNION ALL
+				
+				select PROCESSINSTANCE_ID taskId,CONCAT('/employeeRegister/toHandle.htm?flag=no&amp;id=',id) url,CREATE_USER creator,DATE_FORMAT(CREATE_TIME,'%Y-%m-%d %T') createTime,DEPART_NAME creatorDepart ,'入职登记申请' processName,APPROVAL_STATUS processStatu
+				,10 reProcdefCode,'' subordinateName
+				from emp_entry_registration 
+					where EMPLOYEE_ID = #{empId,jdbcType=BIGINT} 
+						and del_flag = 0
+						<if test=" statu != null ">
+						and
+				 		APPROVAL_STATUS in
+				 		<foreach collection="statu" item="status" open="(" separator="," close=")">
+							#{status,jdbcType=BIGINT}
+						</foreach>
+						</if>
+	            UNION ALL
+	            
+				select PROCESSINSTANCE_ID taskId,CONCAT('/employeeClass/approveNormal.htm?flag=no&amp;employeeClassId=',id) url,CLASS_SETTING_PERSON creator,DATE_FORMAT(CREATE_TIME,'%Y-%m-%d %T') createTime,DEPART_NAME creatorDepart ,'排班申请' processName,APPROVAL_STATUS processStatu
+				,50 reProcdefCode,'' subordinateName
+				from attn_application_employ_class 
+					where EMPLOYEE_ID = #{empId,jdbcType=BIGINT} 
+						and del_flag = 0
+						<if test=" statu != null ">
+						and
+				 		APPROVAL_STATUS in
+				 		<foreach collection="statu" item="status" open="(" separator="," close=")">
+							#{status,jdbcType=BIGINT}
+						</foreach>
+						</if>
+				UNION ALL
+				
+				select PROCESSINSTANCE_ID taskId,CONCAT('/employeeClass/approveVacation.htm?flag=no&amp;dutyId=',id) url,CLASS_SETTING_PERSON creator,DATE_FORMAT(CREATE_TIME,'%Y-%m-%d %T') createTime,DEPART_NAME creatorDepart ,'值班申请' processName,APPROVAL_STATUS processStatu
+				,110 reProcdefCode,'' subordinateName
+				from attn_application_employ_duty 
+					where EMPLOYEE_ID = #{empId,jdbcType=BIGINT} 
+						and del_flag = 0
+						<if test=" statu != null ">
+						and
+				 		APPROVAL_STATUS in
+				 		<foreach collection="statu" item="status" open="(" separator="," close=")">
+							#{status,jdbcType=BIGINT}
+						</foreach>
+						</if>
+				UNION ALL
+						
+				select PROCESSINSTANCE_ID taskId,CONCAT('/empApplicationBusiness/approval.htm?flag=no&amp;businessId=',id) url,cn_name creator,DATE_FORMAT(CREATE_TIME,'%Y-%m-%d %T') createTime,DEPART_NAME creatorDepart ,'出差申请' processName,APPROVAL_STATUS processStatu
+				,80 reProcdefCode,'' subordinateName
+				from base_emp_application_business
+					where EMPLOYEE_ID = #{empId,jdbcType=BIGINT} 
+						and del_flag = 0
+						<if test=" statu != null ">
+						and
+				 		APPROVAL_STATUS in
+				 		<foreach collection="statu" item="status" open="(" separator="," close=")">
+							#{status,jdbcType=BIGINT}
+						</foreach>
+						</if>	
+				UNION ALL
+						
+				select PROCESSINSTANCE_ID taskId,CONCAT('/empApplicationBusiness/approveWorkSummary.htm?flag=no&amp;businessId=',id) url,cn_name creator,DATE_FORMAT(UPDATE_TIME,'%Y-%m-%d %T') createTime,DEPART_NAME creatorDepart ,'出差报告申请' processName,APPROVAL_REPORT_STATUS processStatu
+				,90 reProcdefCode,'' subordinateName
+				from base_emp_application_business
+					where EMPLOYEE_ID = #{empId,jdbcType=BIGINT} 
+						and del_flag = 0
+						and APPROVAL_REPORT_STATUS is not null
+						<if test=" statu != null ">
+						and
+				 		APPROVAL_REPORT_STATUS in
+				 		<foreach collection="statu" item="status" open="(" separator="," close=")">
+							#{status,jdbcType=BIGINT}
+						</foreach>
+						</if>
+			    
+			    UNION ALL
+						
+				select a.process_id taskId,CONCAT('/workLog/approval.htm?index=wdsq&amp;flag=no&amp;taskId=',a.id) url,b.cn_name creator,DATE_FORMAT(a.create_time,'%Y-%m-%d %T') createTime,d.name creatorDepart ,'员工工作日志' processName,a.approval_status processStatu
+				,150 reProcdefCode,'' subordinateName
+				from base_emp_work_log a
+				     left join base_employee b on a.employee_id=b.id
+				     left join base_emp_depart c on a.employee_id=c.employee_id and c.del_flag=0
+				     left join base_depart d on d.id=c.depart_id
+					where a.employee_id = #{empId,jdbcType=BIGINT} 
+						and a.del_flag = 0
+						and a.approval_status is not null
+						<if test=" statu != null ">
+							and
+					 		a.approval_status in
+					 		<foreach collection="statu" item="status" open="(" separator="," close=")">
+								#{status,jdbcType=BIGINT}
+							</foreach>
+						</if>			
+						
+				order by createTime desc
+				
+				limit #{pageNo,jdbcType=BIGINT},#{pageSize,jdbcType=BIGINT}
+ 		</select>
+ 		
+ 		<select id="queryAllTask" parameterType="java.util.Map" resultType="java.util.Map">
+ 			select * from
+ 				(select PROCESSINSTANCE_ID taskId,CONCAT('/empApplicationLeave/approval.htm?flag=no&amp;leaveId=',id) url,cn_name creator,DATE_FORMAT(CREATE_TIME,'%Y-%m-%d %T') createTime,DEPART_NAME creatorDepart ,'请假申请单' processName,APPROVAL_STATUS processStatu
+				,60 reProcdefCode,'' subordinateName
+				from base_emp_application_leave 
+					<where>
+					<if test="nameOrCode != null">
+					AND	EMPLOYEE_ID in
+							<foreach collection ="nameOrCode" item="emp" index= "index" open="(" separator="," close=")">
+						        #{emp.id}
+						    </foreach>
+					</if>
+						<if test="emps != null">
+						AND	EMPLOYEE_ID in
+							<foreach collection ="emps" item="emp" index= "index" open="(" separator="," close=")">
+						        #{emp.id}
+						    </foreach>
+						</if>
+						<if test=" statu != null ">
+					 	AND	APPROVAL_STATUS = #{statu,jdbcType=BIGINT}
+						</if>
+					</where> 
+					
+				UNION ALL
+				
+ 				select PROCESSINSTANCE_ID taskId,CONCAT('/empApplicationOutgoing/approval.htm?flag=no&amp;outgoingId=',id) url,cn_name creator,DATE_FORMAT(CREATE_TIME,'%Y-%m-%d %T') createTime,DEPART_NAME creatorDepart ,'外出申请单' processName,APPROVAL_STATUS processStatu
+				,70 reProcdefCode,'' subordinateName
+				from base_emp_application_outgoing 
+					<where>
+					<if test="nameOrCode != null">
+					  AND	EMPLOYEE_ID in
+							<foreach collection ="nameOrCode" item="emp" index= "index" open="(" separator="," close=")">
+						        #{emp.id}
+						    </foreach>
+					</if>
+						<if test="emps != null">
+						AND	EMPLOYEE_ID in
+							<foreach collection ="emps" item="emp" index= "index" open="(" separator="," close=")">
+						        #{emp.id}
+						    </foreach>
+						</if>
+						<if test=" statu != null ">
+					 	AND	APPROVAL_STATUS = #{statu,jdbcType=BIGINT}
+						</if>
+					</where> 
+				UNION ALL
+				
+ 				select PROCESSINSTANCE_ID taskId,CONCAT('/empApplicationAbnormalAttendance/approval.htm?flag=no&amp;attendanceId=',id) url,create_user creator,DATE_FORMAT(CREATE_TIME,'%Y-%m-%d %T') createTime,DEPART_NAME creatorDepart ,(case when apply_type = 1 then '下属异常考勤单' else '异常考勤单' end) processName,APPROVAL_STATUS processStatu
+				,40 reProcdefCode,(case when apply_type = 1 then cn_name else '' end) subordinateName
+				from base_emp_application_abnormal_attendance
+				<where>
+				<if test="nameOrCode != null">
+					AND	EMPLOYEE_ID in
+							<foreach collection ="nameOrCode" item="emp" index= "index" open="(" separator="," close=")">
+						        #{emp.id}
+						    </foreach>
+					</if>
+						<if test="emps != null">
+						AND	agent_id in
+							<foreach collection ="emps" item="emp" index= "index" open="(" separator="," close=")">
+						        #{emp.id}
+						    </foreach>
+						</if>
+						<if test=" statu != null ">
+					 	AND	APPROVAL_STATUS = #{statu,jdbcType=BIGINT}
+						</if>
+					</where>  
+				UNION ALL
+				
+				select PROCESSINSTANCE_ID taskId,CONCAT('/empApplicationOvertime/approval.htm?flag=no&amp;overtimeId=',id) url,cn_name creator,DATE_FORMAT(CREATE_TIME,'%Y-%m-%d %T') createTime,DEPART_NAME creatorDepart ,'延时工作申请' processName,APPROVAL_STATUS processStatu
+				,30 reProcdefCode,'' subordinateName
+				from base_emp_application_overtime 
+					<where>
+					<if test="nameOrCode != null">
+					AND	EMPLOYEE_ID in
+							<foreach collection ="nameOrCode" item="emp" index= "index" open="(" separator="," close=")">
+						        #{emp.id}
+						    </foreach>
+					</if>
+						<if test="emps != null">
+						AND	EMPLOYEE_ID in
+							<foreach collection ="emps" item="emp" index= "index" open="(" separator="," close=")">
+						        #{emp.id}
+						    </foreach>
+						</if>
+						<if test=" statu != null ">
+					 	AND	APPROVAL_STATUS = #{statu,jdbcType=BIGINT}
+						</if>
+					</where> 
+				UNION ALL
+				
+				select PROCESSINSTANCE_ID taskId,CONCAT('/employeeRegister/toHandle.htm?flag=no&amp;id=',id) url,CREATE_USER creator,DATE_FORMAT(CREATE_TIME,'%Y-%m-%d %T') createTime,DEPART_NAME creatorDepart ,'入职登记申请' processName,APPROVAL_STATUS processStatu
+				,10 reProcdefCode,'' subordinateName
+				from emp_entry_registration 
+					<where>
+					<if test="nameOrCode != null">
+					AND	EMPLOYEE_ID in
+							<foreach collection ="nameOrCode" item="emp" index= "index" open="(" separator="," close=")">
+						        #{emp.id}
+						    </foreach>
+					</if>
+						<if test="emps != null">
+						AND	EMPLOYEE_ID in
+							<foreach collection ="emps" item="emp" index= "index" open="(" separator="," close=")">
+						        #{emp.id}
+						    </foreach>
+						</if>
+						<if test=" statu != null ">
+					 	AND	APPROVAL_STATUS = #{statu,jdbcType=BIGINT}
+						</if>
+					</where> 
+	            UNION ALL
+	            
+				select PROCESSINSTANCE_ID taskId,CONCAT('/employeeClass/approveNormal.htm?flag=no&amp;employeeClassId=',id) url,CLASS_SETTING_PERSON creator,DATE_FORMAT(CREATE_TIME,'%Y-%m-%d %T') createTime,DEPART_NAME creatorDepart ,'排班申请' processName,APPROVAL_STATUS processStatu
+				,50 reProcdefCode,'' subordinateName
+				from attn_application_employ_class 
+					<where>
+					<if test="nameOrCode != null">
+					AND	EMPLOYEE_ID in
+							<foreach collection ="nameOrCode" item="emp" index= "index" open="(" separator="," close=")">
+						        #{emp.id}
+						    </foreach>
+					</if>
+						<if test="emps != null">
+						AND
+							EMPLOYEE_ID in
+							<foreach collection ="emps" item="emp" index= "index" open="(" separator="," close=")">
+						        #{emp.id}
+						    </foreach>
+						</if>
+						<if test=" statu != null ">
+					 	AND	APPROVAL_STATUS = #{statu,jdbcType=BIGINT}
+						</if>
+					</where> 
+				UNION ALL
+				
+				select PROCESSINSTANCE_ID taskId,CONCAT('/employeeClass/approveVacation.htm?flag=no&amp;dutyId=',id) url,CLASS_SETTING_PERSON creator,DATE_FORMAT(CREATE_TIME,'%Y-%m-%d %T') createTime,DEPART_NAME creatorDepart ,'值班申请' processName,APPROVAL_STATUS processStatu
+				,110 reProcdefCode,'' subordinateName
+				from attn_application_employ_duty 
+					<where>
+						<if test="nameOrCode != null">
+						AND	EMPLOYEE_ID in
+							<foreach collection ="nameOrCode" item="emp" index= "index" open="(" separator="," close=")">
+						        #{emp.id}
+						    </foreach>
+						</if>
+						<if test="emps != null">
+						AND
+							EMPLOYEE_ID in
+							<foreach collection ="emps" item="emp" index= "index" open="(" separator="," close=")">
+						        #{emp.id}
+						    </foreach>
+						</if>
+						<if test=" statu != null ">
+					 	 AND	APPROVAL_STATUS = #{statu,jdbcType=BIGINT}
+						</if>
+					</where> 
+				UNION ALL
+						
+				select PROCESSINSTANCE_ID taskId,CONCAT('/empApplicationBusiness/approval.htm?flag=no&amp;businessId=',id) url,cn_name creator,DATE_FORMAT(CREATE_TIME,'%Y-%m-%d %T') createTime,DEPART_NAME creatorDepart ,'出差申请' processName,APPROVAL_STATUS processStatu
+				,80 reProcdefCode,'' subordinateName
+				from base_emp_application_business
+					<where>
+						<if test="nameOrCode != null">
+						AND	EMPLOYEE_ID in
+							<foreach collection ="nameOrCode" item="emp" index= "index" open="(" separator="," close=")">
+						        #{emp.id}
+						    </foreach>
+						</if>
+						<if test="emps != null">
+						 AND	EMPLOYEE_ID in
+							<foreach collection ="emps" item="emp" index= "index" open="(" separator="," close=")">
+						        #{emp.id}
+						    </foreach>
+						</if>
+						<if test=" statu != null ">
+					 	 AND	APPROVAL_STATUS = #{statu,jdbcType=BIGINT}
+						</if>
+					</where> 
+				UNION ALL
+				
+				select a.processinstance_id taskId,CONCAT('/empApplicationLeaveBack/approve.htm?flag=no&amp;leaveAbolishId=',a.id) url,b.cn_name creator,DATE_FORMAT(a.create_time,'%Y-%m-%d %T') createTime,b.DEPART_NAME creatorDepart ,'销假申请' processName,a.approval_status processStatu
+				,130 reProcdefCode,'' subordinateName
+				from base_emp_application_leave_abolish a LEFT JOIN base_emp_application_leave b ON a.leave_id = b.id
+					where b.EMPLOYEE_ID = #{empId,jdbcType=BIGINT}
+						AND b.del_flag = 0
+						AND a.approval_status IS NOT NULL
+						<if test=" statu != null ">
+						AND
+				 		a.approval_status = #{statu,jdbcType=BIGINT}
+						</if>	
+				UNION ALL		
+			
+				select PROCESSINSTANCE_ID taskId,CONCAT('/empApplicationBusiness/approveWorkSummary.htm?flag=no&amp;businessId=',id) url,cn_name creator,DATE_FORMAT(UPDATE_TIME,'%Y-%m-%d %T') createTime,DEPART_NAME creatorDepart ,'出差报告申请' processName,APPROVAL_REPORT_STATUS processStatu
+				,90 reProcdefCode,'' subordinateName
+				from base_emp_application_business
+					where  APPROVAL_REPORT_STATUS is not null
+					<if test="nameOrCode != null">
+					AND	EMPLOYEE_ID in
+							<foreach collection ="nameOrCode" item="emp" index= "index" open="(" separator="," close=")">
+						        #{emp.id}
+						    </foreach>
+					</if>
+					<if test="emps != null">
+						AND
+							EMPLOYEE_ID in
+							<foreach collection ="emps" item="emp" index= "index" open="(" separator="," close=")">
+						        #{emp.id}
+						    </foreach>
+						</if>
+						<if test=" statu != null ">
+						AND
+					 		APPROVAL_REPORT_STATUS = #{statu,jdbcType=BIGINT}
+						</if>
+				)base_ask_task
+				<where>
+					<if test="startTime != null">
+					 AND   createTime  &gt;= str_to_date(CONCAT(#{startTime},' 00:00:00'),'%Y-%m-%d %T') 
+					</if>
+					<if test="endTime != null">
+					 AND   createTime	&lt;= str_to_date(CONCAT(#{endTime},' 23:59:59'),'%Y-%m-%d %T')
+					</if>
+				</where>
+				order by createTime desc
+				
+				limit #{pageNo,jdbcType=BIGINT},#{pageSize,jdbcType=BIGINT}
+ 		</select>
+ 		
+ 		<select id="queryAllTask1" parameterType="java.lang.Long" resultType="com.ule.oa.base.vo.TaskVO">
+	 		SELECT d.processId,d.processName,d.processKey,d.reProcdefCode,d.processStatu,d.resourceId,d.redirectUrl,d.creatorDepart,d.creator,d.createTime,d.view3,d.view4,d.view5,d.view6 FROM ( 
+				  SELECT a.PROC_INST_ID_ AS processId,a.CREATE_TIME_ ,'请假申请单' AS processName,'leave' AS processKey,'60' AS reProcdefCode,b.APPROVAL_STATUS AS processStatu,
+				  b.id AS resourceId, CONCAT('/empApplicationLeave/approval.htm?flag=can&amp;leaveId=',b.id) AS redirectUrl,b.DEPART_NAME AS creatorDepart,b.CREATE_USER AS creator,b.CREATE_TIME AS createTime,
+				  case when c.leave_type = 1 then '年假' when c.leave_type = 2 then '病假' when c.leave_type = 3 then '婚假' when c.leave_type = 4 then '哺乳假'
+				  when c.leave_type = 5 then '调休' when c.leave_type = 6 then '产前假' when c.leave_type = 7 then '产假' when c.leave_type = 8 then '流产假'
+				  when c.leave_type = 9 then '陪产假' when c.leave_type = 10 then '丧假' when c.leave_type = 11 then '事假' when c.leave_type = 12 then '其他' end view3,
+				  CONCAT(DATE_FORMAT(b.start_time,'%Y-%m-%d %H:%i'),'~',DATE_FORMAT(b.end_time,'%Y-%m-%d %H:%i'),'  ',b.DURATION,'天') view4,
+				  b.reason view5,'' as view6
+				FROM
+				  ACT_RU_TASK a 
+				  INNER JOIN base_emp_application_leave b 
+				    ON a.PROC_INST_ID_ = b.PROCESSINSTANCE_ID and b.APPROVAL_STATUS=100
+				  left join base_emp_application_leave_detail c on b.id=c.leave_id
+				WHERE a.PROC_INST_ID_ IN 
+				  (SELECT DISTINCT 
+				    * 
+				  FROM
+				    (SELECT 
+				      rt.PROC_INST_ID_ 
+				    FROM
+				      ACT_RU_IDENTITYLINK ri 
+				      LEFT JOIN ACT_RU_TASK rt 
+				        ON ri.TASK_ID_ = rt.ID_ 
+				    WHERE ri.TYPE_ = 'candidate' 
+				      AND ri.USER_ID_ = #{employeeId,jdbcType=BIGINT}
+				    UNION
+				    ALL 
+				    SELECT 
+				      PROC_INST_ID_  
+				    FROM
+				      ACT_RU_TASK 
+				    WHERE ASSIGNEE_ = #{employeeId,jdbcType=BIGINT}) instance_id)
+				    
+		     UNION ALL
+				    
+		     SELECT a.PROC_INST_ID_ AS processId,a.CREATE_TIME_ ,'出差申请单' AS processName,'bussniess' AS processKey,'80' AS reProcdefCode,b.APPROVAL_STATUS AS processStatu,
+				  b.id AS resourceId,CONCAT('/empApplicationBusiness/approval.htm?flag=can&amp;businessId=',b.id) AS redirectUrl,b.DEPART_NAME AS creatorDepart,b.CREATE_USER AS creator,b.CREATE_TIME AS createTime ,
+				  b.reason as view3,b.address as view4,
+				  CONCAT(DATE_FORMAT(b.start_time,'%Y%m-%d'),'~',DATE_FORMAT(b.end_time,'%H:%i'),'  ',b.DURATION,'天') view5,
+				  case when b.VEHICLE =100 then '火车' when b.VEHICLE =200 then '飞机' else '汽车' end  as view6
+				FROM
+				  ACT_RU_TASK a 
+				  INNER JOIN base_emp_application_business b
+				    ON a.PROC_INST_ID_ = b.PROCESSINSTANCE_ID  and b.APPROVAL_STATUS=100
+				WHERE a.PROC_INST_ID_ IN 
+				  (SELECT DISTINCT 
+				    * 
+				  FROM
+				    (SELECT 
+				      rt.PROC_INST_ID_ 
+				    FROM
+				      ACT_RU_IDENTITYLINK ri 
+				      LEFT JOIN ACT_RU_TASK rt 
+				        ON ri.TASK_ID_ = rt.ID_ 
+				    WHERE ri.TYPE_ = 'candidate' 
+				      AND ri.USER_ID_ = #{employeeId,jdbcType=BIGINT}
+				    UNION
+				    ALL 
+				    SELECT 
+				      PROC_INST_ID_ 
+				    FROM
+				      ACT_RU_TASK 
+				    WHERE ASSIGNEE_ = #{employeeId,jdbcType=BIGINT}) instance_id)
+				    
+		    UNION ALL
+				    
+			SELECT a.PROC_INST_ID_ AS processId,a.CREATE_TIME_ ,'销假申请' AS processName,'cancelLeave' AS processKey,'130' AS reProcdefCode,b.APPROVAL_STATUS AS processStatu,
+				  b.id AS resourceId,CONCAT('/empApplicationLeaveBack/approve.htm?flag=can&amp;leaveAbolishId=',b.id) AS redirectUrl,c.DEPART_NAME AS creatorDepart,b.CREATE_USER AS creator,b.CREATE_TIME AS createTime ,
+				  case when d.leave_type = 1 then '年假' when d.leave_type = 2 then '病假' when d.leave_type = 3 then '婚假' when d.leave_type = 4 then '哺乳假'
+				  when d.leave_type = 5 then '调休' when d.leave_type = 6 then '产前假' when d.leave_type = 7 then '产假' when d.leave_type = 8 then '流产假'
+				  when d.leave_type = 9 then '陪产假' when d.leave_type = 10 then '丧假' when d.leave_type = 11 then '事假' when d.leave_type = 12 then '其他' end view3,
+				  case when (d.leave_type = 5 or d.leave_type = 4) then CONCAT(DATE_FORMAT(b.start_time,'%Y-%m-%d %H:%i'),'~',DATE_FORMAT(b.end_time,'%Y-%m-%d %H:%i'),'  ',b.leave_huors,'小时') 
+				  else CONCAT(DATE_FORMAT(b.start_time,'%Y-%m-%d %H:%i'),'~',DATE_FORMAT(b.end_time,'%Y-%m-%d %H:%i'),'  ',b.leave_days,'天') end view4,
+				  b.comment as view5,'' as view6
+				FROM
+				  ACT_RU_TASK a 
+				  INNER JOIN base_emp_application_leave_abolish b 
+				    ON a.PROC_INST_ID_ = b.PROCESSINSTANCE_ID  and b.APPROVAL_STATUS=100
+				  LEFT JOIN base_emp_application_leave c ON b.leave_id = c.id 
+				  left join base_emp_application_leave_detail d on c.id = d.leave_id
+				WHERE a.PROC_INST_ID_ IN 
+				  (SELECT DISTINCT 
+				    * 
+				  FROM
+				    (SELECT 
+				      rt.PROC_INST_ID_ 
+				    FROM
+				      ACT_RU_IDENTITYLINK ri 
+				      LEFT JOIN ACT_RU_TASK rt 
+				        ON ri.TASK_ID_ = rt.ID_ 
+				    WHERE ri.TYPE_ = 'candidate' 
+				      AND ri.USER_ID_ = #{employeeId,jdbcType=BIGINT}
+				    UNION
+				    ALL 
+				    SELECT 
+				      PROC_INST_ID_ 
+				    FROM
+				      ACT_RU_TASK 
+				    WHERE ASSIGNEE_ = #{employeeId,jdbcType=BIGINT}) instance_id)
+				    
+				UNION ALL 
+				    
+				SELECT a.PROC_INST_ID_ AS processId,a.CREATE_TIME_ ,'外出申请单' AS processName,'outgoing' AS processKey,'70' AS reProcdefCode,b.APPROVAL_STATUS AS processStatu,
+				  b.id AS resourceId,CONCAT('/empApplicationOutgoing/approval.htm?flag=can&amp;outgoingId=',b.id) AS redirectUrl,b.DEPART_NAME AS creatorDepart,b.CREATE_USER AS creator,b.CREATE_TIME AS createTime ,
+				  b.address as view3,
+				  CONCAT(DATE_FORMAT(b.start_time,'%m-%d %H:%i'),'~',DATE_FORMAT(b.end_time,'%H:%i'),'  ',b.DURATION,'小时') view4,
+				  b.reason as view5,'' as view6
+				FROM
+				  ACT_RU_TASK a 
+				  INNER JOIN base_emp_application_outgoing b 
+				    ON a.PROC_INST_ID_ = b.PROCESSINSTANCE_ID  and b.APPROVAL_STATUS=100
+				WHERE a.PROC_INST_ID_ IN 
+				  (SELECT DISTINCT 
+				    * 
+				  FROM
+				    (SELECT 
+				      rt.PROC_INST_ID_ 
+				    FROM
+				      ACT_RU_IDENTITYLINK ri 
+				      LEFT JOIN ACT_RU_TASK rt 
+				        ON ri.TASK_ID_ = rt.ID_ 
+				    WHERE ri.TYPE_ = 'candidate' 
+				      AND ri.USER_ID_ = #{employeeId,jdbcType=BIGINT} 
+				    UNION
+				    ALL 
+				    SELECT 
+				      PROC_INST_ID_  
+				    FROM
+				      ACT_RU_TASK 
+				    WHERE ASSIGNEE_ = #{employeeId,jdbcType=BIGINT}) instance_id)
+				    
+				     UNION ALL 
+				    
+			   SELECT a.PROC_INST_ID_ AS processId,a.CREATE_TIME_ ,
+			      case when b.apply_type = 0 then '异常考勤单' when b.apply_type = 1 then '下属异常考勤单' end processName,
+			     'abnormalAttendance' AS processKey,'40' AS reProcdefCode,b.APPROVAL_STATUS AS processStatu,
+				  b.id AS resourceId,CONCAT('/empApplicationAbnormalAttendance/approval.htm?flag=can&amp;attendanceId=',b.id) AS redirectUrl,b.DEPART_NAME AS creatorDepart,b.CREATE_USER AS creator,b.CREATE_TIME AS createTime ,
+				  CONCAT(case when b.start_time is null then '空卡~' else CONCAT(DATE_FORMAT(b.start_time,'%H:%i'),'~') end,
+				         case when b.end_time is null then '空卡' else DATE_FORMAT(b.end_time,'%H:%i') end
+				  ) as view3,
+				   CONCAT(case when b.START_PUNCH_TIME is null then '空卡~' else CONCAT(DATE_FORMAT(b.START_PUNCH_TIME,'%H:%i'),'~') end,
+				         case when b.END_PUNCH_TIME is null then '空卡' else DATE_FORMAT(b.END_PUNCH_TIME,'%H:%i') end
+				  ) as view4,
+				  b.reason as view5,'' as view6
+				FROM
+				  ACT_RU_TASK a 
+				  INNER JOIN base_emp_application_abnormal_attendance b 
+				    ON a.PROC_INST_ID_ = b.PROCESSINSTANCE_ID  and b.APPROVAL_STATUS=100
+				WHERE a.PROC_INST_ID_ IN 
+				  (SELECT DISTINCT 
+				    * 
+				  FROM
+				    (SELECT 
+				      rt.PROC_INST_ID_ 
+				    FROM
+				      ACT_RU_IDENTITYLINK ri 
+				      LEFT JOIN ACT_RU_TASK rt 
+				        ON ri.TASK_ID_ = rt.ID_ 
+				    WHERE ri.TYPE_ = 'candidate' 
+				      AND ri.USER_ID_ = #{employeeId,jdbcType=BIGINT}
+				    UNION
+				    ALL 
+				    SELECT 
+				      PROC_INST_ID_  
+				    FROM
+				      ACT_RU_TASK 
+				    WHERE ASSIGNEE_ = #{employeeId,jdbcType=BIGINT}) instance_id)
+				    
+			    UNION ALL 
+				    
+				SELECT a.PROC_INST_ID_ AS processId,a.CREATE_TIME_ ,'延时工作申请' AS processName,'overtime' AS processKey,'30' AS reProcdefCode,b.APPROVAL_STATUS AS processStatu,
+				  b.id AS resourceId,
+				  case when a.TASK_DEF_KEY_='actualTime' then CONCAT('/empApplicationOvertime/toAddActualTime.htm?flag=can&amp;overtimeId=',b.id)
+				  else CONCAT('/empApplicationOvertime/approval.htm?flag=can&amp;overtimeId=',b.id) end redirectUrl,
+				  b.DEPART_NAME AS creatorDepart,b.CREATE_USER AS creator,b.CREATE_TIME AS createTime ,
+				  case when b.APPLY_TYPE = 100 then b.PROJECT_NAME when b.APPLY_TYPE = 200 then '会议'  when b.APPLY_TYPE = 300 then '日常工作'
+				  when b.APPLY_TYPE = 400 then '其他' end view3,
+				  case when b.ACTUAL_START_TIME is null then CONCAT(DATE_FORMAT(b.EXPECT_START_TIME,'%Y-%m-%d %H:%i'),'~',DATE_FORMAT(b.EXPECT_END_TIME,'%Y-%m-%d %H:%i'),'  ',b.EXPECT_DURATION,'小时')
+				  else CONCAT(DATE_FORMAT(b.ACTUAL_START_TIME,'%Y-%m-%d %H:%i'),'~',DATE_FORMAT(b.ACTUAL_END_TIME,'%Y-%m-%d %H:%i'),'  ',b.ACTUAL_DURATION,'小时') end view4,
+				  b.reason as view5,'' as view6
+				FROM
+				  ACT_RU_TASK a 
+				  INNER JOIN base_emp_application_overtime b 
+				    ON a.PROC_INST_ID_ = b.PROCESSINSTANCE_ID  and b.APPROVAL_STATUS=100
+				WHERE a.PROC_INST_ID_ IN 
+				  (SELECT DISTINCT 
+				    * 
+				  FROM
+				    (SELECT 
+				      rt.PROC_INST_ID_ 
+				    FROM
+				      ACT_RU_IDENTITYLINK ri 
+				      LEFT JOIN ACT_RU_TASK rt 
+				        ON ri.TASK_ID_ = rt.ID_ 
+				    WHERE ri.TYPE_ = 'candidate' 
+				      AND ri.USER_ID_ = #{employeeId,jdbcType=BIGINT} 
+				    UNION
+				    ALL 
+				    SELECT 
+				      PROC_INST_ID_  
+				    FROM
+				      ACT_RU_TASK 
+				    WHERE ASSIGNEE_ = #{employeeId,jdbcType=BIGINT}) instance_id)
+				    
+				        UNION ALL 
+				    
+			   SELECT a.PROC_INST_ID_ AS processId,a.CREATE_TIME_ ,'入职登记申请' AS processName,'entry' AS processKey,'10' AS reProcdefCode,b.APPROVAL_STATUS AS processStatu,
+				  b.id AS resourceId,CONCAT('/employeeRegister/toHandle.htm?flag=can&amp;id=',b.id,'&amp;taskId=',a.ID_) AS redirectUrl,b.DEPART_NAME AS creatorDepart,b.CREATE_USER AS creator,b.CREATE_TIME AS createTime ,
+				  '' as view3,'' as view4,'' as view5,'' as view6
+				FROM
+				  ACT_RU_TASK a 
+				  INNER JOIN emp_entry_registration b 
+				    ON a.PROC_INST_ID_ = b.PROCESSINSTANCE_ID  and b.APPROVAL_STATUS=100
+				WHERE a.ID_ IN 
+				  (SELECT DISTINCT 
+				    * 
+				  FROM
+				    (SELECT 
+				      rt.ID_ 
+				    FROM
+				      ACT_RU_IDENTITYLINK ri 
+				      LEFT JOIN ACT_RU_TASK rt 
+				        ON ri.TASK_ID_ = rt.ID_ 
+				    WHERE ri.TYPE_ = 'candidate' 
+				      AND ri.USER_ID_ = #{employeeId,jdbcType=BIGINT}
+				    UNION
+				    ALL 
+				    SELECT 
+				      ID_  
+				    FROM
+				      ACT_RU_TASK 
+				    WHERE ASSIGNEE_ = #{employeeId,jdbcType=BIGINT}) instance_id)
+				    
+				    UNION ALL 
+				    
+				SELECT a.PROC_INST_ID_ AS processId,a.CREATE_TIME_ ,CASE WHEN b.is_move=0 THEN '排班申请' WHEN b.is_move=1 THEN '值班申请' END processName,'scheduling' AS processKey,'50' AS reProcdefCode,b.APPROVAL_STATUS AS processStatu,
+				  b.id AS resourceId,CONCAT('/employeeClass/approveNormal.htm?flag=can&amp;employeeClassId=',b.id) AS redirectUrl,b.DEPART_NAME AS creatorDepart,b.CREATE_USER AS creator,b.CREATE_TIME AS createTime ,
+				  '' as view3,'' as view4,'' as view5,'' as view6
+				FROM
+				  ACT_RU_TASK a 
+				  INNER JOIN attn_application_employ_class b 
+				    ON a.PROC_INST_ID_ = b.PROCESSINSTANCE_ID  and b.APPROVAL_STATUS=100
+				WHERE a.PROC_INST_ID_ IN 
+				  (SELECT DISTINCT 
+				    * 
+				  FROM
+				    (SELECT 
+				      rt.PROC_INST_ID_ 
+				    FROM
+				      ACT_RU_IDENTITYLINK ri 
+				      LEFT JOIN ACT_RU_TASK rt 
+				        ON ri.TASK_ID_ = rt.ID_ 
+				    WHERE ri.TYPE_ = 'candidate' 
+				      AND ri.USER_ID_ = #{employeeId,jdbcType=BIGINT}
+				    UNION
+				    ALL 
+				    SELECT 
+				      PROC_INST_ID_  
+				    FROM
+				      ACT_RU_TASK 
+				    WHERE ASSIGNEE_ = #{employeeId,jdbcType=BIGINT}) instance_id)
+				    
+				         UNION ALL 
+				    
+				SELECT a.PROC_INST_ID_ AS processId,a.CREATE_TIME_ ,'值班申请' AS processName,'duty' AS processKey,'110' AS reProcdefCode,b.APPROVAL_STATUS AS processStatu,
+				  b.id AS resourceId,CONCAT('/employeeClass/approveVacation.htm?flag=can&amp;dutyId=',b.id) AS redirectUrl,b.DEPART_NAME AS creatorDepart,b.CLASS_SETTING_PERSON AS creator,b.CREATE_TIME AS createTime ,
+				  '' as view3,'' as view4,'' as view5,'' as view6
+				FROM
+				  ACT_RU_TASK a 
+				  INNER JOIN attn_application_employ_duty b 
+				    ON a.PROC_INST_ID_ = b.PROCESSINSTANCE_ID  and b.APPROVAL_STATUS=100
+				WHERE a.PROC_INST_ID_ IN 
+				  (SELECT DISTINCT 
+				    * 
+				  FROM
+				    (SELECT 
+				      rt.PROC_INST_ID_ 
+				    FROM
+				      ACT_RU_IDENTITYLINK ri 
+				      LEFT JOIN ACT_RU_TASK rt 
+				        ON ri.TASK_ID_ = rt.ID_ 
+				    WHERE ri.TYPE_ = 'candidate' 
+				      AND ri.USER_ID_ = #{employeeId,jdbcType=BIGINT} 
+				    UNION
+				    ALL 
+				    SELECT 
+				      PROC_INST_ID_  
+				    FROM
+				      ACT_RU_TASK 
+				    WHERE ASSIGNEE_ = #{employeeId,jdbcType=BIGINT}) instance_id)
+				    
+				     UNION ALL
+				    
+				SELECT a.PROC_INST_ID_ AS processId,a.CREATE_TIME_ ,'出差总结报告' AS processName,'businessReport' AS processKey,'90' AS reProcdefCode,b.APPROVAL_STATUS AS processStatu,
+				  b.id AS resourceId,CONCAT('/empApplicationBusiness/approveWorkSummary.htm?flag=can&amp;businessId=',b.id) AS redirectUrl,b.DEPART_NAME AS creatorDepart,b.CREATE_USER AS creator,b.CREATE_TIME AS createTime ,
+				  b.reason as view3,b.address as view4,
+				  CONCAT(DATE_FORMAT(b.start_time,'%Y%m-%d'),'~',DATE_FORMAT(b.end_time,'%H:%i'),'  ',b.DURATION,'天') view5,
+				  case when b.VEHICLE =100 then '火车' when b.VEHICLE =200 then '飞机' else '汽车' end  as view6
+				FROM
+				  ACT_RU_TASK a 
+				  INNER JOIN base_emp_application_business b
+				    ON a.PROC_INST_ID_ = b.PROCESSINSTANCE_REPORT_ID  and b.APPROVAL_REPORT_STATUS in(0,100)
+				WHERE a.PROC_INST_ID_ IN 
+				  (SELECT DISTINCT 
+				    * 
+				  FROM
+				    (SELECT 
+				      rt.PROC_INST_ID_ 
+				    FROM
+				      ACT_RU_IDENTITYLINK ri 
+				      LEFT JOIN ACT_RU_TASK rt 
+				        ON ri.TASK_ID_ = rt.ID_ 
+				    WHERE ri.TYPE_ = 'candidate' 
+				      AND ri.USER_ID_ = #{employeeId,jdbcType=BIGINT}
+				    UNION
+				    ALL 
+				    SELECT 
+				      PROC_INST_ID_ 
+				    FROM
+				      ACT_RU_TASK 
+				    WHERE ASSIGNEE_ = #{employeeId,jdbcType=BIGINT}) instance_id)
+				    
+			    UNION ALL 
+				    
+				SELECT a.PROC_INST_ID_ AS processId,a.CREATE_TIME_ ,'消下属缺勤单' as processName,'removeSubAbsence' AS processKey,'140' AS reProcdefCode,b.approal_status AS processStatu,
+				  b.id AS resourceId,CONCAT('/removeSubordinateAbsence/approval.htm?flag=can&amp;removeSubordinateAbsenceId=',b.id) AS redirectUrl,
+				  e.name AS creatorDepart,c.cn_name AS creator,b.CREATE_TIME AS createTime ,
+				  '' as view3,'' as view4,'' as view5,'' as view6
+				FROM
+				  ACT_RU_TASK a 
+				  INNER JOIN remove_subordinate_absence b 
+				    ON a.PROC_INST_ID_ = b.processinstance_id  and b.approal_status=100
+				  left join base_employee c on c.id = b.employee_id
+				  left join base_emp_depart d on b.employee_id = d.employee_id and d.del_flag=0
+				  left join base_depart e on e.id = d.depart_id
+				WHERE a.PROC_INST_ID_ IN 
+				  (SELECT DISTINCT 
+				    * 
+				  FROM
+				    (SELECT 
+				      rt.PROC_INST_ID_ 
+				    FROM
+				      ACT_RU_IDENTITYLINK ri 
+				      LEFT JOIN ACT_RU_TASK rt 
+				        ON ri.TASK_ID_ = rt.ID_ 
+				    WHERE ri.TYPE_ = 'candidate' 
+				      AND ri.USER_ID_ = #{employeeId,jdbcType=BIGINT}
+				    UNION
+				    ALL 
+				    SELECT 
+				      PROC_INST_ID_  
+				    FROM
+				      ACT_RU_TASK 
+				    WHERE ASSIGNEE_ = #{employeeId,jdbcType=BIGINT}) instance_id)
+				    
+			    UNION ALL 
+				    
+				SELECT a.PROC_INST_ID_ AS processId,a.CREATE_TIME_ ,'员工工作日志' as processName,'workLog' AS processKey,'150' AS reProcdefCode,b.approval_status AS processStatu,
+				  b.id AS resourceId,CONCAT('/workLog/approval.htm?index=wddb&amp;flag=can&amp;taskId=',b.id) AS redirectUrl,
+				  e.name AS creatorDepart,c.cn_name AS creator,b.create_time AS createTime ,
+				  '' as view3,'' as view4,'' as view5,'' as view6
+				FROM
+				  ACT_RU_TASK a 
+				  INNER JOIN base_emp_work_log b 
+				    ON a.PROC_INST_ID_ = b.process_id  and b.approval_status=100
+				  left join base_employee c on c.id = b.employee_id
+				  left join base_emp_depart d on b.employee_id = d.employee_id and d.del_flag=0
+				  left join base_depart e on e.id = d.depart_id
+				WHERE a.PROC_INST_ID_ IN 
+				  (SELECT DISTINCT 
+				    * 
+				  FROM
+				    (SELECT 
+				      rt.PROC_INST_ID_ 
+				    FROM
+				      ACT_RU_IDENTITYLINK ri 
+				      LEFT JOIN ACT_RU_TASK rt 
+				        ON ri.TASK_ID_ = rt.ID_ 
+				    WHERE ri.TYPE_ = 'candidate' 
+				      AND ri.USER_ID_ = #{employeeId,jdbcType=BIGINT}
+				    UNION
+				    ALL 
+				    SELECT 
+				      PROC_INST_ID_  
+				    FROM
+				      ACT_RU_TASK 
+				    WHERE ASSIGNEE_ = #{employeeId,jdbcType=BIGINT}) instance_id)
+		    
+		     ) d  ORDER BY d.CREATE_TIME_ DESC 
+ 		      
+ 		</select>
+ 		
+ 		<select id="queryAllTask2" parameterType="java.lang.Long" resultType="com.ule.oa.base.vo.TaskVO">
+	 		SELECT d.processId,d.processName,d.processKey,d.reProcdefCode,d.processStatu,d.resourceId,d.redirectUrl,d.creatorDepart,d.creator,d.createTime,d.view3,d.view4,d.view5,d.view6,d.operation FROM ( 
+				  SELECT a.PROC_INST_ID_ AS processId,a.CREATE_TIME_ ,'请假申请单' AS processName,'leave' AS processKey,'60' AS reProcdefCode,b.APPROVAL_STATUS AS processStatu,
+				  b.id AS resourceId, CONCAT('/empApplicationLeave/approval.htm?flag=can&amp;leaveId=',b.id) AS redirectUrl,b.DEPART_NAME AS creatorDepart,b.CREATE_USER AS creator,b.CREATE_TIME AS createTime,
+				  case when c.leave_type = 1 then '年假' when c.leave_type = 2 then '病假' when c.leave_type = 3 then '婚假' when c.leave_type = 4 then '哺乳假'
+				  when c.leave_type = 5 then '调休' when c.leave_type = 6 then '产前假' when c.leave_type = 7 then '产假' when c.leave_type = 8 then '流产假'
+				  when c.leave_type = 9 then '陪产假' when c.leave_type = 10 then '丧假' when c.leave_type = 11 then '事假' when c.leave_type = 12 then '其他' end view3,
+				  CONCAT(DATE_FORMAT(b.start_time,'%Y-%m-%d %H:%i'),'~',DATE_FORMAT(b.end_time,'%Y-%m-%d %H:%i'),'  ',b.DURATION,'天') view4,
+				  b.reason view5,'' as view6,'已失效' as operation
+				FROM
+				  ACT_RU_TASK a 
+				  INNER JOIN base_emp_application_leave b 
+				    ON a.PROC_INST_ID_ = b.PROCESSINSTANCE_ID and b.APPROVAL_STATUS=500
+				  left join base_emp_application_leave_detail c on b.id=c.leave_id
+				WHERE a.PROC_INST_ID_ IN 
+				  (SELECT DISTINCT 
+				    * 
+				  FROM
+				    (SELECT 
+				      rt.PROC_INST_ID_ 
+				    FROM
+				      ACT_RU_IDENTITYLINK ri 
+				      LEFT JOIN ACT_RU_TASK rt 
+				        ON ri.TASK_ID_ = rt.ID_ 
+				    WHERE ri.TYPE_ = 'candidate' 
+				      AND ri.USER_ID_ = #{employeeId,jdbcType=BIGINT}
+				    UNION
+				    ALL 
+				    SELECT 
+				      PROC_INST_ID_  
+				    FROM
+				      ACT_RU_TASK 
+				    WHERE ASSIGNEE_ = #{employeeId,jdbcType=BIGINT}) instance_id)
+				    
+		     UNION ALL
+				    
+		     SELECT a.PROC_INST_ID_ AS processId,a.CREATE_TIME_ ,'出差申请单' AS processName,'bussniess' AS processKey,'80' AS reProcdefCode,b.APPROVAL_STATUS AS processStatu,
+				  b.id AS resourceId,CONCAT('/empApplicationBusiness/approval.htm?flag=can&amp;businessId=',b.id) AS redirectUrl,b.DEPART_NAME AS creatorDepart,b.CREATE_USER AS creator,b.CREATE_TIME AS createTime ,
+				  b.reason as view3,b.address as view4,
+				  CONCAT(DATE_FORMAT(b.start_time,'%Y%m-%d'),'~',DATE_FORMAT(b.end_time,'%H:%i'),'  ',b.DURATION,'天') view5,
+				  case when b.VEHICLE =100 then '火车' when b.VEHICLE =200 then '飞机' else '汽车' end  as view6
+				  ,'已失效' as operation
+				FROM
+				  ACT_RU_TASK a 
+				  INNER JOIN base_emp_application_business b
+				    ON a.PROC_INST_ID_ = b.PROCESSINSTANCE_ID  and b.APPROVAL_STATUS=500
+				WHERE a.PROC_INST_ID_ IN 
+				  (SELECT DISTINCT 
+				    * 
+				  FROM
+				    (SELECT 
+				      rt.PROC_INST_ID_ 
+				    FROM
+				      ACT_RU_IDENTITYLINK ri 
+				      LEFT JOIN ACT_RU_TASK rt 
+				        ON ri.TASK_ID_ = rt.ID_ 
+				    WHERE ri.TYPE_ = 'candidate' 
+				      AND ri.USER_ID_ = #{employeeId,jdbcType=BIGINT}
+				    UNION
+				    ALL 
+				    SELECT 
+				      PROC_INST_ID_ 
+				    FROM
+				      ACT_RU_TASK 
+				    WHERE ASSIGNEE_ = #{employeeId,jdbcType=BIGINT}) instance_id)
+				    
+		    UNION ALL
+				    
+			SELECT a.PROC_INST_ID_ AS processId,a.CREATE_TIME_ ,'销假申请' AS processName,'cancelLeave' AS processKey,'130' AS reProcdefCode,b.APPROVAL_STATUS AS processStatu,
+				  b.id AS resourceId,CONCAT('/empApplicationLeaveBack/approve.htm?flag=can&amp;leaveAbolishId=',b.id) AS redirectUrl,c.DEPART_NAME AS creatorDepart,b.CREATE_USER AS creator,b.CREATE_TIME AS createTime ,
+				  case when d.leave_type = 1 then '年假' when d.leave_type = 2 then '病假' when d.leave_type = 3 then '婚假' when d.leave_type = 4 then '哺乳假'
+				  when d.leave_type = 5 then '调休' when d.leave_type = 6 then '产前假' when d.leave_type = 7 then '产假' when d.leave_type = 8 then '流产假'
+				  when d.leave_type = 9 then '陪产假' when d.leave_type = 10 then '丧假' when d.leave_type = 11 then '事假' when d.leave_type = 12 then '其他' end view3,
+				  case when (d.leave_type = 5 or d.leave_type = 4) then CONCAT(DATE_FORMAT(b.start_time,'%Y-%m-%d %H:%i'),'~',DATE_FORMAT(b.end_time,'%Y-%m-%d %H:%i'),'  ',b.leave_huors,'小时') 
+				  else CONCAT(DATE_FORMAT(b.start_time,'%Y-%m-%d %H:%i'),'~',DATE_FORMAT(b.end_time,'%Y-%m-%d %H:%i'),'  ',b.leave_days,'天') end view4,
+				  b.comment as view5,'' as view6,'已失效' as operation
+				FROM
+				  ACT_RU_TASK a 
+				  INNER JOIN base_emp_application_leave_abolish b 
+				    ON a.PROC_INST_ID_ = b.PROCESSINSTANCE_ID  and b.APPROVAL_STATUS=500
+				  LEFT JOIN base_emp_application_leave c ON b.leave_id = c.id 
+				  left join base_emp_application_leave_detail d on c.id = d.leave_id
+				WHERE a.PROC_INST_ID_ IN 
+				  (SELECT DISTINCT 
+				    * 
+				  FROM
+				    (SELECT 
+				      rt.PROC_INST_ID_ 
+				    FROM
+				      ACT_RU_IDENTITYLINK ri 
+				      LEFT JOIN ACT_RU_TASK rt 
+				        ON ri.TASK_ID_ = rt.ID_ 
+				    WHERE ri.TYPE_ = 'candidate' 
+				      AND ri.USER_ID_ = #{employeeId,jdbcType=BIGINT}
+				    UNION
+				    ALL 
+				    SELECT 
+				      PROC_INST_ID_ 
+				    FROM
+				      ACT_RU_TASK 
+				    WHERE ASSIGNEE_ = #{employeeId,jdbcType=BIGINT}) instance_id)
+				    
+				UNION ALL 
+				    
+				SELECT a.PROC_INST_ID_ AS processId,a.CREATE_TIME_ ,'外出申请单' AS processName,'outgoing' AS processKey,'70' AS reProcdefCode,b.APPROVAL_STATUS AS processStatu,
+				  b.id AS resourceId,CONCAT('/empApplicationOutgoing/approval.htm?flag=can&amp;outgoingId=',b.id) AS redirectUrl,b.DEPART_NAME AS creatorDepart,b.CREATE_USER AS creator,b.CREATE_TIME AS createTime ,
+				  b.address as view3,
+				  CONCAT(DATE_FORMAT(b.start_time,'%m-%d %H:%i'),'~',DATE_FORMAT(b.end_time,'%H:%i'),'  ',b.DURATION,'小时') view4,
+				  b.reason as view5,'' as view6,'已失效' as operation
+				FROM
+				  ACT_RU_TASK a 
+				  INNER JOIN base_emp_application_outgoing b 
+				    ON a.PROC_INST_ID_ = b.PROCESSINSTANCE_ID  and b.APPROVAL_STATUS=500
+				WHERE a.PROC_INST_ID_ IN 
+				  (SELECT DISTINCT 
+				    * 
+				  FROM
+				    (SELECT 
+				      rt.PROC_INST_ID_ 
+				    FROM
+				      ACT_RU_IDENTITYLINK ri 
+				      LEFT JOIN ACT_RU_TASK rt 
+				        ON ri.TASK_ID_ = rt.ID_ 
+				    WHERE ri.TYPE_ = 'candidate' 
+				      AND ri.USER_ID_ = #{employeeId,jdbcType=BIGINT} 
+				    UNION
+				    ALL 
+				    SELECT 
+				      PROC_INST_ID_  
+				    FROM
+				      ACT_RU_TASK 
+				    WHERE ASSIGNEE_ = #{employeeId,jdbcType=BIGINT}) instance_id)
+				    
+				     UNION ALL 
+				    
+			   SELECT a.PROC_INST_ID_ AS processId,a.CREATE_TIME_ ,
+			      case when b.apply_type = 0 then '异常考勤单' when b.apply_type = 1 then '下属异常考勤单' end processName,
+			     'abnormalAttendance' AS processKey,'40' AS reProcdefCode,b.APPROVAL_STATUS AS processStatu,
+				  b.id AS resourceId,CONCAT('/empApplicationAbnormalAttendance/approval.htm?flag=can&amp;attendanceId=',b.id) AS redirectUrl,b.DEPART_NAME AS creatorDepart,b.CREATE_USER AS creator,b.CREATE_TIME AS createTime ,
+				  CONCAT(case when b.start_time is null then '空卡~' else CONCAT(DATE_FORMAT(b.start_time,'%H:%i'),'~') end,
+				         case when b.end_time is null then '空卡' else DATE_FORMAT(b.end_time,'%H:%i') end
+				  ) as view3,
+				   CONCAT(case when b.START_PUNCH_TIME is null then '空卡~' else CONCAT(DATE_FORMAT(b.START_PUNCH_TIME,'%H:%i'),'~') end,
+				         case when b.END_PUNCH_TIME is null then '空卡' else DATE_FORMAT(b.END_PUNCH_TIME,'%H:%i') end
+				  ) as view4,
+				  b.reason as view5,'' as view6,'已失效' as operation
+				FROM
+				  ACT_RU_TASK a 
+				  INNER JOIN base_emp_application_abnormal_attendance b 
+				    ON a.PROC_INST_ID_ = b.PROCESSINSTANCE_ID  and b.APPROVAL_STATUS=500
+				WHERE a.PROC_INST_ID_ IN 
+				  (SELECT DISTINCT 
+				    * 
+				  FROM
+				    (SELECT 
+				      rt.PROC_INST_ID_ 
+				    FROM
+				      ACT_RU_IDENTITYLINK ri 
+				      LEFT JOIN ACT_RU_TASK rt 
+				        ON ri.TASK_ID_ = rt.ID_ 
+				    WHERE ri.TYPE_ = 'candidate' 
+				      AND ri.USER_ID_ = #{employeeId,jdbcType=BIGINT}
+				    UNION
+				    ALL 
+				    SELECT 
+				      PROC_INST_ID_  
+				    FROM
+				      ACT_RU_TASK 
+				    WHERE ASSIGNEE_ = #{employeeId,jdbcType=BIGINT}) instance_id)
+				    
+			    UNION ALL 
+				    
+				SELECT a.PROC_INST_ID_ AS processId,a.CREATE_TIME_ ,'延时工作申请' AS processName,'overtime' AS processKey,'30' AS reProcdefCode,b.APPROVAL_STATUS AS processStatu,
+				  b.id AS resourceId,CONCAT('/empApplicationOvertime/approval.htm?flag=can&amp;overtimeId=',b.id) AS redirectUrl,b.DEPART_NAME AS creatorDepart,b.CREATE_USER AS creator,b.CREATE_TIME AS createTime ,
+				  case when b.APPLY_TYPE = 100 then b.PROJECT_NAME when b.APPLY_TYPE = 200 then '会议'  when b.APPLY_TYPE = 300 then '日常工作'
+				  when b.APPLY_TYPE = 400 then '其他' end view3,
+				  case when b.ACTUAL_START_TIME is null then CONCAT(DATE_FORMAT(b.EXPECT_START_TIME,'%Y-%m-%d %H:%i'),'~',DATE_FORMAT(b.EXPECT_END_TIME,'%Y-%m-%d %H:%i'),'  ',b.EXPECT_DURATION,'小时')
+				  else CONCAT(DATE_FORMAT(b.ACTUAL_START_TIME,'%Y-%m-%d %H:%i'),'~',DATE_FORMAT(b.ACTUAL_END_TIME,'%Y-%m-%d %H:%i'),'  ',b.ACTUAL_DURATION,'小时') end view4,
+				  b.reason as view5,'' as view6,'已失效' as operation
+				FROM
+				  ACT_RU_TASK a 
+				  INNER JOIN base_emp_application_overtime b 
+				    ON a.PROC_INST_ID_ = b.PROCESSINSTANCE_ID  and b.APPROVAL_STATUS=500
+				WHERE a.PROC_INST_ID_ IN 
+				  (SELECT DISTINCT 
+				    * 
+				  FROM
+				    (SELECT 
+				      rt.PROC_INST_ID_ 
+				    FROM
+				      ACT_RU_IDENTITYLINK ri 
+				      LEFT JOIN ACT_RU_TASK rt 
+				        ON ri.TASK_ID_ = rt.ID_ 
+				    WHERE ri.TYPE_ = 'candidate' 
+				      AND ri.USER_ID_ = #{employeeId,jdbcType=BIGINT} 
+				    UNION
+				    ALL 
+				    SELECT 
+				      PROC_INST_ID_  
+				    FROM
+				      ACT_RU_TASK 
+				    WHERE ASSIGNEE_ = #{employeeId,jdbcType=BIGINT}) instance_id)
+				    
+				        UNION ALL 
+				    
+			   SELECT a.PROC_INST_ID_ AS processId,a.CREATE_TIME_ ,'入职登记申请' AS processName,'entry' AS processKey,'10' AS reProcdefCode,b.APPROVAL_STATUS AS processStatu,
+				  b.id AS resourceId,CONCAT('/employeeRegister/toHandle.htm?flag=can&amp;id=',b.id) AS redirectUrl,b.DEPART_NAME AS creatorDepart,b.CREATE_USER AS creator,b.CREATE_TIME AS createTime ,
+				  '' as view3,'' as view4,'' as view5,'' as view6,'已失效' as operation
+				FROM
+				  ACT_RU_TASK a 
+				  INNER JOIN emp_entry_registration b 
+				    ON a.PROC_INST_ID_ = b.PROCESSINSTANCE_ID  and b.APPROVAL_STATUS=500
+				WHERE a.ID_ IN 
+				  (SELECT DISTINCT 
+				    * 
+				  FROM
+				    (SELECT 
+				      rt.ID_ 
+				    FROM
+				      ACT_RU_IDENTITYLINK ri 
+				      LEFT JOIN ACT_RU_TASK rt 
+				        ON ri.TASK_ID_ = rt.ID_ 
+				    WHERE ri.TYPE_ = 'candidate' 
+				      AND ri.USER_ID_ = #{employeeId,jdbcType=BIGINT}
+				    UNION
+				    ALL 
+				    SELECT 
+				      ID_  
+				    FROM
+				      ACT_RU_TASK 
+				    WHERE ASSIGNEE_ = #{employeeId,jdbcType=BIGINT}) instance_id)
+				    
+				    UNION ALL 
+				    
+				SELECT a.PROC_INST_ID_ AS processId,a.CREATE_TIME_ ,CASE WHEN b.is_move=0 THEN '排班申请' WHEN b.is_move=1 THEN '值班申请' END processName,'scheduling' AS processKey,'50' AS reProcdefCode,b.APPROVAL_STATUS AS processStatu,
+				  b.id AS resourceId,CONCAT('/employeeClass/approveNormal.htm?flag=can&amp;employeeClassId=',b.id) AS redirectUrl,b.DEPART_NAME AS creatorDepart,b.CREATE_USER AS creator,b.CREATE_TIME AS createTime ,
+				  '' as view3,'' as view4,'' as view5,'' as view6,'已失效' as operation
+				FROM
+				  ACT_RU_TASK a 
+				  INNER JOIN attn_application_employ_class b 
+				    ON a.PROC_INST_ID_ = b.PROCESSINSTANCE_ID  and b.APPROVAL_STATUS=500
+				WHERE a.PROC_INST_ID_ IN 
+				  (SELECT DISTINCT 
+				    * 
+				  FROM
+				    (SELECT 
+				      rt.PROC_INST_ID_ 
+				    FROM
+				      ACT_RU_IDENTITYLINK ri 
+				      LEFT JOIN ACT_RU_TASK rt 
+				        ON ri.TASK_ID_ = rt.ID_ 
+				    WHERE ri.TYPE_ = 'candidate' 
+				      AND ri.USER_ID_ = #{employeeId,jdbcType=BIGINT}
+				    UNION
+				    ALL 
+				    SELECT 
+				      PROC_INST_ID_  
+				    FROM
+				      ACT_RU_TASK 
+				    WHERE ASSIGNEE_ = #{employeeId,jdbcType=BIGINT}) instance_id)
+				    
+				         UNION ALL 
+				    
+				SELECT a.PROC_INST_ID_ AS processId,a.CREATE_TIME_ ,'值班申请' AS processName,'duty' AS processKey,'110' AS reProcdefCode,b.APPROVAL_STATUS AS processStatu,
+				  b.id AS resourceId,CONCAT('/employeeClass/approveVacation.htm?flag=can&amp;dutyId=',b.id) AS redirectUrl,b.DEPART_NAME AS creatorDepart,b.CLASS_SETTING_PERSON AS creator,b.CREATE_TIME AS createTime ,
+				  '' as view3,'' as view4,'' as view5,'' as view6,'已失效' as operation
+				FROM
+				  ACT_RU_TASK a 
+				  INNER JOIN attn_application_employ_duty b 
+				    ON a.PROC_INST_ID_ = b.PROCESSINSTANCE_ID  and b.APPROVAL_STATUS=500
+				WHERE a.PROC_INST_ID_ IN 
+				  (SELECT DISTINCT 
+				    * 
+				  FROM
+				    (SELECT 
+				      rt.PROC_INST_ID_ 
+				    FROM
+				      ACT_RU_IDENTITYLINK ri 
+				      LEFT JOIN ACT_RU_TASK rt 
+				        ON ri.TASK_ID_ = rt.ID_ 
+				    WHERE ri.TYPE_ = 'candidate' 
+				      AND ri.USER_ID_ = #{employeeId,jdbcType=BIGINT} 
+				    UNION
+				    ALL 
+				    SELECT 
+				      PROC_INST_ID_  
+				    FROM
+				      ACT_RU_TASK 
+				    WHERE ASSIGNEE_ = #{employeeId,jdbcType=BIGINT}) instance_id)
+				    
+				     UNION ALL
+				    
+				SELECT a.PROC_INST_ID_ AS processId,a.CREATE_TIME_ ,'出差总结报告' AS processName,'businessReport' AS processKey,'90' AS reProcdefCode,b.APPROVAL_STATUS AS processStatu,
+				  b.id AS resourceId,CONCAT('/empApplicationBusiness/approveWorkSummary.htm?flag=can&amp;businessId=',b.id) AS redirectUrl,b.DEPART_NAME AS creatorDepart,b.CREATE_USER AS creator,b.CREATE_TIME AS createTime ,
+				  b.reason as view3,b.address as view4,
+				  CONCAT(DATE_FORMAT(b.start_time,'%Y%m-%d'),'~',DATE_FORMAT(b.end_time,'%H:%i'),'  ',b.DURATION,'天') view5,
+				  case when b.VEHICLE =100 then '火车' when b.VEHICLE =200 then '飞机' else '汽车' end  as view6
+				  ,'已失效' as operation
+				FROM
+				  ACT_RU_TASK a 
+				  INNER JOIN base_emp_application_business b
+				    ON a.PROC_INST_ID_ = b.PROCESSINSTANCE_REPORT_ID  and b.APPROVAL_REPORT_STATUS = 500
+				WHERE a.PROC_INST_ID_ IN 
+				  (SELECT DISTINCT 
+				    * 
+				  FROM
+				    (SELECT 
+				      rt.PROC_INST_ID_ 
+				    FROM
+				      ACT_RU_IDENTITYLINK ri 
+				      LEFT JOIN ACT_RU_TASK rt 
+				        ON ri.TASK_ID_ = rt.ID_ 
+				    WHERE ri.TYPE_ = 'candidate' 
+				      AND ri.USER_ID_ = #{employeeId,jdbcType=BIGINT}
+				    UNION
+				    ALL 
+				    SELECT 
+				      PROC_INST_ID_ 
+				    FROM
+				      ACT_RU_TASK 
+				    WHERE ASSIGNEE_ = #{employeeId,jdbcType=BIGINT}) instance_id)
+				    
+			    UNION ALL 
+				    
+				SELECT a.PROC_INST_ID_ AS processId,a.CREATE_TIME_ ,'消下属缺勤单' as processName,'removeSubAbsence' AS processKey,'140' AS reProcdefCode,b.approal_status AS processStatu,
+				  b.id AS resourceId,CONCAT('/removeSubordinateAbsence/approval.htm?flag=can&amp;removeSubordinateAbsenceId=',b.id) AS redirectUrl,
+				  e.name AS creatorDepart,c.cn_name AS creator,b.CREATE_TIME AS createTime ,
+				  '' as view3,'' as view4,'' as view5,'' as view6,'已失效' as operation
+				FROM
+				  ACT_RU_TASK a 
+				  INNER JOIN remove_subordinate_absence b 
+				    ON a.PROC_INST_ID_ = b.processinstance_id  and b.approal_status=500
+				  left join base_employee c on c.id = b.employee_id
+				  left join base_emp_depart d on b.employee_id = d.employee_id and d.del_flag=0
+				  left join base_depart e on e.id = d.depart_id
+				WHERE a.PROC_INST_ID_ IN 
+				  (SELECT DISTINCT 
+				    * 
+				  FROM
+				    (SELECT 
+				      rt.PROC_INST_ID_ 
+				    FROM
+				      ACT_RU_IDENTITYLINK ri 
+				      LEFT JOIN ACT_RU_TASK rt 
+				        ON ri.TASK_ID_ = rt.ID_ 
+				    WHERE ri.TYPE_ = 'candidate' 
+				      AND ri.USER_ID_ = #{employeeId,jdbcType=BIGINT}
+				    UNION
+				    ALL 
+				    SELECT 
+				      PROC_INST_ID_  
+				    FROM
+				      ACT_RU_TASK 
+				    WHERE ASSIGNEE_ = #{employeeId,jdbcType=BIGINT}) instance_id)
+		    
+		     ) d  ORDER BY d.CREATE_TIME_ DESC 
+ 		      
+ 		</select>
+</mapper>

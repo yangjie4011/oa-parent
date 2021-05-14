@@ -1,0 +1,63 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:task="http://www.springframework.org/schema/task"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans	http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+		http://www.springframework.org/schema/task  
+		http://www.springframework.org/schema/task/spring-task-3.1.xsd">
+		
+	<!-- 定时任务扫描的路径 -->
+	<task:annotation-driven/>
+	<context:component-scan base-package="com.ule.oa.web.job" />
+
+	<!-- <mvc:annotation-driven /> -->
+	<mvc:annotation-driven content-negotiation-manager="contentNegotiationManager"/>
+
+	<bean id="contentNegotiationManager" class="org.springframework.web.accept.ContentNegotiationManagerFactoryBean">
+	    <property name="favorPathExtension" value="false"/>
+	    <property name="favorParameter" value="true"/>
+	</bean>
+
+	<bean
+		class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+		<property name="messageConverters">
+			<list>
+				<bean
+					class="org.springframework.http.converter.StringHttpMessageConverter">
+					<property name="supportedMediaTypes">
+						<list>
+							<value>text/html;charset=UTF-8</value>
+							<value>application/json;charset=UTF-8</value>
+						</list>
+					</property>
+				</bean>
+			</list>
+		</property>
+	</bean>
+	
+	<context:component-scan base-package="com.ule.oa.web.controller">
+		<context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+	</context:component-scan>
+	
+	<bean id="jspViewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="viewClass" value="org.springframework.web.servlet.view.JstlView" />
+		<property name="prefix" value="/WEB-INF/pages/" />
+		<property name="suffix" value=".jsp" />
+	</bean>
+	
+	<!-- 支持上传文件 -->  
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver"/>
+	
+	<!-- 全局异常处理器 -->
+<!-- 	<bean class="com.ule.oa.web.exception.MyExceptionResolver"></bean> -->
+
+	<!-- token访问令牌验证 -->    
+    <mvc:interceptors>  
+	    <mvc:interceptor>  
+	        <mvc:mapping path="/**"/>  
+	        <bean class="com.ule.oa.web.interceptor.TokenInterceptor"/>  
+	    </mvc:interceptor>  
+	</mvc:interceptors>  
+</beans>

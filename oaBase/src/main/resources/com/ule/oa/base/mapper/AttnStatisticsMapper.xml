@@ -1,0 +1,689 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ule.oa.base.mapper.AttnStatisticsMapper" >
+  <resultMap id="BaseResultMap" type="com.ule.oa.base.po.AttnStatistics" >
+    <id column="ID" property="id" jdbcType="BIGINT" />
+    <result column="company_id" property="companyId" jdbcType="BIGINT" />
+    <result column="employ_id" property="employId" jdbcType="BIGINT" />
+    <result column="attn_date" property="attnDate" jdbcType="DATE" />
+    <result column="start_work_time" property="startWorkTime" jdbcType="TIMESTAMP" />
+    <result column="end_work_time" property="endWorkTime" jdbcType="TIMESTAMP" />
+    <result column="come_late_time" property="comeLateTime" jdbcType="INTEGER" />
+    <result column="left_early_time" property="leftEarlyTime" jdbcType="INTEGER" />
+    <result column="absenteeism_time" property="absenteeismTime" jdbcType="INTEGER" />
+    <result column="must_attn_time" property="mustAttnTime" jdbcType="DOUBLE" />
+    <result column="all_attn_time" property="allAttnTime" jdbcType="DOUBLE" />
+    <result column="act_attn_time" property="actAttnTime" jdbcType="DOUBLE" />
+    <result column="lack_attn_time" property="lackAttnTime" jdbcType="DOUBLE" />
+    <result column="attn_status" property="attnStatus" jdbcType="INTEGER" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="del_flag" property="delFlag" jdbcType="INTEGER" />
+    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <resultMap id="AttnStatisticsMap" type="com.ule.oa.base.po.AttnStatistics" >
+    <result column="company_id" property="companyId" jdbcType="BIGINT" />
+    <result column="employ_id" property="employId" jdbcType="BIGINT" />
+    <result column="work_date" property="attnDate" jdbcType="DATE" />
+    <result column="start_time" property="startWorkTime" jdbcType="TIMESTAMP" />
+    <result column="end_time" property="endWorkTime" jdbcType="TIMESTAMP" />
+    <result column="work_hours" property="allAttnTime" jdbcType="DOUBLE" />
+    <result column="data_type" property="type" jdbcType="VARCHAR" />
+    <result column="leave_type" property="leaveType" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    ID, company_id, employ_id, attn_date, start_work_time, end_work_time, come_late_time, 
+    left_early_time, absenteeism_time, must_attn_time, all_attn_time, act_attn_time, lack_attn_time, 
+    attn_status, remark, del_flag, create_user, create_time, update_time, 
+    update_user
+  </sql>
+  
+  <select id="getAttnStatisticsByCondition" resultMap="BaseResultMap" parameterType="com.ule.oa.base.po.AttnStatistics" >
+    select 
+    <include refid="Base_Column_List" />
+    from attn_statistics
+    where del_flag = 0
+    and company_id = #{companyId,jdbcType=BIGINT}
+    and employ_id = #{employId,jdbcType=BIGINT}
+    and attn_date = #{attnDate,jdbcType=DATE}
+    ORDER BY ID DESC
+	LIMIT 0,1
+  </select>
+  
+  <select id="getAttnStatistics" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from attn_statistics
+    where del_flag = 0
+    and employ_id = #{employId,jdbcType=BIGINT}
+    and attn_date = #{attnDate,jdbcType=DATE}
+    ORDER BY ID DESC
+	LIMIT 0,1
+  </select>
+  
+  <select id="getAttStatisticsList" resultMap="BaseResultMap" parameterType="com.ule.oa.base.po.AttnStatistics" >
+    select 
+    <include refid="Base_Column_List" />
+    from attn_statistics
+    where del_flag = 0
+    <if test="companyId != null" >
+      and company_id = #{companyId,jdbcType=BIGINT}
+    </if>
+    <if test="employId != null" >
+      and employ_id = #{employId,jdbcType=BIGINT}
+    </if>
+    <if test="attnDate != null" >
+      and attn_date = #{attnDate,jdbcType=DATE}
+    </if>
+    <if test="startTime != null" >
+      and attn_date &gt;= #{startTime,jdbcType=DATE}
+    </if>
+    <if test="endTime != null" >
+      and attn_date &lt;= #{endTime,jdbcType=DATE}
+    </if>
+    <if test="mustAttnTime != null" >
+      and must_attn_time > 0
+    </if>
+    <if test="startWorkTime != null" >
+      and start_work_time = #{startWorkTime,jdbcType=TIMESTAMP}
+    </if>
+    <if test="endWorkTime != null" >
+      and end_work_time = #{endWorkTime,jdbcType=TIMESTAMP}
+    </if>
+    <if test="attnStatus != null" >
+      and attn_status = #{attnStatus,jdbcType=INTEGER}
+    </if>
+    <if test="type != null and type !=''" >
+	    <if test="type =='late'" >
+	       and come_late_time &gt; 0 
+	    </if>
+	    <if test="type =='early'" >
+	       and left_early_time &gt; 0 
+	    </if>
+	    <if test="type =='lack'" >
+	       and lack_attn_time &gt; 0 
+	    </if>
+	    <if test="type =='absent'" >
+	       and absenteeism_time &gt; 0 
+	    </if>
+    </if>
+    order by attn_date
+  </select>
+  
+  <select id="getTotalAttStatistics" resultMap="BaseResultMap" parameterType="com.ule.oa.base.po.AttnStatistics" >
+    SELECT company_id,employ_id,SUM(must_attn_time)must_attn_time,SUM(all_attn_time)all_attn_time,SUM(act_attn_time)act_attn_time
+    from attn_statistics
+    where del_flag = 0
+    <if test="companyId != null" >
+      and company_id = #{companyId,jdbcType=BIGINT}
+    </if>
+    <if test="employId != null" >
+      and employ_id = #{employId,jdbcType=BIGINT}
+    </if>
+    <if test="startTime != null" >
+      and attn_date &gt;= #{startTime,jdbcType=DATE}
+    </if>
+    <if test="endTime != null" >
+      and attn_date &lt;= #{endTime,jdbcType=DATE}
+    </if>
+    GROUP BY company_id,employ_id
+  </select>
+  
+  <select id="getStandardTotalAttStatistics" resultMap="BaseResultMap" parameterType="com.ule.oa.base.po.AttnStatistics" >
+   
+    SELECT  temp.company_id,temp.employ_id,SUM(temp.must_attn_time)must_attn_time,SUM(temp.all_attn_time)all_attn_time,SUM(act_attn_time)act_attn_time FROM (
+       SELECT company_id,employ_id,must_attn_time,all_attn_time, CASE act_attn_time>must_attn_time WHEN TRUE THEN must_attn_time ELSE act_attn_time END act_attn_time
+    FROM attn_statistics
+    WHERE 
+		del_flag = 0
+	    <if test="companyId != null" >
+	      and company_id = #{companyId,jdbcType=BIGINT}
+	    </if>
+	    <if test="employId != null" >
+	      and employ_id = #{employId,jdbcType=BIGINT}
+	    </if>
+	    <if test="startTime != null" >
+	      and attn_date &gt;= #{startTime,jdbcType=DATE}
+	    </if>
+	    <if test="endTime != null" >
+	      and attn_date &lt;= #{endTime,jdbcType=DATE}
+	    </if>
+     ) temp GROUP BY temp.company_id,temp.employ_id
+
+  </select>
+  
+  <select id="getStandardAttStatisticsList" resultMap="BaseResultMap" parameterType="com.ule.oa.base.po.AttnStatistics" >
+       SELECT company_id,employ_id,attn_date attnDate,must_attn_time,all_attn_time, CASE act_attn_time>must_attn_time WHEN TRUE THEN must_attn_time ELSE act_attn_time END act_attn_time
+    FROM attn_statistics
+    WHERE 
+		del_flag = 0
+	    <if test="companyId != null" >
+	      and company_id = #{companyId,jdbcType=BIGINT}
+	    </if>
+	    <if test="employId != null" >
+	      and employ_id = #{employId,jdbcType=BIGINT}
+	    </if>
+	    <if test="startTime != null" >
+	      and attn_date &gt;= #{startTime,jdbcType=DATE}
+	    </if>
+	    <if test="endTime != null" >
+	      and attn_date &lt;= #{endTime,jdbcType=DATE}
+	    </if>
+
+  </select>
+  
+  
+  <!-- 打卡list -->
+  <select id="getAttnStatisticsListByAttnWork" resultMap="AttnStatisticsMap" parameterType="com.ule.oa.base.po.AttnWorkHours" >
+    select distinct
+    company_id,employ_id,work_date,start_time,end_time,work_hours
+    from attn_work_hours
+    where del_flag = 0
+    <if test="workDate != null" >
+      and work_date = #{workDate,jdbcType=DATE}
+    </if>
+    <if test="dataType != null" >
+      and data_type = #{dataType,jdbcType=INTEGER}
+    </if>
+	<if test="employeeIds != null"> 
+	    and employ_id in 
+	    <foreach collection="employeeIds" index="index" item="item" open="(" separator="," close=")">
+             #{item}
+         	</foreach>
+  	</if>
+  </select>
+  <!-- 打卡单个 -->
+  <select id="getAttnStatisticsByAttnWork" resultMap="AttnStatisticsMap" parameterType="com.ule.oa.base.po.AttnWorkHours" >
+    select distinct
+    company_id,employ_id,work_date,start_time,end_time,work_hours
+    from attn_work_hours
+    where del_flag = 0
+    <if test="workDate != null" >
+      and work_date = #{workDate,jdbcType=DATE}
+    </if>
+    <if test="dataType != null" >
+      and data_type = #{dataType,jdbcType=INTEGER}
+    </if>
+    <if test="employeeId != null" >
+      and employ_id = #{employeeId,jdbcType=INTEGER}
+    </if>
+  </select>
+  <!-- 单据和打卡list -->
+  <select id="getAttnStatisticsList" resultMap="AttnStatisticsMap" parameterType="com.ule.oa.base.po.AttnWorkHours" >
+    select 
+    company_id,employ_id,work_date,start_time,end_time,work_hours,data_type,leave_type
+    from attn_work_hours
+    where del_flag = 0
+    <if test="workDate != null" >
+      and work_date = #{workDate,jdbcType=DATE}
+    </if>
+    <!-- <if test="dataType != null" >
+      and data_type &lt;&gt; #{dataType,jdbcType=INTEGER}
+    </if> -->
+	<if test="employeeIds != null"> 
+	    and employ_id in 
+	    <foreach collection="employeeIds" index="index" item="item" open="(" separator="," close=")">
+             #{item}
+         	</foreach>
+  	</if>
+    ORDER BY employ_id,start_time,end_time
+  </select>
+  <!-- 单据dange -->
+  <select id="getAttnStatisticsForm" resultMap="AttnStatisticsMap" parameterType="com.ule.oa.base.po.AttnWorkHours" >
+    select 
+    company_id,employ_id,work_date,SUM(work_hours) work_hours 
+    from attn_work_hours
+    where del_flag = 0
+    <if test="workDate != null" >
+      and work_date = #{workDate,jdbcType=DATE}
+    </if>
+    <if test="dataType != null" >
+      and data_type &lt;&gt; #{dataType,jdbcType=INTEGER}
+    </if>
+    <if test="employeeId != null" >
+      and employ_id = #{employeeId,jdbcType=INTEGER}
+    </if>
+    GROUP BY company_id,employ_id,work_date
+  </select>
+  
+  <select id="getSubAttStatisticsList" resultType="Map" parameterType="com.ule.oa.base.po.AttnStatistics" >
+	SELECT bed.depart_id,ast.employ_id employeeId,be.cn_name employeeName,sum(ast.all_attn_time) totalAllAttnTime,sum(ast.attn_status) errorTimes FROM base_employee be 
+	INNER JOIN attn_statistics ast ON be.id = ast.employ_id 
+    INNER JOIN base_emp_depart bed ON be.id = bed.employee_id
+	where be.del_flag = 0 and ast.del_flag =0 and bed.del_flag =0
+    <if test="startTime != null" >
+      and ast.attn_date &gt;= #{startTime,jdbcType=DATE}
+    </if>
+    <if test="endTime != null" >
+      and ast.attn_date &lt;= #{endTime,jdbcType=DATE}
+    </if>
+    <if test="reportToLeader != null" >
+      and be.report_to_leader = #{reportToLeader,jdbcType=BIGINT}
+    </if>
+    <if test="empTypeIdList != null and empTypeIdList.size > 0" >
+        and be.emp_type_id in
+           <foreach collection="empTypeIdList" index="index" item="item" open="(" separator="," close=")">
+	           #{item}
+	       </foreach>
+    </if>
+    <if test="departId != null" >
+      and bed.depart_id = #{departId,jdbcType=BIGINT}
+    </if>
+    <if test="nameOrCode != null" >
+      and (be.cn_name like concat(concat('%',#{nameOrCode}),'%') OR be.code = #{nameOrCode,jdbcType=VARCHAR})
+    </if>
+	GROUP BY bed.depart_id,ast.employ_id,be.cn_name
+  </select>
+
+  <insert id="save" parameterType="com.ule.oa.base.po.AttnStatistics" >
+    insert into attn_statistics (company_id, employ_id, 
+      attn_date, start_work_time, end_work_time, 
+      come_late_time, left_early_time, absenteeism_time, 
+      must_attn_time, all_attn_time, act_attn_time, lack_attn_time, 
+      attn_status, remark, 
+      del_flag, create_user, create_time, 
+      update_time, update_user)
+    values (#{companyId,jdbcType=BIGINT}, #{employId,jdbcType=BIGINT}, 
+      #{attnDate,jdbcType=DATE}, #{startWorkTime,jdbcType=TIMESTAMP}, #{endWorkTime,jdbcType=TIMESTAMP}, 
+      #{comeLateTime,jdbcType=INTEGER}, #{leftEarlyTime,jdbcType=INTEGER}, #{absenteeismTime,jdbcType=INTEGER}, 
+      #{mustAttnTime,jdbcType=DOUBLE}, #{allAttnTime,jdbcType=DOUBLE}, #{actAttnTime,jdbcType=DOUBLE}, #{lackAttnTime,jdbcType=DOUBLE}, 
+      #{attnStatus,jdbcType=INTEGER}, #{remark,jdbcType=VARCHAR}, 
+      #{delFlag,jdbcType=INTEGER}, #{createUser,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{updateTime,jdbcType=TIMESTAMP}, #{updateUser,jdbcType=VARCHAR})
+  </insert>
+
+  <insert id="saveBatch" parameterType="com.ule.oa.base.po.AttnStatistics" >
+    insert into attn_statistics ( company_id, employ_id, 
+      attn_date, start_work_time, end_work_time, 
+      come_late_time, left_early_time, absenteeism_time, 
+      must_attn_time, all_attn_time, act_attn_time, lack_attn_time, 
+      attn_status, remark, 
+      del_flag, create_user, create_time, 
+      update_time, update_user)
+    values 
+    <foreach collection ="list" item="item" index= "index" separator =",">
+ 	  ( #{item.companyId,jdbcType=BIGINT}, #{item.employId,jdbcType=BIGINT}, 
+      #{item.attnDate,jdbcType=DATE}, #{item.startWorkTime,jdbcType=TIMESTAMP}, #{item.endWorkTime,jdbcType=TIMESTAMP}, 
+      #{item.comeLateTime,jdbcType=INTEGER}, #{item.leftEarlyTime,jdbcType=INTEGER}, #{item.absenteeismTime,jdbcType=INTEGER}, 
+      #{item.mustAttnTime,jdbcType=DOUBLE}, #{item.allAttnTime,jdbcType=DOUBLE}, #{item.actAttnTime,jdbcType=DOUBLE}, #{item.lackAttnTime,jdbcType=DOUBLE}, 
+      #{item.attnStatus,jdbcType=INTEGER}, #{item.remark,jdbcType=VARCHAR}, 
+      #{item.delFlag,jdbcType=INTEGER}, #{item.createUser,jdbcType=VARCHAR}, #{item.createTime,jdbcType=TIMESTAMP}, 
+      #{item.updateTime,jdbcType=TIMESTAMP}, #{item.updateUser,jdbcType=VARCHAR})
+    </foreach >
+  </insert>
+  
+  <update id="updateById" parameterType="com.ule.oa.base.po.AttnStatistics" >
+    update attn_statistics set
+        company_id = #{companyId,jdbcType=BIGINT},
+        employ_id = #{employId,jdbcType=BIGINT},
+        attn_date = #{attnDate,jdbcType=DATE},
+        start_work_time = #{startWorkTime,jdbcType=TIMESTAMP},
+        end_work_time = #{endWorkTime,jdbcType=TIMESTAMP},
+        come_late_time = #{comeLateTime,jdbcType=INTEGER},
+        left_early_time = #{leftEarlyTime,jdbcType=INTEGER},
+        absenteeism_time = #{absenteeismTime,jdbcType=INTEGER},
+        must_attn_time = #{mustAttnTime,jdbcType=DOUBLE},
+        all_attn_time = #{allAttnTime,jdbcType=DOUBLE},
+        act_attn_time = #{actAttnTime,jdbcType=DOUBLE},
+        lack_attn_time = #{lackAttnTime,jdbcType=DOUBLE},
+        attn_status = #{attnStatus,jdbcType=INTEGER},
+        remark = #{remark,jdbcType=VARCHAR},
+        del_flag = #{delFlag,jdbcType=INTEGER},
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+        update_user = #{updateUser,jdbcType=VARCHAR}
+    where ID = #{id,jdbcType=BIGINT}
+  </update>
+  
+  <select id="getNumberByType" resultType="Map" parameterType="com.ule.oa.base.po.AttnStatistics" >
+    select cltNumber,letNumber,latNumber,atNumber from
+	(SELECT count(DISTINCT ast.employ_id) cltNumber FROM attn_statistics ast
+    LEFT JOIN base_emp_depart bed ON ast.employ_id = bed.employee_id AND bed.del_flag = 0
+    LEFT JOIN base_employee be ON ast.employ_id = be.id AND be.del_flag = 0
+    WHERE come_late_time > 0
+    <if test="empTypeIdList != null and empTypeIdList.size > 0" >
+        and be.emp_type_id in
+           <foreach collection="empTypeIdList" index="index" item="item" open="(" separator="," close=")">
+	           #{item}
+	       </foreach>
+    </if>
+    <if test="startTime != null" >
+        and ast.attn_date &gt;= #{startTime,jdbcType=DATE}
+    </if>
+    <if test="endTime != null" >
+        and ast.attn_date &lt; #{endTime,jdbcType=DATE}
+    </if>
+    <if test="departId != null" >
+        and bed.depart_id = #{departId,jdbcType=BIGINT}
+    </if>)a,
+    (SELECT count(DISTINCT ast.employ_id) letNumber FROM attn_statistics ast
+    LEFT JOIN base_emp_depart bed ON ast.employ_id = bed.employee_id AND bed.del_flag = 0
+    LEFT JOIN base_employee be ON ast.employ_id = be.id AND be.del_flag = 0
+    WHERE left_early_time > 0
+    <if test="empTypeIdList != null and empTypeIdList.size > 0" >
+        and be.emp_type_id in
+           <foreach collection="empTypeIdList" index="index" item="item" open="(" separator="," close=")">
+	           #{item}
+	       </foreach>
+    </if>
+    <if test="startTime != null" >
+        and ast.attn_date &gt;= #{startTime,jdbcType=DATE}
+    </if>
+    <if test="endTime != null" >
+        and ast.attn_date &lt; #{endTime,jdbcType=DATE}
+    </if>
+    <if test="departId != null" >
+        and bed.depart_id = #{departId,jdbcType=BIGINT}
+    </if>)b,
+    (SELECT count(DISTINCT ast.employ_id) latNumber FROM attn_statistics ast
+    LEFT JOIN base_emp_depart bed ON ast.employ_id = bed.employee_id AND bed.del_flag = 0
+    LEFT JOIN base_employee be ON ast.employ_id = be.id AND be.del_flag = 0
+    WHERE lack_attn_time > 0
+    <if test="empTypeIdList != null and empTypeIdList.size > 0" >
+        and be.emp_type_id in
+           <foreach collection="empTypeIdList" index="index" item="item" open="(" separator="," close=")">
+	           #{item}
+	       </foreach>
+    </if>
+    <if test="startTime != null" >
+        and ast.attn_date &gt;= #{startTime,jdbcType=DATE}
+    </if>
+    <if test="endTime != null" >
+        and ast.attn_date &lt; #{endTime,jdbcType=DATE}
+    </if>
+    <if test="departId != null" >
+        and bed.depart_id = #{departId,jdbcType=BIGINT}
+    </if>)c,
+    (SELECT count(DISTINCT ast.employ_id) atNumber FROM attn_statistics ast
+    LEFT JOIN base_emp_depart bed ON ast.employ_id = bed.employee_id AND bed.del_flag = 0
+    LEFT JOIN base_employee be ON ast.employ_id = be.id AND be.del_flag = 0
+    WHERE absenteeism_time > 0
+    <if test="empTypeIdList != null and empTypeIdList.size > 0" >
+        and be.emp_type_id in
+           <foreach collection="empTypeIdList" index="index" item="item" open="(" separator="," close=")">
+	           #{item}
+	       </foreach>
+    </if>
+    <if test="startTime != null" >
+        and ast.attn_date &gt;= #{startTime,jdbcType=DATE}
+    </if>
+    <if test="endTime != null" >
+        and ast.attn_date &lt; #{endTime,jdbcType=DATE}
+    </if>
+    <if test="departId != null" >
+        and bed.depart_id = #{departId,jdbcType=BIGINT}
+    </if>)d
+  </select>
+ 
+  <select id="getEmpAttnTimes" resultType="Map" parameterType="com.ule.oa.base.po.AttnStatistics" >
+    SELECT ast.employ_id employeeId,be.cn_name employeeName,bd.name departName,count(0) count FROM attn_statistics ast
+    LEFT JOIN base_emp_depart bed ON ast.employ_id = bed.employee_id AND bed.del_flag = 0
+    LEFT JOIN base_employee be on ast.employ_id = be.id 
+    LEFT JOIN base_depart bd ON bd.id = bed.depart_id
+    <where>
+	    <if test="type != null and type !=''" >
+		    <if test="type =='late'" >
+		       and come_late_time > 0 
+		    </if>
+		    <if test="type =='early'" >
+		       and left_early_time > 0 
+		    </if>
+		    <if test="type =='lack'" >
+		       and lack_attn_time > 0 
+		    </if>
+		    <if test="type =='absent'" >
+		       and absenteeism_time > 0 
+		    </if>
+	    </if>
+	    <if test="empTypeIdList != null and empTypeIdList.size > 0" >
+           and be.emp_type_id in
+           <foreach collection="empTypeIdList" index="index" item="item" open="(" separator="," close=")">
+	           #{item}
+	       </foreach>
+         </if>
+	    <if test="startTime != null" >
+	        and ast.attn_date &gt;= #{startTime,jdbcType=DATE}
+	    </if>
+	    <if test="endTime != null" >
+	        and ast.attn_date &lt; #{endTime,jdbcType=DATE}
+	    </if>
+	    <if test="departId != null" >
+	        and bed.depart_id = #{departId,jdbcType=BIGINT}
+	    </if>
+    </where>
+    GROUP BY ast.employ_id,be.cn_name,bd.name
+  </select>
+  
+  <select id="getEmpAttnDetailReport" resultType="Map">
+    SELECT be.code,be.cn_name,bd.id departId,bd.name departName,bp.position_name positionName,scs.display_name workTypeName,ats.attn_date,
+	CASE dayofweek(ats.attn_date) 
+	WHEN 1 THEN '星期日' WHEN 2 THEN '星期一' WHEN 3 THEN '星期二' WHEN 4 THEN '星期三'
+	WHEN 5 THEN '星期四' WHEN 6 THEN '星期五' WHEN 7 THEN '星期六' END dayofweek,
+	CASE  WHEN ats.must_attn_time = 0 THEN '休息'
+    ELSE IFNULL(acs.name,'常白班') END className,DATE_FORMAT(ats.start_work_time,'%T') classStartTime,DATE_FORMAT(ats.end_work_time,'%T') classEndTime,
+	DATE_FORMAT(awh1.start_time,'%T') start_work_time,DATE_FORMAT(awh1.end_time,'%T') end_work_time,
+	ats.come_late_time,ats.left_early_time,ats.absenteeism_time absenteeism_time,ats.lack_attn_time,ats.must_attn_time,
+	<!-- CASE WHEN awh1.work_hours > ats.all_attn_time THEN ats.all_attn_time ELSE awh1.work_hours END  -->
+	awh1.work_hours work_hours,
+	ats.all_attn_time,ats.act_attn_time,dwr.expect_delay_hour,dwr.actual_delay_hour,dwr.is_matched,dwr.is_confirm,rsa.remove_absence_hours,
+	CASE ats.attn_status 
+	WHEN 0 THEN '正常' ELSE '异常' END attn_status,awh.data_type,awh.leave_type,awh.data_reason
+	FROM attn_statistics ats
+	INNER JOIN base_employee be on ats.employ_id = be.id and be.del_flag = 0 
+	AND ats.attn_date BETWEEN DATE_FORMAT(IFNULL(be.first_Entry_time,'2000-12-1'),'%Y-%m-%d') AND DATE_FORMAT(IFNULL(be.Quit_time,'9999-12-1'),'%Y-%m-%d')
+	LEFT JOIN base_emp_depart bed on be.id = bed.employee_id and bed.del_flag = 0 
+	LEFT JOIN base_depart bd on bed.depart_id = bd.id and bd.del_flag = 0 
+	LEFT JOIN base_emp_position bep on be.id = bep.employee_id and bep.del_flag = 0 
+	LEFT JOIN base_position bp on bep.position_id = bp.id and bp.del_flag = 0 
+	LEFT JOIN sys_company_config scs on be.work_type = scs.id and scs.del_flag = 0 
+	LEFT JOIN attn_employ_class aec on ats.employ_id = aec.employ_id AND aec.class_date=ats.attn_date and aec.del_flag = 0 
+	LEFT JOIN attn_class_setting acs on acs.id = aec.class_setting_id
+	LEFT JOIN delay_work_register dwr ON ats.employ_id = dwr.employee_id AND dwr.del_flag = 0 AND dwr.delay_date =  ats.attn_date
+	LEFT JOIN remove_subordinate_absence rsa ON ats.employ_id = rsa.employee_id AND rsa.del_flag = 0 AND rsa.attendance_date = ats.attn_date AND rsa.approal_status IN(200,600)
+	LEFT JOIN 
+	(SELECT work_date,employ_id,group_concat(data_type) data_type,group_concat(leave_type) leave_type,group_concat(data_reason) data_reason
+	FROM attn_work_hours  
+	WHERE del_flag = 0
+	    <if test="startTime != null" >
+	        and work_date &gt;= #{startTime,jdbcType=DATE}
+	    </if>
+	    <if test="endTime != null" >
+	        and work_date &lt;= #{endTime,jdbcType=DATE}
+	    </if>
+	GROUP BY work_date,employ_id) awh 
+	on ats.attn_date = awh.work_date AND ats.employ_id = awh.employ_id
+	LEFT JOIN 
+	(SELECT work_date,start_time,end_time,employ_id,work_hours
+	FROM attn_work_hours  
+	WHERE data_type = 0 and del_flag = 0
+	    <if test="startTime != null" >
+	        and work_date &gt;= #{startTime,jdbcType=DATE}
+	    </if>
+	    <if test="endTime != null" >
+	        and work_date &lt;= #{endTime,jdbcType=DATE}
+	    </if>
+	) awh1 
+	on ats.attn_date = awh1.work_date AND ats.employ_id = awh1.employ_id
+	where ats.del_flag = 0 and be.work_address_type = 0
+    <if test="departId != null" >
+        and bed.depart_id = #{departId,jdbcType=BIGINT}
+    </if>
+    <if test="startTime != null" >
+        and ats.attn_date &gt;= #{startTime,jdbcType=DATE}
+    </if>
+    <if test="endTime != null" >
+        and ats.attn_date &lt;= #{endTime,jdbcType=DATE}
+    </if>
+    <if test="empTypeIdList != null and empTypeIdList.size > 0" >
+        and be.emp_type_id in
+           <foreach collection="empTypeIdList" index="index" item="item" open="(" separator="," close=")">
+	           #{item}
+	       </foreach>
+    </if>
+	ORDER BY bd.name,be.code,ats.attn_date
+  </select>
+  
+  <select id="getYGKQMXReport" resultType="com.ule.oa.base.po.AttnStatistics">
+    SELECT 
+	   a.employ_id employId,a.attn_date attnDate,a.start_work_time startWorkTime,a.end_work_time endWorkTime,
+	   a.come_late_time comeLateTime,a.left_early_time leftEarlyTime,a.absenteeism_time absenteeismTime,
+	   a.must_attn_time mustAttnTime,a.all_attn_time allAttnTime,a.act_attn_time actAttnTime,
+	   a.lack_attn_time lackAttnTime,a.attn_status attnStatus,a.remark remark
+	FROM
+	  attn_statistics a 
+	WHERE a.attn_date &gt;= #{startTime,jdbcType=DATE}
+	  AND a.attn_date &lt;= #{endTime,jdbcType=DATE}
+	  ORDER BY a.attn_date
+  </select>
+  
+  <select id="getExistIdStatistics"  parameterType="com.ule.oa.base.po.AttnStatistics" resultType="java.lang.Long">
+      select ID from
+      attn_statistics
+      where del_flag = 0
+      <if test="employId != null" >
+        and employ_id = #{employId,jdbcType=BIGINT}
+      </if>
+      <if test="attnDate != null" >
+        and attn_date = #{attnDate,jdbcType=DATE}
+      </if>
+  </select>
+  
+  <select id="getEmpAttnMonthLack" resultType="Map">
+	  
+	SELECT be.code,be.cn_name,bd.id departId,bd.name departName,count(awh.work_date) total 
+	FROM base_employee be LEFT JOIN 
+	(SELECT DISTINCT employ_id,work_date FROM(
+	SELECT employ_id,work_date  <!-- 查询出每个员工每天请假的小时数 -->
+	from (SELECT employ_id,work_date, SUM(work_hours) work_hours FROM attn_work_hours where 
+	data_type not in (0,40,70) and del_flag = 0    <!-- 周园园提出，其中不包括外出的次数,异常申诉次数，类型70为外出 -->
+		    <if test="startTime != null" >
+		        and work_date &gt;= #{startTime,jdbcType=DATE}
+		    </if>
+		    <if test="endTime != null" >
+		        and work_date &lt;= #{endTime,jdbcType=DATE}
+		    </if>
+	GROUP BY employ_id,work_date
+	) a where work_hours &gt;= 3
+	UNION
+	SELECT employ_id,attn_date work_date FROM attn_statistics <!--  查询出每个员工每天旷工的小时数 -->
+	where absenteeism_time &gt; 0 and del_flag = 0
+		    <if test="startTime != null" >
+		        and attn_date &gt;= #{startTime,jdbcType=DATE}
+		    </if>
+		    <if test="endTime != null" >
+		        and attn_date &lt;= #{endTime,jdbcType=DATE}
+		    </if>)tbl )awh
+	ON be.id = awh.employ_id
+	LEFT JOIN base_emp_depart bed on be.id = bed.employee_id and bed.del_flag = 0
+	LEFT JOIN base_depart bd on bed.depart_id = bd.id and bd.del_flag = 0
+	where be.del_flag = 0
+	    <if test="departId != null" >
+	        and bed.depart_id = #{departId,jdbcType=BIGINT}
+	    </if>
+	    <if test="empTypeIdList != null and empTypeIdList.size > 0" >
+           and be.emp_type_id in
+           <foreach collection="empTypeIdList" index="index" item="item" open="(" separator="," close=")">
+	           #{item}
+	       </foreach>
+        </if>
+	GROUP BY be.code,be.cn_name,bd.id,bd.name
+	ORDER BY bd.name,be.code
+  </select>
+  
+  <select id="getEmpAttnMonthLackDetail" resultType="Map">
+  SELECT code,cn_name,departId,departName,positionName,workTypeName,className,attn_date,SUM(lateAndEarly) lateAndEarly,SUM(absenteeism_time) absenteeism_time,
+  CASE display_code WHEN 'comprehensive' THEN 
+  case when
+  SUM(must_attn_time) - SUM(all_attn_time) &lt; 0 then 0
+  else SUM(must_attn_time) - SUM(all_attn_time)
+  end
+  ELSE SUM(lack_attn_time) END lack_attn_time,
+  SUM(must_attn_time) must_attn_time,SUM(all_attn_time) all_attn_time,SUM(act_attn_time) act_attn_time,total_delay_hours,SUM(remove_absence_hours) deduct_hours,(SUM(act_attn_time)+SUM(remove_absence_hours)) after_deduct_act_attn_hours,(SUM(act_attn_time)+total_delay_hours) sum_attn_hours
+  FROM(
+  SELECT be.code,be.cn_name,bd.id departId,bd.name departName,bp.position_name positionName,scs.display_code,scs.display_name workTypeName,
+  sc.display_name className,
+  DATE_FORMAT(ats.attn_date,'%Y-%m') attn_date,
+	(ats.come_late_time+ats.left_early_time) lateAndEarly,CASE WHEN ats.must_attn_time&gt;=8 THEN (ats.absenteeism_time/480) 
+      WHEN ats.must_attn_time&lt;8 AND ats.must_attn_time&gt;0 THEN (ats.absenteeism_time/(ats.must_attn_time*60))
+      ELSE (ats.absenteeism_time/480) END absenteeism_time,ats.lack_attn_time,ats.must_attn_time,ats.all_attn_time,ats.act_attn_time,bedh.total_delay_hours,rsa.remove_absence_hours
+	FROM attn_statistics ats
+	INNER JOIN base_employee be on ats.employ_id = be.id and be.del_flag = 0
+	AND ats.attn_date BETWEEN DATE_FORMAT(IFNULL(be.first_Entry_time,'2000-12-1'),'%Y-%m-%d') AND DATE_FORMAT(IFNULL(be.Quit_time,'9999-12-1'),'%Y-%m-%d')
+	LEFT JOIN base_emp_depart bed on be.id = bed.employee_id and bed.del_flag = 0
+	LEFT JOIN base_depart bd on bed.depart_id = bd.id and bd.del_flag = 0
+	LEFT JOIN base_emp_position bep on be.id = bep.employee_id and bep.del_flag = 0
+	LEFT JOIN base_position bp on bep.position_id = bp.id and bp.del_flag = 0
+	LEFT JOIN sys_company_config scs on be.work_type = scs.id and scs.del_flag = 0
+ 	LEFT JOIN sys_config sc on be.whether_scheduling = sc.id and sc.del_flag = 0
+ 	LEFT JOIN base_emp_delay_hours bedh ON bedh.employee_id = ats.employ_id AND bedh.del_flag = 0 AND DATE_FORMAT(ats.attn_date,'%Y-%m') = DATE_FORMAT(bedh.delay_month,'%Y-%m')
+ 	LEFT JOIN remove_subordinate_absence rsa ON rsa.employee_id = ats.employ_id AND rsa.del_flag = 0 AND rsa.approal_status IN(200,600) AND rsa.attendance_date=ats.attn_date 
+	where ats.del_flag = 0 and ats.must_attn_time &lt;&gt; 0
+	    <if test="departId != null" >
+	        and bed.depart_id = #{departId,jdbcType=BIGINT}
+	    </if>
+	    <if test="startTime != null" >
+	        and ats.attn_date &gt;= #{startTime,jdbcType=DATE}
+	    </if>
+	    <if test="endTime != null" >
+	        and ats.attn_date &lt;= #{endTime,jdbcType=DATE}
+	    </if>
+	    <if test="empTypeIdList != null and empTypeIdList.size > 0" >
+           and be.emp_type_id in
+           <foreach collection="empTypeIdList" index="index" item="item" open="(" separator="," close=")">
+	           #{item}
+	       </foreach>
+        </if>
+  ) detail
+  GROUP BY code,cn_name,departId,departName,positionName,workTypeName,className,attn_date,display_code,total_delay_hours
+  ORDER BY departName,attn_date,code
+  </select>
+  
+  <select id="getAttnExReaminList" parameterType="com.ule.oa.base.po.AttnStatistics" resultType="com.ule.oa.base.po.AttnStatistics">
+  	select company_id companyId,employ_id employId,count(1) exTimes from attn_statistics 
+  	where attn_status = 1 
+  	and del_flag = 0
+  	and attn_date &gt;= #{startTime,jdbcType=DATE} 
+  	and attn_date &lt;= #{endTime,jdbcType=DATE}
+  	and employ_id in(
+		select id from base_employee where job_status = 0 and del_flag = 0 and work_address_type = 0
+		<if test="empTypeIdList != null and empTypeIdList.size > 0" >
+           and emp_type_id in
+           <foreach collection="empTypeIdList" index="index" item="item" open="(" separator="," close=")">
+	           #{item}
+	       </foreach>
+        </if>
+	)
+	and must_attn_time &gt; 0
+	group by company_id,employ_id
+  </select>
+  
+  <!-- 删除原出差单据增加的工时 -->
+  <update id="deleteOriginalBillWorkHour">
+  	update attn_work_hours
+  	set del_flag = 1
+  	where employ_id = #{employeeId}
+  	and data_type = 80
+  	and work_date  &gt;= #{startTime}
+  	and work_date &lt;= #{endTime}
+  </update>
+  
+  <select id="getActAttnTimeGroupByemployIds" resultType="com.ule.oa.base.po.AttnStatistics">
+  	  SELECT any_value(employ_id) AS employId,SUM(act_attn_time) AS actAttnTimeCount 
+      		FROM
+      	attn_statistics 
+		WHERE del_flag = 0
+		    AND attn_date&gt;=#{startDate,jdbcType=DATE}
+		    AND attn_date&lt;=#{endDate,jdbcType=DATE}
+			<if test="employIdList != null"> 
+		      and employ_id in 
+		      <foreach collection="employIdList" index="index" item="item" open="(" separator="," close=")">
+	               #{item}
+	          </foreach>
+		    </if>
+		GROUP BY employ_id
+  </select>
+  
+</mapper>

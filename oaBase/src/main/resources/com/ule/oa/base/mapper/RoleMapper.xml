@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ule.oa.base.mapper.RoleMapper" >
+  <resultMap id="BaseResultMap" type="com.ule.oa.base.po.Role" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="company_id" property="companyId" jdbcType="BIGINT"/>
+    <result column="role_name" property="roleName" jdbcType="VARCHAR" />
+    <result column="role_desc" property="roleDesc" jdbcType="VARCHAR" />
+    <result column="rank" property="rank" jdbcType="BIGINT" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="del_flag" property="delFlag" jdbcType="INTEGER" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="version" property="version" jdbcType="BIGINT" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    id, company_id,role_name, role_desc, rank, create_time, create_user, update_time, update_user, 
+    del_flag, remark, version
+  </sql>
+  
+  <select id="getById" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from sys_role
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  
+  <insert id="save" parameterType="com.ule.oa.base.po.Role" >
+  	<selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">
+		SELECT LAST_INSERT_ID() AS id
+	</selectKey>
+  
+    insert into sys_role
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="companyId != null">
+	  	company_id,
+	  </if>
+      <if test="roleName != null" >
+        role_name,
+      </if>
+      <if test="roleDesc != null" >
+        role_desc,
+      </if>
+      <if test="rank != null" >
+        rank,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="createUser != null" >
+        create_user,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+      <if test="updateUser != null" >
+        update_user,
+      </if>
+      <if test="delFlag != null" >
+        del_flag,
+      </if>
+      <if test="remark != null" >
+        remark,
+      </if>
+      <if test="version != null" >
+        version,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="companyId != null">
+	  	#{companyId,jdbcType=BIGINT},
+	  </if>
+      <if test="roleName != null" >
+        #{roleName,jdbcType=VARCHAR},
+      </if>
+      <if test="roleDesc != null" >
+        #{roleDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="rank != null" >
+        #{rank,jdbcType=BIGINT},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUser != null" >
+        #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUser != null" >
+        #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="delFlag != null" >
+        #{delFlag,jdbcType=INTEGER},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="version != null" >
+        #{version,jdbcType=BIGINT},
+      </if>
+    </trim>
+  </insert>
+  
+  <update id="updateById" parameterType="com.ule.oa.base.po.Role" >
+    update sys_role
+    <set >
+      <if test="companyId != null">
+	  	company_id = #{companyId,jdbcType=BIGINT},
+	  </if>
+      <if test="roleName != null" >
+        role_name = #{roleName,jdbcType=VARCHAR},
+      </if>
+      <if test="roleDesc != null" >
+        role_desc = #{roleDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="rank != null" >
+        rank = #{rank,jdbcType=BIGINT},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUser != null" >
+        create_user = #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="delFlag != null" >
+        del_flag = #{delFlag,jdbcType=INTEGER},
+      </if>
+      <if test="remark != null" >
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="version != null" >
+        version = #{version,jdbcType=BIGINT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+  <!-- 分页查询角色信息 -->
+  <select id="getPageList" parameterType="com.ule.oa.base.po.Role" resultType="com.ule.oa.base.po.Role">
+	  	select <include refid="Base_Column_List"/> from sys_role
+	  	<where>
+	     	and del_flag !=1
+	        <if test="delFlag != null">
+		  		and del_flag = #{delFlag,jdbcType=INTEGER}
+		  	</if>
+		  	<if test="companyId != null">
+		  		and company_id = #{companyId,jdbcType=BIGINT}
+		  	</if>
+	  		<if test="roleName != null and roleName != ''">
+	  			and role_name like concat('%',#{roleName,jdbcType=VARCHAR},'%')
+	  		</if>
+  		</where>
+  		order by id desc limit #{offset},#{limit}
+  </select>
+  
+  <!-- 查询部门职位总记录数 -->
+  <select id="getCount" parameterType="com.ule.oa.base.po.Role" resultType="java.lang.Integer">
+	  	select count(1) from sys_role
+	  	<where>
+	     	and del_flag !=1
+	  		<if test="delFlag != null">
+		  		and del_flag = #{delFlag,jdbcType=INTEGER}
+		  	</if>
+		  	<if test="companyId != null">
+		  		and company_id = #{companyId,jdbcType=BIGINT}
+		  	</if>
+	  		<if test="roleName != null and roleName != ''">
+	  			and role_name like concat('%',#{roleName,jdbcType=VARCHAR},'%')
+	  		</if>
+  		</where>
+  </select>
+  
+  <select id="getListByCondition" parameterType="com.ule.oa.base.po.Role" resultMap="BaseResultMap">
+  	select <include refid="Base_Column_List"/> from sys_role
+  	where del_flag = 0
+  	<if test="id != null">
+  		and id = #{id,jdbcType=BIGINT}
+  	</if>
+  	<if test="companyId != null">
+  		and company_id = #{companyId,jdbcType=BIGINT}
+  	</if>
+	<if test="roleName != null and roleName != ''">
+		and role_name like concat('%',#{roleName,jdbcType=VARCHAR},'%')
+	</if>
+	<if test="unRoleName != null and unRoleName != ''">
+		and role_name = #{unRoleName,jdbcType=VARCHAR}
+	</if>
+  </select>
+</mapper>

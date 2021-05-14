@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ule.oa.base.mapper.AttnReportMapper" >
+
+	<insert id="save" parameterType="com.ule.oa.base.po.tbl.AttnReportTbl" useGeneratedKeys="true" keyProperty="id">
+	    insert into attn_report (employee_id,employee_name,employee_code,depart_id,depart_name,
+	      position_name,work_type,statistic_type,report_type,create_time,create_user,del_flag)
+		values(#{employeeId,jdbcType=BIGINT},#{employeeName,jdbcType=VARCHAR},#{employeeCode,jdbcType=VARCHAR}, 
+		      #{departId,jdbcType=BIGINT}, #{departName,jdbcType=VARCHAR}, #{positionName,jdbcType=VARCHAR},
+		      #{workType,jdbcType=VARCHAR},#{statisticType,jdbcType=INTEGER},#{reportType,jdbcType=INTEGER},
+		      now(), #{createUser,jdbcType=VARCHAR},0
+	      )
+	      <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">
+	            SELECT LAST_INSERT_ID() AS id
+	       </selectKey> 
+	 </insert>
+	  
+	 <select id="getDinnerAndTrafficAllowanceDay" resultType="com.ule.oa.base.po.tbl.AttnReportTbl">
+   		 SELECT 
+			  a.id as id, a.employee_id as employeeId
+			FROM
+			  attn_report a 
+			  LEFT JOIN attn_report_dinner_and_traffic_allowance_day b 
+			    ON a.id = b.report_id 
+		 WHERE a.del_flag = 0 AND b.del_flag = 0 
+			      AND a.employee_id = #{employeeId,jdbcType=BIGINT} 
+                  AND b.attn_date &gt;= #{startDate,jdbcType=DATE}
+                  AND b.attn_date &lt;= #{endDate,jdbcType=DATE}
+                  limit 0,1
+     </select>
+     
+     <update id="deleteById">
+      	update attn_report set del_flag=1,update_user=#{updateUser},update_time = now() 
+      	where del_flag=0 and id = #{id}
+     </update>
+     
+     <select id="getDinnerAndTrafficAllowanceMonthDetail" resultType="Map">
+   		 SELECT 
+			  a.employee_name employeeName,a.employee_code employeeCode,a.depart_name departName,
+			  a.position_name positionName,a.work_type workType,b.attn_date attnDate,b.week week
+			  ,b.attn_class attnClass,b.off_duty_time offDutyTime,b.overtime_hours overtimeHours,
+			  b.dinner_allowance dinnerAllowance,b.traffic_allowance trafficAllowance
+			FROM
+			  attn_report a 
+			  LEFT JOIN attn_report_dinner_and_traffic_allowance_day b 
+			    ON a.id = b.report_id 
+			  LEFT JOIN base_employee e 
+			    ON a.employee_id = e.id
+			WHERE a.del_flag = 0 AND b.del_flag=0 AND e.del_flag=0
+			  AND b.attn_date &gt;= #{startDate,jdbcType=DATE}
+			  AND b.attn_date &lt;= #{endDate,jdbcType=DATE} 
+  		ORDER BY e.emp_type_id,CAST(SUBSTRING(a.employee_code, 3) AS SIGNED),b.attn_date
+     </select>
+     
+     <select id="getDinnerAllowanceMonthSummary" resultType="Map">
+   		 SELECT 
+		  any_value(a.employee_name) employeeName,any_value(a.employee_code) employeeCode,
+		  any_value(a.depart_name) departName,any_value(a.position_name) positionName,
+		  any_value(a.work_type) workType,DATE_FORMAT(b.attn_date,'%Y-%m') month,
+		  SUM(b.dinner_allowance) dinnerCount
+		FROM
+		  attn_report a 
+		  LEFT JOIN attn_report_dinner_and_traffic_allowance_day b 
+		    ON a.id = b.report_id 
+		  LEFT JOIN base_employee e 
+		    ON a.employee_id = e.id
+		WHERE a.del_flag = 0 AND b.del_flag=0 AND e.del_flag=0
+		  AND b.attn_date &gt;= #{startDate,jdbcType=DATE}
+		  AND b.attn_date &lt;= #{endDate,jdbcType=DATE} 
+		  <if test="departId != null" >
+       		 AND a.depart_id = #{departId,jdbcType=BIGINT}
+          </if>
+		  GROUP BY a.employee_id,month 
+		  ORDER BY max(e.emp_type_id),CAST(SUBSTRING(max(a.employee_code), 3) AS SIGNED)
+     </select>
+     
+     <select id="getTrafficAllowanceMonthSummary" resultType="com.ule.oa.base.po.TrafficAllowanceMonthSummaryDTO">
+   		 SELECT 
+		  CONCAT(a.employee_code,DATE_FORMAT(b.attn_date,'%Y-%m')) codeAndMonth,
+		  count(b.traffic_allowance) trafficCount
+		FROM
+		  attn_report a 
+		  LEFT JOIN attn_report_dinner_and_traffic_allowance_day b 
+		    ON a.id = b.report_id 
+		  LEFT JOIN base_employee e 
+		    ON a.employee_id = e.id
+		WHERE a.del_flag = 0 AND b.del_flag=0 AND e.del_flag=0
+		  AND b.attn_date &gt;= #{startDate,jdbcType=DATE}
+		  AND b.attn_date &lt;= #{endDate,jdbcType=DATE} 
+		  AND b.traffic_allowance = #{trafficAllowance,jdbcType=VARCHAR} 
+		  <if test="departId != null" >
+       		 AND a.depart_id = #{departId,jdbcType=BIGINT}
+          </if>
+		  GROUP BY codeAndMonth
+		  ORDER BY max(e.emp_type_id),CAST(SUBSTRING(max(a.employee_code), 3) AS SIGNED)
+     </select>
+     
+</mapper>

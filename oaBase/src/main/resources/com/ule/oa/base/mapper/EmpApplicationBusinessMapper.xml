@@ -1,0 +1,793 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ule.oa.base.mapper.EmpApplicationBusinessMapper" >
+
+  <resultMap id="BaseResultMap" type="com.ule.oa.base.po.EmpApplicationBusiness" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="EMPLOYEE_ID" property="employeeId" jdbcType="BIGINT" />
+    <result column="CN_NAME" property="cnName" jdbcType="VARCHAR" />
+    <result column="code" property="code" jdbcType="VARCHAR" />
+    <result column="DEPART_ID" property="departId" jdbcType="BIGINT" />
+    <result column="DEPART_NAME" property="departName" jdbcType="VARCHAR" />
+    <result column="POSITION_NAME" property="positionName" jdbcType="VARCHAR" />
+    <result column="POSITION_ID" property="positionId" jdbcType="BIGINT" />
+    <result column="SUBMIT_DATE" property="submitDate" jdbcType="TIMESTAMP" />
+    <result column="START_TIME" property="startTime" jdbcType="TIMESTAMP" />
+    <result column="END_TIME" property="endTime" jdbcType="TIMESTAMP" />
+    <result column="DURATION" property="duration" jdbcType="DOUBLE" />
+    <result column="VEHICLE" property="vehicle" jdbcType="BIGINT" />
+    <result column="BUSINESS_TYPE" property="businessType" jdbcType="BIGINT" />
+    <result column="address" property="address" jdbcType="VARCHAR" />
+    <result column="REASON" property="reason" jdbcType="VARCHAR" />
+    <result column="Approval_status" property="approvalStatus" jdbcType="BIGINT" />
+    <result column="Approval_report_status" property="approvalReportStatus" jdbcType="BIGINT" />
+    <result column="approval_Reason" property="approvalReason" jdbcType="VARCHAR" />
+    <result column="VERSION" property="version" jdbcType="VARCHAR" />
+    <result column="del_flag" property="delFlag" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="PROCESSINSTANCE_ID" property="processinstanceId" jdbcType="VARCHAR" />
+    <result column="PROCESSINSTANCE_REPORT_ID" property="processinstanceReportId" jdbcType="VARCHAR" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+ 	id,EMPLOYEE_ID,CN_NAME,code,DEPART_ID,DEPART_NAME,POSITION_NAME,POSITION_ID,SUBMIT_DATE,START_TIME,END_TIME,DURATION,
+    VEHICLE,BUSINESS_TYPE,address,REASON,Approval_status,Approval_report_status,approval_Reason,VERSION,del_flag,create_time,create_user,update_time
+    ,update_user,PROCESSINSTANCE_ID,PROCESSINSTANCE_REPORT_ID,ORIGINAL_BILL_ID,remark,
+    start_city_address,start_province_address,end_city_address,end_province_address,
+    travel_province1,travel_city1,travel_province2,travel_city2,travel_province3,travel_city3,travel_province4,travel_city4,travel_province5,travel_city5
+  </sql>
+  
+  <select id="getById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+  	select <include refid="Base_Column_List"/> from base_emp_application_business
+  	where id = #{id,jdbcType=BIGINT}
+  </select>
+  
+  <insert id="save" parameterType="com.ule.oa.base.po.EmpApplicationBusiness" useGeneratedKeys="true" keyProperty="id">
+    insert into base_emp_application_business (
+      EMPLOYEE_ID,
+      CN_NAME,
+      code,
+      DEPART_ID,
+      DEPART_NAME,
+      POSITION_ID,
+      POSITION_NAME,
+      SUBMIT_DATE,
+      START_TIME,
+      END_TIME,
+      DURATION,
+      VEHICLE,
+      BUSINESS_TYPE,
+      address,
+      REASON,
+      Approval_status,
+      VERSION,
+      create_time,
+      create_user,  
+      del_flag,
+      PROCESSINSTANCE_ID,
+      PROCESSINSTANCE_REPORT_ID,
+      ORIGINAL_BILL_ID,
+      travel_province1,
+      travel_city1,
+      travel_province2,
+      travel_city2,
+      travel_province3,
+      travel_city3,
+      travel_province4,
+      travel_city4,
+      travel_province5,      
+      travel_city5,
+      start_province_address,
+      start_city_address,
+      end_province_address,
+      end_city_address,
+      remark
+      )
+    values (
+      #{employeeId,jdbcType=BIGINT},
+      #{cnName,jdbcType=VARCHAR}, 
+      #{code,jdbcType=VARCHAR}, 
+      #{departId,jdbcType=BIGINT},
+      #{departName,jdbcType=VARCHAR}, 
+      #{positionId,jdbcType=BIGINT},
+      #{positionName,jdbcType=VARCHAR}, 
+      #{submitDate,jdbcType=TIMESTAMP}, 
+      #{startTime,jdbcType=TIMESTAMP}, 
+      #{endTime,jdbcType=TIMESTAMP}, 
+      #{duration,jdbcType=DOUBLE},
+      #{vehicle,jdbcType=BIGINT},
+      #{businessType,jdbcType=BIGINT},
+      #{address,jdbcType=VARCHAR}, 
+      #{reason,jdbcType=VARCHAR}, 
+      #{approvalStatus,jdbcType=BIGINT},
+      #{version,jdbcType=VARCHAR}, 
+      #{createTime,jdbcType=TIMESTAMP}, 
+      #{createUser,jdbcType=VARCHAR},
+      #{delFlag,jdbcType=INTEGER},
+      #{processinstanceId,jdbcType=VARCHAR},
+      #{processinstanceReportId,jdbcType=VARCHAR},
+      #{originalBillId,jdbcType=BIGINT},
+      #{travelProvince1,jdbcType=VARCHAR},
+      #{travelCity1,jdbcType=VARCHAR},
+      #{travelProvince2,jdbcType=VARCHAR},
+      #{travelCity2,jdbcType=VARCHAR},
+      #{travelProvince3,jdbcType=VARCHAR},
+      #{travelCity3,jdbcType=VARCHAR},
+      #{travelProvince4,jdbcType=VARCHAR},
+      #{travelCity4,jdbcType=VARCHAR},
+      #{travelProvince5,jdbcType=VARCHAR},
+      #{travelCity5,jdbcType=VARCHAR},
+      #{startProvinceAddress,jdbcType=VARCHAR},
+      #{startCityAddress,jdbcType=VARCHAR},
+      #{endProvinceAddress,jdbcType=VARCHAR},
+      #{endCityAddress,jdbcType=VARCHAR},
+      #{remark,jdbcType=VARCHAR}
+      )
+  </insert>
+  
+  <update id="updateById" parameterType="com.ule.oa.base.po.EmpApplicationBusiness" >
+    update base_emp_application_business
+    <set >
+      <if test="approvalStatus != null" >
+        Approval_status = #{approvalStatus,jdbcType=BIGINT},
+      </if>
+      <if test="approvalReportStatus != null" >
+        Approval_report_status = #{approvalReportStatus,jdbcType=BIGINT},
+      </if>
+      <if test="approvalReason != null and approvalReason !=''" >
+        approval_Reason = #{approvalReason,jdbcType=VARCHAR},
+      </if>
+      <if test="version != null and version !=''" >
+        version = #{version,jdbcType=VARCHAR},
+      </if>
+      <if test="delFlag != null" >
+        del_flag = #{delFlag,jdbcType=INTEGER},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="processinstanceId != null" >
+        PROCESSINSTANCE_ID = #{processinstanceId,jdbcType=VARCHAR},
+      </if>
+      <if test="processinstanceReportId != null" >
+        PROCESSINSTANCE_REPORT_ID = #{processinstanceReportId,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        remark = #{remark,jdbcType=VARCHAR}
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+  <!-- 分页查询报表 -->
+  <select id="getReportPageList" parameterType="com.ule.oa.base.po.EmpApplicationBusiness" resultType="com.ule.oa.base.po.EmpApplicationBusiness">
+	 select ab.id,ab.code,ab.cn_name cnName,ab.depart_id departId,ab.depart_name departName,ab.position_id positionId,ab.position_name positionName,ab.remark,
+	 cc.display_name workType,ab.start_time startTime,ab.end_time endTime,be.id employeeId,ab.processInstance_id processInstanceId,ab.processInstance_report_id processInstanceReportId,
+	 ab.duration,ab.address,ab.vehicle,ab.reason,ab.submit_date submitDate,'' auditUser,ab.approval_status approvalStatus,
+	 case ab.approval_status when 100 then '待审批' when 200 then '已审批' when 300 then '已拒' when 400 then '撤销' when 500 then '失效' when 600 then '失效同意' when 700 then '失效拒绝'  else '' end approvalStatusDesc
+	 from base_emp_application_business ab
+	 left join base_employee be
+	 on ab.employee_id = be.id
+	 left join sys_company_config cc
+	 on be.work_type = cc.id
+	 <where>
+  		and ab.del_flag = 0
+  		<if test="address !=null and address!=''">
+  			and ab.address like concat('%',#{address,jdbcType=VARCHAR},'%')
+  		</if>		
+	  	<if test="code != null and code != ''">
+	  		and ab.code like concat('%',#{code,jdbcType=VARCHAR},'%')
+	  	</if>
+  		<if test="cnName != null and cnName != ''">
+  			and ab.cn_name like concat('%',#{cnName,jdbcType=VARCHAR},'%')
+  		</if>
+  		<if test="departId != null and departId != ''">
+  			and ab.depart_id = #{departId,jdbcType=BIGINT}
+  		</if>
+  		<if test="departList != null and departList.size > 0">
+  			and ab.depart_id in
+  			<foreach collection="departList" item="departId" open="(" separator="," close=")">
+  				#{departId,jdbcType=BIGINT}
+  			</foreach>
+  		</if>
+  		<if test="workType != null and workType != ''">
+  			and be.work_type = #{workType,jdbcType=BIGINT}
+  		</if>
+  		<if test="empTypeId != null and empTypeId != ''">
+  			and be.emp_type_id = #{empTypeId,jdbcType=BIGINT}
+  		</if>
+  		<if test="whetherScheduling != null and whetherScheduling != ''">
+  			and be.whether_scheduling = #{whetherScheduling,jdbcType=BIGINT}
+  		</if>  			
+	  	<if test="startTime != null and endTime != null"> 
+		 and(	
+				(
+					start_time &gt;= #{startTime,jdbcType=BIGINT} and start_time &lt;= #{endTime,jdbcType=BIGINT}
+				)or 						<!--开始时间是否包含在其他时间段-->
+				(
+					start_time &lt;= #{startTime,jdbcType=BIGINT} and end_time &gt;= #{endTime,jdbcType=BIGINT}
+				)or							<!-- 开始时间和结束时间在外的都包括 外包-->
+				(
+					end_time &gt;= #{startTime,jdbcType=BIGINT} and end_time &lt;= #{endTime,jdbcType=BIGINT}
+				)or(						<!-- 结束时间是否包含在其他时间段-->
+					start_time &gt;= #{startTime,jdbcType=BIGINT} and end_time &lt;= #{endTime,jdbcType=BIGINT}
+				)								<!-- 开始时间和结束时间内-->
+			)
+	  	</if>
+	  	<if test="assignee != null and assignee != ''" >
+	        and PROCESSINSTANCE_ID in (select DISTINCT
+				* 
+			FROM
+				(
+			SELECT
+				rt.PROC_INST_ID_ 
+			FROM
+				ACT_RU_IDENTITYLINK ri
+				LEFT JOIN ACT_RU_TASK rt ON ri.TASK_ID_ = rt.ID_ 
+			WHERE
+				ri.TYPE_ = 'candidate' 
+				AND ri.USER_ID_ = #{assignee,jdbcType=VARCHAR}
+				
+				UNION ALL
+				
+			SELECT
+				PROC_INST_ID_ 
+			FROM
+				ACT_RU_TASK 
+			WHERE
+				ASSIGNEE_ = #{assignee,jdbcType=VARCHAR}
+				) instance_id
+				)
+        </if>
+  		<if test="approvalStatus != null and approvalStatus != ''" >
+	        and approval_status = #{approvalStatus,jdbcType=BIGINT}
+        </if>
+        <if test="approvalReportStatus != null and approvalReportStatus != ''" >
+	        and approval_report_status = #{approvalReportStatus,jdbcType=BIGINT}
+        </if>
+        
+        <if test="vehicle != null and vehicle != ''" >
+	        and vehicle = #{vehicle,jdbcType=BIGINT}
+        </if>
+        <if test="currentUserDepart != null and currentUserDepart.size > 0">
+			and be.id in
+			<foreach collection="currentUserDepart" item="ids" open="(" separator="," close=")">
+				#{ids,jdbcType=BIGINT}
+			</foreach>
+		</if>
+		<if test="subEmployeeIdList != null and subEmployeeIdList.size > 0">
+			and be.id in
+			<foreach collection="subEmployeeIdList" item="ids" open="(" separator="," close=")">
+				#{ids,jdbcType=BIGINT}
+			</foreach>
+		</if>
+	</where>
+	order by ab.submit_date desc,convert(be.cn_name using gbk) collate gbk_chinese_ci asc 
+	<if test="offset != null and limit != null">
+		limit #{offset},#{limit}
+	</if>
+  </select>
+  
+  <!-- 查询报表总记录数 -->
+  <select id="getReportCount" parameterType="com.ule.oa.base.po.EmpApplicationBusiness" resultType="java.lang.Integer">
+  	select count(1) from base_emp_application_business ab
+	 left join base_employee be
+	 on ab.employee_id = be.id
+	 left join sys_company_config cc
+	 on be.work_type = cc.id
+	<where>
+		and ab.del_flag = 0
+		<if test="address !=null and address!=''">
+  			and ab.address like concat('%',#{address,jdbcType=VARCHAR},'%')
+  		</if>		
+	  	<if test="code != null and code != ''">
+	  		and ab.code like concat('%',#{code,jdbcType=VARCHAR},'%')
+	  	</if>
+  		<if test="cnName != null and cnName != ''">
+  			and ab.cn_name like concat('%',#{cnName,jdbcType=VARCHAR},'%')
+  		</if>
+  		<if test="departId != null and departId != ''">
+  			and ab.depart_id = #{departId,jdbcType=BIGINT}
+  		</if>
+  		<if test="departList != null and departList.size > 0">
+  			and ab.depart_id in
+  			<foreach collection="departList" item="departId" open="(" separator="," close=")">
+  				#{departId,jdbcType=BIGINT}
+  			</foreach>
+  		</if>
+  		<if test="workType != null and workType != ''">
+  			and be.work_type = #{workType,jdbcType=BIGINT}
+  		</if>
+  		<if test="empTypeId != null and empTypeId != ''">
+  			and be.emp_type_id = #{empTypeId,jdbcType=BIGINT}
+  		</if>
+  		<if test="whetherScheduling != null and whetherScheduling != ''">
+  			and be.whether_scheduling = #{whetherScheduling,jdbcType=BIGINT}
+  		</if>
+  		<if test="startTime != null and endTime != null"> 
+		 and(	
+				(
+					start_time &gt;= #{startTime,jdbcType=BIGINT} and start_time &lt;= #{endTime,jdbcType=BIGINT}
+				)or 						<!--开始时间是否包含在其他时间段-->
+				(
+					start_time &lt;= #{startTime,jdbcType=BIGINT} and end_time &gt;= #{endTime,jdbcType=BIGINT}
+				)or							<!-- 开始时间和结束时间在外的都包括 外包-->
+				(
+					end_time &gt;= #{startTime,jdbcType=BIGINT} and end_time &lt;= #{endTime,jdbcType=BIGINT}
+				)or(						<!-- 结束时间是否包含在其他时间段-->
+					start_time &gt;= #{startTime,jdbcType=BIGINT} and end_time &lt;= #{endTime,jdbcType=BIGINT}
+				)								<!-- 开始时间和结束时间内-->
+			)
+	  	</if>
+  		<if test="approvalStatus != null and approvalStatus != ''" >
+	        and approval_status = #{approvalStatus,jdbcType=BIGINT}
+        </if>
+        <if test="vehicle != null and vehicle != ''" >
+	        and vehicle = #{vehicle,jdbcType=BIGINT}
+        </if>
+        <if test="assignee != null and assignee != ''" >
+	        and PROCESSINSTANCE_ID in (select DISTINCT
+				* 
+			FROM
+				(
+			SELECT
+				rt.PROC_INST_ID_ 
+			FROM
+				ACT_RU_IDENTITYLINK ri
+				LEFT JOIN ACT_RU_TASK rt ON ri.TASK_ID_ = rt.ID_ 
+			WHERE
+				ri.TYPE_ = 'candidate' 
+				AND ri.USER_ID_ = #{assignee,jdbcType=VARCHAR}
+				
+				UNION ALL
+				
+			SELECT
+				PROC_INST_ID_ 
+			FROM
+				ACT_RU_TASK 
+			WHERE
+				ASSIGNEE_ = #{assignee,jdbcType=VARCHAR}
+				) instance_id
+				)
+        </if>
+        <if test="currentUserDepart != null and currentUserDepart.size > 0">
+			and be.id in
+			<foreach collection="currentUserDepart" item="ids" open="(" separator="," close=")">
+				#{ids,jdbcType=BIGINT}
+			</foreach>
+		</if>
+		<if test="subEmployeeIdList != null and subEmployeeIdList.size > 0">
+			and be.id in
+			<foreach collection="subEmployeeIdList" item="ids" open="(" separator="," close=")">
+				#{ids,jdbcType=BIGINT}
+			</foreach>
+		</if>
+     </where>
+  </select>
+  <select id="queryByProcessId" resultMap="BaseResultMap">
+	  	select <include refid="Base_Column_List"/> from base_emp_application_business
+	  	where PROCESSINSTANCE_ID = #{processId,jdbcType=BIGINT}
+  </select>
+  <select id="queryByReportProcessId" resultMap="BaseResultMap">
+	  	select <include refid="Base_Column_List"/> from base_emp_application_business
+	  	where PROCESSINSTANCE_REPORT_ID = #{processId,jdbcType=BIGINT}
+  </select>	  
+  <select id="getUpdateBill" resultMap="BaseResultMap">
+  		SELECT <include refid="Base_Column_List"/> FROM base_emp_application_business WHERE ORIGINAL_BILL_ID = #{originalBillId}
+  		AND DEL_FLAG = 0 limit 1
+  </select>
+  
+  <select id="getUnCompleteReportList" resultMap="BaseResultMap">
+	 select  <include refid="Base_Column_List"/> from base_emp_application_business
+	    where del_flag = 0
+		and approval_report_status in (0,100)
+  </select>
+  
+  <select id="getUserGroupList"  parameterType="com.ule.oa.base.po.EmpApplicationBusiness" resultType="com.ule.oa.base.po.EmpApplicationBusiness" >
+  	select any_value(employee_id) as employeeId,any_value(cn_name) as cnName,any_value(bab.depart_name) as departName ,any_value(1) as peopleNum, COUNT(EMPLOYEE_ID) as frequencyNum,SUM(bab.duration) as duration FROM base_emp_application_business bab
+	where del_flag=0 and YEAR(START_TIME)=#{year,jdbcType=BIGINT} and APPROVAL_STATUS in (200,600)
+	<if test="cnName != null and cnName != ''">
+  		and cn_name like concat('%',#{cnName,jdbcType=VARCHAR},'%')
+  	</if>
+	GROUP BY EMPLOYEE_ID
+  </select>
+  <select id="getUserGroupListCount"  parameterType="com.ule.oa.base.po.EmpApplicationBusiness" resultType="java.lang.Integer" >
+ 	select count(1) from(
+		select count(1) FROM base_emp_application_business bab
+		where del_flag=0 and YEAR(START_TIME)=#{year,jdbcType=BIGINT} and APPROVAL_STATUS in (200,600)
+		<if test="cnName != null and cnName != ''">
+  		and cn_name like concat('%',#{cnName,jdbcType=VARCHAR},'%')
+  	</if>
+		GROUP BY EMPLOYEE_ID
+	)temp
+ </select>  
+  
+  
+  
+  
+  <select id="getDepartGroupList"  parameterType="com.ule.oa.base.po.EmpApplicationBusiness" resultType="com.ule.oa.base.po.EmpApplicationBusiness" >
+  	select T1.v1 as departName,T1.v2 as frequencyNum,T1.v3 as duration,T2.v4 as peopleNum,T1.DEPART_ID as departId from 
+	(select any_value(bab.depart_name) as v1 ,count(bab.EMPLOYEE_ID)as v2,SUM(bab.duration) as v3,DEPART_ID FROM base_emp_application_business bab
+	where del_flag=0 and YEAR(START_TIME)=#{year,jdbcType=BIGINT} and APPROVAL_STATUS in (200,600)
+	<if test="departId != null">
+  		and depart_id = #{departId,jdbcType=BIGINT}
+  	</if>
+	 GROUP BY DEPART_ID)T1,
+	(
+	select count(1) AS v4,v2 as DEPART_ID from (
+		select count(employee_id) as v1,any_value(depart_id) as v2 from base_emp_application_business 
+		where del_flag=0 and YEAR(START_TIME)=#{year,jdbcType=BIGINT}  and APPROVAL_STATUS in (200,600)
+		<if test="departId != null">
+	 		and depart_id = #{departId,jdbcType=BIGINT}
+	 	</if>
+		GROUP BY employee_id
+	)temp GROUP BY v2
+	) T2
+	where T2.DEPART_ID=T1.DEPART_ID
+  </select>
+
+  <select id="getDepartGroupListCount" parameterType="com.ule.oa.base.po.EmpApplicationBusiness" resultType="java.lang.Integer">
+  	select count(1) from(
+	select T1.v1 as departName,T1.v2 as peopleNum,T1.v3 as duration,T2.v4 as frequencyNum from
+	(select any_value(bab.depart_name) as v1 ,count(bab.EMPLOYEE_ID)as v2,SUM(bab.duration) as v3,DEPART_ID FROM base_emp_application_business bab
+	where del_flag=0 and YEAR(START_TIME)=#{year,jdbcType=BIGINT} and APPROVAL_STATUS in (200,600)
+	<if test="departId != null">
+  		and depart_id = #{departId,jdbcType=BIGINT}
+  	</if>
+	GROUP BY DEPART_ID)T1,
+	(select COUNT(id) as v4,DEPART_ID FROM base_emp_application_business bap
+	where del_flag=0 and YEAR(START_TIME)=#{year,jdbcType=BIGINT} and APPROVAL_STATUS in (200,600)
+	<if test="departId != null">
+  		and depart_id = #{departId,jdbcType=BIGINT}
+  	</if>
+	GROUP BY DEPART_ID)T2
+	where T2.DEPART_ID=T1.DEPART_ID   
+	)temp
+  </select>  
+  
+  
+  
+  <select id="getYearGroupList"  parameterType="com.ule.oa.base.po.EmpApplicationBusiness" resultType="com.ule.oa.base.po.EmpApplicationBusiness" >
+  	select COUNT(bab.id) as frequencyNum,SUM(bab.duration) as duration,
+	(SELECT
+	  COUNT(v4)FROM
+	(
+	select COUNT(EMPLOYEE_ID) as v4 FROM base_emp_application_business ba
+	left JOIN base_employee be on be.id=ba.EMPLOYEE_ID
+	where ba.del_flag=0 and  YEAR(START_TIME)=#{year,jdbcType=BIGINT} and APPROVAL_STATUS in (200,600)
+		<if test="currentUserDepart != null and currentUserDepart.size > 0">
+			and be.id in
+			<foreach collection="currentUserDepart" item="ids" open="(" separator="," close=")">
+				#{ids,jdbcType=BIGINT}
+			</foreach>
+		</if>
+	GROUP BY EMPLOYEE_ID
+	)
+	temp) as peopleNum
+		FROM base_emp_application_business bab 
+	left JOIN base_employee bee on bee.id=bab.EMPLOYEE_ID
+	where bab.del_flag=0  and  YEAR(START_TIME)=#{year,jdbcType=BIGINT} and APPROVAL_STATUS in (200,600)
+		<if test="currentUserDepart != null and currentUserDepart.size > 0">
+			and bee.id in
+			<foreach collection="currentUserDepart" item="ids" open="(" separator="," close=")">
+				#{ids,jdbcType=BIGINT}
+			</foreach>
+		</if>
+	GROUP BY YEAR(START_TIME)=#{year,jdbcType=BIGINT}
+  </select>
+  
+  <select id="getAdreessGroupList"  parameterType="com.ule.oa.base.po.EmpApplicationBusiness" resultType="com.ule.oa.base.po.EmpApplicationBusiness" >  
+   select count(1) as frequencyNum ,SUM(duration) as duration,
+	(select count(v1) from(
+	select be.id as v1 from base_emp_application_business bab
+	left join base_employee be on  be.id=bab.employee_id
+	where 
+	    travel_city1 = #{address,jdbcType=VARCHAR} and bab.del_flag=0 and  YEAR(START_TIME)=#{year,jdbcType=BIGINT}	and APPROVAL_STATUS in (200,600)
+		<if test="currentUserDepart != null and currentUserDepart.size > 0"> and be.id in <foreach collection="currentUserDepart" item="ids" open="(" separator="," close=")"> #{ids,jdbcType=BIGINT} </foreach> </if>
+		OR travel_city2 = #{address,jdbcType=VARCHAR} and bab.del_flag=0 and  YEAR(START_TIME)=#{year,jdbcType=BIGINT}	and APPROVAL_STATUS in (200,600)
+		<if test="currentUserDepart != null and currentUserDepart.size > 0"> and be.id in <foreach collection="currentUserDepart" item="ids" open="(" separator="," close=")"> #{ids,jdbcType=BIGINT} </foreach> </if>
+		OR travel_city3 = #{address,jdbcType=VARCHAR} and bab.del_flag=0 and  YEAR(START_TIME)=#{year,jdbcType=BIGINT}	and APPROVAL_STATUS in (200,600)
+		<if test="currentUserDepart != null and currentUserDepart.size > 0"> and be.id in <foreach collection="currentUserDepart" item="ids" open="(" separator="," close=")"> #{ids,jdbcType=BIGINT} </foreach> </if>
+		OR travel_city4 = #{address,jdbcType=VARCHAR} and bab.del_flag=0 and  YEAR(START_TIME)=#{year,jdbcType=BIGINT}	and APPROVAL_STATUS in (200,600)
+		<if test="currentUserDepart != null and currentUserDepart.size > 0"> and be.id in <foreach collection="currentUserDepart" item="ids" open="(" separator="," close=")"> #{ids,jdbcType=BIGINT} </foreach> </if>
+	GROUP BY be.id  ) str
+	) as peopleNum
+	 from base_emp_application_business ba left join base_employee be on  be.id=ba.employee_id
+	where 
+       travel_city1 = #{address,jdbcType=VARCHAR} and ba.del_flag=0 and  YEAR(START_TIME)=#{year,jdbcType=BIGINT}	and APPROVAL_STATUS in (200,600)
+	<if test="currentUserDepart != null and currentUserDepart.size > 0"> and be.id in <foreach collection="currentUserDepart" item="ids" open="(" separator="," close=")"> #{ids,jdbcType=BIGINT} </foreach> </if>
+	OR travel_city2 = #{address,jdbcType=VARCHAR} and ba.del_flag=0 and  YEAR(START_TIME)=#{year,jdbcType=BIGINT}	and APPROVAL_STATUS in (200,600)
+	<if test="currentUserDepart != null and currentUserDepart.size > 0"> and be.id in <foreach collection="currentUserDepart" item="ids" open="(" separator="," close=")"> #{ids,jdbcType=BIGINT} </foreach> </if>
+	OR travel_city3 = #{address,jdbcType=VARCHAR} and ba.del_flag=0 and  YEAR(START_TIME)=#{year,jdbcType=BIGINT}	and APPROVAL_STATUS in (200,600)
+	<if test="currentUserDepart != null and currentUserDepart.size > 0"> and be.id in <foreach collection="currentUserDepart" item="ids" open="(" separator="," close=")"> #{ids,jdbcType=BIGINT} </foreach> </if>
+	OR travel_city4 = #{address,jdbcType=VARCHAR} and ba.del_flag=0 and  YEAR(START_TIME)=#{year,jdbcType=BIGINT}	and APPROVAL_STATUS in (200,600)
+	<if test="currentUserDepart != null and currentUserDepart.size > 0"> and be.id in <foreach collection="currentUserDepart" item="ids" open="(" separator="," close=")"> #{ids,jdbcType=BIGINT} </foreach> </if>
+  </select>
+  
+  
+  
+  <select id="myTaskList"  parameterType="com.ule.oa.base.po.EmpApplicationBusiness" resultType="com.ule.oa.base.po.EmpApplicationBusiness" >
+  	 SELECT DISTINCT ab.id,ab.code,ab.cn_name cnName,ab.depart_id departId,ab.depart_name departName,ab.position_id positionId,ab.position_name positionName,ab.remark,
+	 cc.display_name workType,ab.start_time startTime,ab.end_time endTime,be.id employeeId,ab.processInstance_id processInstanceId,ab.processInstance_report_id processInstanceReportId,
+	 ab.duration,ab.address,ab.vehicle,ab.reason,ab.submit_date submitDate,'' auditUser,ab.approval_status approvalStatus,
+	 case ab.approval_status when 100 then '待审批' when 200 then '已审批' when 300 then '已拒' when 400 then '撤销' when 500 then '失效'when 600 then '失效同意' when 700 then '失效拒绝'  else '' end approvalStatusDesc
+	 from base_emp_application_business ab
+	 left join base_employee be
+	 on ab.employee_id = be.id
+	 left join sys_company_config cc
+	 on be.work_type = cc.id
+		LEFT JOIN ACT_HI_TASKINST t 
+		ON ab.processinstance_id = t.PROC_INST_ID_
+	where ab.del_flag = 0	
+  		and t.ASSIGNEE_ = #{assignee,jdbcType=VARCHAR}
+    	AND t.TASK_DEF_KEY_ != 'proposer' 
+    	AND t.END_TIME_ IS NOT NULL 
+    	AND t.PROC_DEF_ID_ LIKE '%business%'	
+  		<if test="address !=null and address!=''">
+  			and ab.address like concat('%',#{address,jdbcType=VARCHAR},'%')
+  		</if>		
+	  	<if test="code != null and code != ''">
+	  		and ab.code like concat('%',#{code,jdbcType=VARCHAR},'%')
+	  	</if>
+  		<if test="cnName != null and cnName != ''">
+  			and ab.cn_name like concat('%',#{cnName,jdbcType=VARCHAR},'%')
+  		</if>
+  		<if test="departId != null and departId != ''">
+  			and ab.depart_id = #{departId,jdbcType=BIGINT}
+  		</if>
+  		<if test="departList != null and departList.size > 0">
+  			and ab.depart_id in
+  			<foreach collection="departList" item="departId" open="(" separator="," close=")">
+  				#{departId,jdbcType=BIGINT}
+  			</foreach>
+  		</if>
+  		<if test="workType != null and workType != ''">
+  			and be.work_type = #{workType,jdbcType=BIGINT}
+  		</if>
+  		<if test="empTypeId != null and empTypeId != ''">
+  			and be.emp_type_id = #{empTypeId,jdbcType=BIGINT}
+  		</if>
+  		<if test="whetherScheduling != null and whetherScheduling != ''">
+  			and be.whether_scheduling = #{whetherScheduling,jdbcType=BIGINT}
+  		</if>  			
+	  	<if test="startTime != null and endTime != null"> 
+		 and(	
+				(
+					start_time &gt;= #{startTime,jdbcType=BIGINT} and start_time &lt;= #{endTime,jdbcType=BIGINT}
+				)or 						<!--开始时间是否包含在其他时间段-->
+				(
+					start_time &lt;= #{startTime,jdbcType=BIGINT} and end_time &gt;= #{endTime,jdbcType=BIGINT}
+				)or							<!-- 开始时间和结束时间在外的都包括 外包-->
+				(
+					end_time &gt;= #{startTime,jdbcType=BIGINT} and end_time &lt;= #{endTime,jdbcType=BIGINT}
+				)or(						<!-- 结束时间是否包含在其他时间段-->
+					start_time &gt;= #{startTime,jdbcType=BIGINT} and end_time &lt;= #{endTime,jdbcType=BIGINT}
+				)								<!-- 开始时间和结束时间内-->
+			)
+	  	</if>
+  		<if test="approvalStatus != null and approvalStatus != ''" >
+	        and approval_status = #{approvalStatus,jdbcType=BIGINT}
+        </if>
+        <if test="approvalReportStatus != null and approvalReportStatus != ''" >
+	        and approval_report_status = #{approvalReportStatus,jdbcType=BIGINT}
+        </if>
+        
+        <if test="vehicle != null and vehicle != ''" >
+	        and vehicle = #{vehicle,jdbcType=BIGINT}
+        </if>
+        <if test="currentUserDepart != null and currentUserDepart.size > 0">
+			and be.id in
+			<foreach collection="currentUserDepart" item="ids" open="(" separator="," close=")">
+				#{ids,jdbcType=BIGINT}
+			</foreach>
+		</if>
+		<if test="subEmployeeIdList != null and subEmployeeIdList.size > 0">
+			and be.id in
+			<foreach collection="subEmployeeIdList" item="ids" open="(" separator="," close=")">
+				#{ids,jdbcType=BIGINT}
+			</foreach>
+		</if>
+	order by ab.submit_date desc
+	<if test="offset != null and limit != null">
+		limit #{offset},#{limit}
+	</if>
+  </select>
+  
+  <select id="myTaskListCount" parameterType="com.ule.oa.base.po.EmpApplicationBusiness" resultType="java.lang.Integer">
+  	select count(DISTINCT ab.id)
+	  	 from base_emp_application_business ab
+	 left join base_employee be
+	 on ab.employee_id = be.id
+	 left join sys_company_config cc
+	 on be.work_type = cc.id
+		LEFT JOIN ACT_HI_TASKINST t 
+		ON ab.processinstance_id = t.PROC_INST_ID_
+	where ab.del_flag = 0
+  		and t.ASSIGNEE_ = #{assignee,jdbcType=VARCHAR}
+    	AND t.TASK_DEF_KEY_ != 'proposer' 
+    	AND t.TASK_DEF_KEY_ != 'administration' 
+    	AND t.END_TIME_ IS NOT NULL 
+    	AND t.PROC_DEF_ID_ LIKE '%business%'	
+	
+  		<if test="address !=null and address!=''">
+  			and ab.address like concat('%',#{address,jdbcType=VARCHAR},'%')
+  		</if>		
+	  	<if test="code != null and code != ''">
+	  		and ab.code like concat('%',#{code,jdbcType=VARCHAR},'%')
+	  	</if>
+  		<if test="cnName != null and cnName != ''">
+  			and ab.cn_name like concat('%',#{cnName,jdbcType=VARCHAR},'%')
+  		</if>
+  		<if test="departId != null and departId != ''">
+  			and ab.depart_id = #{departId,jdbcType=BIGINT}
+  		</if>
+  		<if test="departList != null and departList.size > 0">
+  			and ab.depart_id in
+  			<foreach collection="departList" item="departId" open="(" separator="," close=")">
+  				#{departId,jdbcType=BIGINT}
+  			</foreach>
+  		</if>
+  		<if test="workType != null and workType != ''">
+  			and be.work_type = #{workType,jdbcType=BIGINT}
+  		</if>
+  		<if test="empTypeId != null and empTypeId != ''">
+  			and be.emp_type_id = #{empTypeId,jdbcType=BIGINT}
+  		</if>
+  		<if test="whetherScheduling != null and whetherScheduling != ''">
+  			and be.whether_scheduling = #{whetherScheduling,jdbcType=BIGINT}
+  		</if>  			
+	  	<if test="startTime != null and endTime != null"> 
+		 and(	
+				(
+					start_time &gt;= #{startTime,jdbcType=BIGINT} and start_time &lt;= #{endTime,jdbcType=BIGINT}
+				)or 						<!--开始时间是否包含在其他时间段-->
+				(
+					start_time &lt;= #{startTime,jdbcType=BIGINT} and end_time &gt;= #{endTime,jdbcType=BIGINT}
+				)or							<!-- 开始时间和结束时间在外的都包括 外包-->
+				(
+					end_time &gt;= #{startTime,jdbcType=BIGINT} and end_time &lt;= #{endTime,jdbcType=BIGINT}
+				)or(						<!-- 结束时间是否包含在其他时间段-->
+					start_time &gt;= #{startTime,jdbcType=BIGINT} and end_time &lt;= #{endTime,jdbcType=BIGINT}
+				)								<!-- 开始时间和结束时间内-->
+			)
+	  	</if>
+  		<if test="approvalStatus != null and approvalStatus != ''" >
+	        and approval_status = #{approvalStatus,jdbcType=BIGINT}
+        </if>
+        <if test="vehicle != null and vehicle != ''" >
+	        and vehicle = #{vehicle,jdbcType=BIGINT}
+        </if>
+        <if test="approvalStatusList != null and approvalStatusList.size > 0">
+			and approval_status in
+			<foreach collection="approvalStatusList" item="ids" open="(" separator="," close=")">
+				#{ids,jdbcType=BIGINT}
+			</foreach>
+		</if>
+        <if test="currentUserDepart != null and currentUserDepart.size > 0">
+			and be.id in
+			<foreach collection="currentUserDepart" item="ids" open="(" separator="," close=")">
+				#{ids,jdbcType=BIGINT}
+			</foreach>
+		</if>
+		<if test="subEmployeeIdList != null and subEmployeeIdList.size > 0">
+			and be.id in
+			<foreach collection="subEmployeeIdList" item="ids" open="(" separator="," close=")">
+				#{ids,jdbcType=BIGINT}
+			</foreach>
+		</if>
+  </select>
+  
+  <select id="getEmpPageList" parameterType="com.ule.oa.base.po.EmpApplicationBusiness" resultType="com.ule.oa.base.po.EmpApplicationBusiness">
+	SELECT  e.id as employeeId,d.name as departName, e.cn_name as cnName,any_value(0) as peopleNum,any_value(0) as duration , any_value(0) frequencyNum
+	    FROM base_employee e
+		LEFT JOIN base_emp_depart ed on e.id = ed.employee_id
+		LEFT JOIN base_depart d on ed.depart_id = d.id
+		where e.del_flag=0
+		<if test="empTypeIdList != null and empTypeIdList.size > 0" >
+	       and e.emp_type_id in
+	           <foreach collection="empTypeIdList" index="index" item="item" open="(" separator="," close=")">
+		           #{item}
+		       </foreach>
+	     </if>
+	     <if test="currentUserDepart != null and currentUserDepart.size > 0">
+			and e.id in
+			<foreach collection="currentUserDepart" item="ids" open="(" separator="," close=")">
+				#{ids,jdbcType=BIGINT}
+			</foreach>
+		</if>
+	    <if test="cnName != null and cnName != ''">
+  			and e.cn_name like concat('%',#{cnName,jdbcType=VARCHAR},'%')
+  		</if> 
+	    <if test="firstEntryTime != null">
+	    	and e.first_Entry_time &lt; #{firstEntryTime,jdbcType=TIMESTAMP}
+	    </if>
+	    <if test="quitTime != null">
+	   		AND (e.Quit_time IS NULL OR (e.Quit_time IS NOT NULL AND e.Quit_time &gt; #{quitTime,jdbcType=TIMESTAMP}))  
+	    </if>
+	    
+	    ORDER BY CAST(SUBSTRING(e.CODE, 3) AS SIGNED)
+	    <if test="offset != null and limit != null">
+			limit #{offset},#{limit}
+		</if>
+		
+  </select>
+  
+  <select id="getEmpPageListCount" parameterType="com.ule.oa.base.po.EmpApplicationBusiness" resultType="java.lang.Integer">
+  	SELECT  count(1)
+	    FROM base_employee e
+			LEFT JOIN base_emp_depart ed on e.id = ed.employee_id
+			LEFT JOIN base_depart d on ed.depart_id = d.id
+		where e.del_flag=0
+		<if test="empTypeIdList != null and empTypeIdList.size > 0" >
+	       and e.emp_type_id in
+	           <foreach collection="empTypeIdList" index="index" item="item" open="(" separator="," close=")">
+		           #{item}
+		       </foreach>
+	     </if>	
+	     <if test="currentUserDepart != null and currentUserDepart.size > 0">
+			and e.id in
+			<foreach collection="currentUserDepart" item="ids" open="(" separator="," close=")">
+				#{ids,jdbcType=BIGINT}
+			</foreach>
+		</if>
+	    <if test="cnName != null and cnName != ''">
+  			and e.cn_name like concat('%',#{cnName,jdbcType=VARCHAR},'%')
+  		</if> 
+	    <if test="firstEntryTime != null">
+	    	and e.first_Entry_time &lt; #{firstEntryTime,jdbcType=TIMESTAMP}
+	    </if>
+	    <if test="quitTime != null">
+	   		AND (e.Quit_time IS NULL OR (e.Quit_time IS NOT NULL AND e.Quit_time &gt; #{quitTime,jdbcType=TIMESTAMP}))  
+	    </if>
+ </select>
+ <select id="getDepartList" parameterType="com.ule.oa.base.po.EmpApplicationBusiness" resultType="com.ule.oa.base.po.EmpApplicationBusiness">
+  select d.id as departId,any_value(d.name) as departName,any_value(0) as peopleNum,any_value(0) as duration , any_value(0) frequencyNum from base_depart d
+	left JOIN 	 base_emp_depart ed   on ed.depart_id = d.id
+	where d.del_flag=0
+	<if test="departId != null and departId != ''">
+  		and d.id = #{departId,jdbcType=BIGINT}
+  	</if>
+  	<if test="departList != null and departList.size > 0">
+		and d.id in
+		<foreach collection="departList" item="ids" open="(" separator="," close=")">
+			#{ids,jdbcType=BIGINT}
+		</foreach>
+	</if>
+	<if test="departList.size == 0">
+		and d.id =0
+	</if>
+	GROUP BY d.id
+	<if test="offset != null and limit != null">
+		limit #{offset},#{limit}
+	</if>
+ </select>
+	
+<select id="getDepartListCount" parameterType="com.ule.oa.base.po.EmpApplicationBusiness" resultType="java.lang.Integer">
+  select count(1) from (
+	select count(1) from base_depart d
+	left JOIN 	 base_emp_depart ed   on ed.depart_id = d.id
+	where d.del_flag=0
+	<if test="departId != null and departId != ''">
+  		and d.id = #{departId,jdbcType=BIGINT}
+  	</if>
+  	<if test="departList != null and departList.size > 0">
+		and d.id in
+		<foreach collection="departList" item="ids" open="(" separator="," close=")">
+			#{ids,jdbcType=BIGINT}
+		</foreach>
+	</if>
+	<if test="departList.size == 0">
+		and d.id =0
+	</if>
+	GROUP BY d.id
+  )str
+ </select>	
+  
+</mapper>

@@ -1,0 +1,456 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ule.oa.base.mapper.ApplicationEmployeeClassDetailMapper" >
+  <resultMap id="BaseResultMap" type="com.ule.oa.base.po.ApplicationEmployeeClassDetail" >
+    <id column="ID" property="id" jdbcType="BIGINT" />
+    <result column="attn_application_employ_class_id" property="attnApplicationEmployClassId" jdbcType="BIGINT" />
+    <result column="company_id" property="companyId" jdbcType="BIGINT" />
+    <result column="employ_id" property="employId" jdbcType="BIGINT" />
+    <result column="employ_name" property="employName" jdbcType="VARCHAR" />
+    <result column="class_date" property="classDate" jdbcType="DATE" />
+    <result column="class_setting_id" property="classSettingId" jdbcType="BIGINT" />
+    <result column="class_setting_code" property="classSettingCode" jdbcType="VARCHAR" />
+    <result column="del_flag" property="delFlag" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="class_setting_person" property="classSettingPerson" jdbcType="VARCHAR"/>
+    <result column="is_move" property="isMove" jdbcType="INTEGER" />
+    <result column="start_time" property="startTime" jdbcType="TIME" />
+    <result column="end_time" property="endTime" jdbcType="TIME" />
+    <result column="should_time" property="shouldTime" jdbcType="DOUBLE" />
+  </resultMap>
+  
+  <resultMap id="EmployeeClassSettingMap" type="com.ule.oa.base.po.EmployeeClass" >
+    <result column="company_id" property="companyId" jdbcType="BIGINT" />
+    <result column="employ_id" property="employId" jdbcType="BIGINT" />
+    <result column="class_date" property="classDate" jdbcType="DATE" />
+    <result column="start_time" property="startTime" jdbcType="TIME" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="end_time" property="endTime" jdbcType="TIME" />
+    <result column="is_Inter_day" property="isInterDay" jdbcType="INTEGER" />
+    <result column="must_attn_time" property="mustAttnTime" jdbcType="DOUBLE" />
+    <result column="version" property="version" jdbcType="BIGINT"/>
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    ID, attn_application_employ_class_id,company_id, employ_id, employ_name, class_date, class_setting_id, class_setting_code,class_setting_person,
+    del_flag, create_time, create_user, update_user, update_time,is_move,should_time
+  </sql>
+  
+  <!-- 根据部门id获取需要排班人数 -->
+  <select id="getMustClassSettingCountByDepartId" resultType="java.lang.Integer" parameterType="java.lang.Long">
+  	select count(emp.id) from base_employee emp
+	join sys_config conf
+	on (
+		emp.whether_scheduling = conf.id
+		and conf.code = 'whetherScheduling'
+		and conf.display_code = 'yes'
+		and emp.del_flag = 0
+		and conf.del_flag = 0
+	)
+	left join base_emp_depart ed
+	on (emp.id = ed.employee_id and ed.del_flag = 0)
+	where ed.depart_id = #{departId,jdbcType=BIGINT}
+  </select>
+  
+  <!-- 根据部门id和排班时间获取已经排班人数和排班人（查看当月和下月已经排班人数和排班人） -->
+  <select id="getAlreadyClassSettingByDepartIdAndMonth" resultType="com.ule.oa.base.po.ApplicationEmployeeClassDetail" parameterType="com.ule.oa.base.po.ApplicationEmployeeClassDetail">
+  	select count(distinct ec.employ_id) alreadyClassSettingCount,ec.class_setting_person classSettingPerson
+	from base_employee emp
+	left join base_emp_depart ed
+	on (
+		emp.id = ed.employee_id and emp.del_flag = 0 and ed.del_flag = 0
+	)
+	join attn_application_employ_class_detail ec
+	on(
+		emp.id = ec.employ_id and ec.del_flag = 0
+	)
+	where ed.depart_id = #{departId,jdbcType=BIGINT}
+	and ec.class_date &gt;= #{startTime,jdbcType=DATE}
+	and ec.class_date &lt;= #{endTime,jdbcType=DATE}
+	group by ec.class_setting_person 
+ </select>
+ 
+ <select id="getEmployeeClassSetByMonth" resultType="com.ule.oa.base.po.ApplicationEmployeeClassDetail" parameterType="com.ule.oa.base.po.ApplicationEmployeeClassDetail">
+	 SELECT a.employ_id,a.class_date,a.class_setting_id,a.is_move,b.must_attn_time,b.name ,b.start_time,b.end_time
+	FROM
+	  attn_application_employ_class_detail a 
+	  LEFT JOIN attn_class_setting b 
+	    ON a.class_setting_id = b.id 
+	WHERE a.del_flag=0 
+     <if test="attnApplicationEmployClassId != null" >
+	     and a.attn_application_employ_class_id = #{attnApplicationEmployClassId,jdbcType=BIGINT}
+	 </if>
+	 <if test="employId != null" >
+         and a.employ_id = #{employId,jdbcType=BIGINT}
+     </if>
+     <if test="isMove != null" >
+         and a.is_move = #{isMove,jdbcType=INTEGER}
+     </if>
+ </select>
+
+  <select id="selectByCondition" resultMap="BaseResultMap" parameterType="com.ule.oa.base.po.ApplicationEmployeeClassDetail" >
+    select 
+    <include refid="Base_Column_List" />
+    from attn_application_employ_class_detail where del_flag=0 
+    <if test="attnApplicationEmployClassId != null" >
+      and attn_application_employ_class_id = #{attnApplicationEmployClassId,jdbcType=BIGINT}
+    </if>
+    <if test="employId != null" >
+      and employ_id = #{employId,jdbcType=BIGINT}
+    </if>
+    <if test="classDate != null" >
+      and class_date = #{classDate,jdbcType=DATE}
+    </if>
+    <if test="classSettingId != null" >
+      and class_setting_id = #{classSettingId,jdbcType=BIGINT}
+    </if>
+    <if test="isMove != null" >
+      and is_move = #{isMove,jdbcType=INTEGER}
+    </if>
+    order by class_date
+  </select>
+  
+  <select id="getAreadyExsitList" resultMap="BaseResultMap" parameterType="com.ule.oa.base.po.ApplicationEmployeeClassDetail" >
+    select 
+    <include refid="Base_Column_List" />
+    from attn_application_employ_class_detail where del_flag=0 and attn_application_employ_class_id = #{attnApplicationEmployClassId,jdbcType=BIGINT} and class_setting_id IS NOT NULL
+  </select>
+  
+  <select id="checkEmployeeisClassSet" resultType="java.lang.Integer" parameterType="com.ule.oa.base.po.ApplicationEmployeeClassDetail" >
+    select 
+    count(1)
+    from attn_application_employ_class_detail where del_flag=0 and class_setting_id is not null
+    <if test="attnApplicationEmployClassId != null" >
+      and attn_application_employ_class_id = #{attnApplicationEmployClassId,jdbcType=BIGINT}
+    </if>
+    <if test="employId != null" >
+      and employ_id = #{employId,jdbcType=BIGINT}
+    </if>
+  </select>
+  
+  <select id="checkEmployeeisNew" resultType="java.lang.Integer" parameterType="com.ule.oa.base.po.ApplicationEmployeeClassDetail" >
+    select 
+    count(1)
+    from attn_application_employ_class_detail where del_flag=0
+    <if test="attnApplicationEmployClassId != null" >
+      and attn_application_employ_class_id = #{attnApplicationEmployClassId,jdbcType=BIGINT}
+    </if>
+    <if test="employId != null" >
+      and employ_id = #{employId,jdbcType=BIGINT}
+    </if>
+  </select>
+  
+  <select id="getEmployeeClassList" resultMap="EmployeeClassSettingMap" parameterType="com.ule.oa.base.po.ApplicationEmployeeClassDetail" >
+    SELECT a.company_id,a.employ_id,a.class_date,a.version,b.name,b.start_time,b.end_time,b.must_attn_time,b.is_Inter_day
+	FROM attn_application_employ_class_detail a
+	LEFT JOIN attn_class_setting b ON a.class_setting_id = b.id 
+	AND a.company_id = b.company_id
+	where a.del_flag=0 and a.employ_id is not null
+    <if test="classDate != null" >
+      and class_date = #{classDate,jdbcType=DATE}
+    </if>
+    <if test="employId != null" >
+      and employ_id = #{employId,jdbcType=BIGINT}
+    </if>
+    <if test="startTime != null" >
+      and class_date &gt;= #{startTime,jdbcType=DATE}
+    </if>
+    <if test="endTime != null" >
+      and class_date &lt;= #{endTime,jdbcType=DATE}
+    </if>
+	<if test="employeeIds != null"> 
+	    and employ_id in 
+	    <foreach collection="employeeIds" index="index" item="item" open="(" separator="," close=")">
+             #{item}
+         	</foreach>
+  	</if>
+  </select>
+  
+  <select id="getEmployeeById" resultMap="BaseResultMap" parameterType="com.ule.oa.base.po.ApplicationEmployeeClassDetail" >
+    SELECT ID, attn_application_employ_class_id,company_id, employ_id, employ_name, class_date, class_setting_id, class_setting_code,class_setting_person,
+   		del_flag, create_time, create_user, update_user, update_time,is_move,should_time
+    	FROM attn_application_employ_class_detail 
+	where del_flag=0 and employ_id is not null
+    <if test="classDate != null" >
+      and class_date = #{classDate,jdbcType=DATE}
+    </if>
+    <if test="employId != null" >
+      and employ_id = #{employId,jdbcType=BIGINT}
+    </if>
+    <if test="startTime != null" >
+      and class_date &gt;= #{startTime,jdbcType=DATE}
+    </if>
+    <if test="endTime != null" >
+      and class_date &lt;= #{endTime,jdbcType=DATE}
+    </if>
+  </select>
+  
+  
+  <select id="getEmployeeClassHours" resultMap="BaseResultMap" parameterType="com.ule.oa.base.po.ApplicationEmployeeClassDetail" >
+    SELECT ANY_VALUE(a.employ_name) as employ_name,ANY_VALUE(a.should_time) as should_time,a.employ_id,SUM(b.must_attn_time)must_attn_time<!-- ,DATE_FORMAT(a.class_date,'%Y-%m')class_date去掉按月显示 -->
+	FROM attn_application_employ_class_detail a
+	LEFT JOIN attn_class_setting b ON a.class_setting_id = b.id 
+	where a.del_flag=0 and a.employ_id is not null
+    <if test="classDate != null" >
+      and DATE_FORMAT(a.class_date,'%Y-%m') = DATE_FORMAT(#{classDate,jdbcType=DATE},'%Y-%m')
+    </if>
+    <if test="employId != null" >
+      and employ_id = #{employId,jdbcType=BIGINT}
+    </if>
+    <if test="isMove != null" >
+      and is_move = #{isMove,jdbcType=INTEGER}
+    </if>
+    <if test="attnApplicationEmployClassId != null" >
+      and attn_application_employ_class_id = #{attnApplicationEmployClassId,jdbcType=BIGINT}
+    </if> 
+    GROUP BY a.employ_id
+  </select>
+  
+  <select id="getEmployeeClassHoursByDates" resultMap="BaseResultMap" parameterType="com.ule.oa.base.po.ApplicationEmployeeClassDetail" >
+    SELECT ANY_VALUE(a.employ_name) as employ_name,ANY_VALUE(a.should_time) as should_time,a.employ_id,SUM(b.must_attn_time)must_attn_time<!-- ,DATE_FORMAT(a.class_date,'%Y-%m')class_date去掉按月显示 -->
+	FROM attn_employ_class a
+	LEFT JOIN attn_class_setting b ON a.class_setting_id = b.id 
+	where a.del_flag=0 and a.employ_id is not null
+	  and employ_id = #{employId,jdbcType=BIGINT}
+	  and class_date in  
+	  <foreach collection="classDateList" index="index" item="item" open="(" separator="," close=")">
+             #{item}
+      </foreach>
+    GROUP BY a.employ_id
+  </select>
+  
+  <select id="getclassEmployeeNum" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+     SELECT employ_id FROM attn_application_employ_class_detail 
+		WHERE attn_application_employ_class_id = #{attnApplicationEmployClassId,jdbcType=BIGINT}
+		  AND class_setting_id IS NOT NULL 
+		GROUP BY employ_id 
+  </select>
+
+  <insert id="save" parameterType="com.ule.oa.base.po.ApplicationEmployeeClassDetail" >
+  	<selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">
+		SELECT LAST_INSERT_ID() AS id
+	</selectKey>
+	
+	insert into attn_application_employ_class_detail
+	<trim prefix="(" suffix=")" suffixOverrides=",">
+		  <if test="companyId != null" >
+	        company_id,
+	      </if>
+	      <if test="attnApplicationEmployClassId != null" >
+	        attn_application_employ_class_id,
+	      </if>
+	      <if test="employId != null" >
+	        employ_id,
+	      </if>
+	      <if test="employName != null" >
+	        employ_name,
+	      </if>
+	      <if test="classDate != null" >
+	        class_date,
+	      </if>
+	      <if test="classSettingId != null" >
+	        class_setting_id,
+	      </if>
+	      <if test="classSettingCode != null" >
+	        class_setting_code,
+	      </if>
+	      <if test="classSettingPerson != null">
+	      	class_setting_person,
+	      </if>
+	      <if test="delFlag != null" >
+	        del_flag,
+	      </if>
+	      <if test="createTime != null" >
+	        create_time,
+	      </if>
+	      <if test="createUser != null" >
+	        create_user,
+	      </if>
+	      <if test="updateUser != null" >
+	        update_user,
+	      </if>
+	      <if test="updateTime != null" >
+	        update_time,
+	      </if>
+	</trim>
+	
+	<trim prefix="values(" suffix=")" suffixOverrides=",">
+		  <if test="companyId != null" >
+	        #{companyId,jdbcType=BIGINT},
+	      </if>
+	      <if test="attnApplicationEmployClassId != null" >
+	         #{attnApplicationEmployClassId,jdbcType=BIGINT},
+	      </if>
+	      <if test="employId != null" >
+	        #{employId,jdbcType=BIGINT},
+	      </if>
+	      <if test="employName != null" >
+	        #{employName,jdbcType=VARCHAR},
+	      </if>
+	      <if test="classDate != null" >
+	        #{classDate,jdbcType=DATE},
+	      </if>
+	      <if test="classSettingId != null" >
+	        #{classSettingId,jdbcType=BIGINT},
+	      </if>
+	      <if test="classSettingCode != null" >
+	        #{classSettingCode,jdbcType=VARCHAR},
+	      </if>
+	      <if test="classSettingPerson != null">
+	      	#{classSettingPerson,jdbcType=VARCHAR},
+	      </if>
+	      <if test="delFlag != null" >
+	        #{delFlag,jdbcType=INTEGER},
+	      </if>
+	      <if test="createTime != null" >
+	        #{createTime,jdbcType=TIMESTAMP},
+	      </if>
+	      <if test="createUser != null" >
+	        #{createUser,jdbcType=VARCHAR},
+	      </if>
+	      <if test="updateUser != null" >
+	        #{updateUser,jdbcType=VARCHAR},
+	      </if>
+	      <if test="updateTime != null" >
+	        #{updateTime,jdbcType=TIMESTAMP},
+	      </if>
+	</trim>
+  </insert>
+  
+  <insert id="batchSave" parameterType="java.util.List">
+  	insert into attn_application_employ_class_detail (
+  	  attn_application_employ_class_id,company_id, employ_id,employ_name,
+  	  class_date, class_setting_id, 
+      class_setting_code,class_setting_person,
+      create_time,create_user, update_user, update_time,del_flag,is_move,should_time
+      )
+    select tmp.* from (
+    	<foreach collection="list" item="item" separator="UNION">
+    		select 
+    		#{item.attnApplicationEmployClassId,jdbcType=BIGINT} as attn_application_employ_class_id,
+    		#{item.companyId,jdbcType=BIGINT} as company_id,
+    		#{item.employId,jdbcType=BIGINT} as employ_id,
+    		#{item.employName,jdbcType=VARCHAR} as employ_name,
+    		#{item.classDate,jdbcType=DATE} as class_date,
+    		#{item.classSettingId,jdbcType=BIGINT} as class_setting_id,
+    		#{item.classSettingCode,jdbcType=VARCHAR} as class_setting_code,
+    		#{item.classSettingPerson,jdbcType=VARCHAR} as class_setting_person,
+    		#{item.createTime,jdbcType=TIMESTAMP} as create_time,
+    		#{item.createUser,jdbcType=VARCHAR} as create_user,
+    		#{item.updateUser,jdbcType=VARCHAR} as update_user,
+    		#{item.updateTime,jdbcType=TIMESTAMP} as update_time,
+    		#{item.delFlag,jdbcType=INTEGER} as del_flag,
+    		#{item.isMove,jdbcType=INTEGER} as is_move,
+    		#{item.shouldTime,jdbcType=INTEGER} as should_time
+    		from dual
+    	</foreach>
+    )tmp
+  </insert>
+  
+
+  <update id="updateById" parameterType="com.ule.oa.base.po.ApplicationEmployeeClassDetail" >
+    update attn_application_employ_class_detail
+    <set >
+      <if test="companyId != null" >
+        company_id = #{companyId,jdbcType=BIGINT},
+      </if>
+      <if test="employId != null" >
+        employ_id = #{employId,jdbcType=BIGINT},
+      </if>
+      <if test="employName != null" >
+        employ_name = #{employName,jdbcType=VARCHAR},
+      </if>
+      <if test="classDate != null" >
+        class_date = #{classDate,jdbcType=DATE},
+      </if>
+      <if test="classSettingId != null" >
+        class_setting_id = #{classSettingId,jdbcType=BIGINT},
+      </if>
+      <if test="classSettingCode != null" >
+        class_setting_code = #{classSettingCode,jdbcType=VARCHAR},
+      </if>
+      <if test="delFlag != null" >
+        del_flag = #{delFlag,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUser != null" >
+        create_user = #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="classSettingPerson != null">
+      	class_setting_person = #{classSettingPerson,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=BIGINT}
+  </update>
+  
+  <update id="updateSetIdById" parameterType="com.ule.oa.base.po.ApplicationEmployeeClassDetail" >
+    update attn_application_employ_class_detail
+    <set >
+      class_setting_id = #{classSettingId,jdbcType=BIGINT},
+      update_user = #{updateUser,jdbcType=VARCHAR},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    </set>
+    where ID = #{id,jdbcType=BIGINT}
+  </update>
+  
+  <update id="updateByCondition" parameterType="com.ule.oa.base.po.ApplicationEmployeeClassDetail" >
+    update attn_application_employ_class_detail
+    <set >
+      class_setting_id = #{classSettingId,jdbcType=BIGINT},
+      <if test="isMove != null" >
+        is_move = #{isMove,jdbcType=INTEGER},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="delFlag != null" >
+	        del_flag= #{delFlag,jdbcType=INTEGER},
+	  </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP}
+      </if>
+    </set>
+    where attn_application_employ_class_id = #{attnApplicationEmployClassId,jdbcType=BIGINT} and employ_id = #{employId,jdbcType=BIGINT} and class_date=#{classDate,jdbcType=DATE}
+  </update>
+  
+  <update id="deleteByEmployeeClassId" parameterType="com.ule.oa.base.po.ApplicationEmployeeClassDetail" >
+    update attn_application_employ_class_detail 
+    <set >
+      del_flag = 1,
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP}
+      </if>
+    </set>
+    where attn_application_employ_class_id = #{attnApplicationEmployClassId,jdbcType=BIGINT}
+  </update>
+  
+  <update id="deleteByQuitTime" parameterType="com.ule.oa.base.po.ApplicationEmployeeClassDetail" >
+    update attn_application_employ_class_detail 
+    <set >
+      del_flag = 1,
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP}
+      </if>
+    </set>
+    where class_date &gt; #{classDate,jdbcType=DATE} and  employ_id = #{employId,jdbcType=BIGINT}
+  </update>
+  
+
+</mapper>

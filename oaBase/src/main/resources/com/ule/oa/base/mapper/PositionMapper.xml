@@ -1,0 +1,320 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ule.oa.base.mapper.PositionMapper" >
+  
+  <resultMap id="BaseResultMap" type="com.ule.oa.base.po.Position" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="company_id" property="companyId" jdbcType="BIGINT" />
+    <result column="position_code" property="positionCode" jdbcType="VARCHAR" />
+    <result column="position_name" property="positionName" jdbcType="VARCHAR" />
+    <result column="position_level_id" property="positionLevelId" jdbcType="BIGINT" />
+    <result column="position_seq_id" property="positionSeqId" jdbcType="BIGINT" />
+    <result column="parent_id" property="parentId" jdbcType="INTEGER" />
+    <result column="rank" property="rank" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="del_flag" property="delFlag" jdbcType="INTEGER" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="version" property="version" jdbcType="BIGINT" />
+    
+    <result column="parentPositionName" property="parentPositionName" jdbcType="INTEGER" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    id, position_code, position_name,position_level_id,position_seq_id,create_time, 
+    create_user, update_time, update_user, del_flag, remark,company_id,parent_id,rank,version
+  </sql>
+  
+  <select id="getById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+  	select <include refid="Base_Column_List"/> from base_position
+  	where id = #{id,jdbcType=BIGINT}
+  </select>
+  
+  <select id="getByEmpId" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    SELECT p.id, p.position_name
+    FROM base_position p 
+    LEFT JOIN base_emp_position ep on ep.position_id = p.id 
+    LEFT JOIN base_employee e on ep.employee_id = e.id
+    <where>
+    	p.del_flag = 0 and ep.employee_id=#{employeeId,jdbcType=BIGINT}
+    </where> 
+  </select>
+  
+   <!-- 分页查询部门职位信息 -->
+  <select id="getPageList" parameterType="com.ule.oa.base.po.DepartPosition" resultType="com.ule.oa.base.po.Position">
+	  	select p.id,p.position_code,p.position_name,p.remark remark,pl.name as 'companyPositionLevel.name'
+	  	from base_depart_position dp
+		left join base_position p
+	  	on (
+	  		dp.position_id  = p.id and dp.del_flag = 0 and p.del_flag = 0
+	  	)
+	  	left join base_company_position_level pl
+	  	on(
+	  		p.position_level_id = pl.id and p.company_id = pl.company_id and pl.del_flag = 0
+	  	) 
+	  	<where>
+		  	<if test="companyId != null and companyId !=''">
+		  		and p.company_id = #{companyId,jdbcType=BIGINT}
+		  	</if>
+	  		<if test="departId != null and departId != ''">
+	  			and dp.depart_id = #{departId,jdbcType=BIGINT}
+	  		</if>
+  		</where>
+  		order by convert(p.position_name USING gbk) limit #{offset},#{limit}
+  </select>
+  
+  <!-- 查询部门职位总记录数 -->
+  <select id="getCount" parameterType="com.ule.oa.base.po.DepartPosition" resultType="java.lang.Integer">
+	  	select count(1) from base_depart_position dp,base_position p
+	  	where dp.position_id  = p.id
+	  	and dp.del_flag = 0 and p.del_flag = 0
+	  	<if test="companyId != null and companyId !=''">
+	  		and p.company_id = #{companyId,jdbcType=BIGINT}
+	  	</if>
+  		<if test="departId != null and departId != ''">
+  			and dp.depart_id = #{departId,jdbcType=BIGINT}
+  		</if>
+  </select>
+  
+  <!-- 获得职位树 -->
+  <select id="getTreeList" resultMap="BaseResultMap" parameterType="com.ule.oa.base.po.Position" >
+  	select <include refid="Base_Column_List"/> from base_position p
+  	where p.del_flag = 0
+  	<if test="id != null">
+   		and p.id = #{id,jdbcType=BIGINT}
+   	</if>
+    <if test="positionCode != null and positionCode != ''" >
+       and p.position_code = #{positionCode,jdbcType=VARCHAR}
+     </if>
+     <if test="positionName != null and positionName !=''" >
+       and p.position_name = #{positionName,jdbcType=VARCHAR}
+     </if>
+     <if test="createTime != null" >
+       and p.create_time = #{createTime,jdbcType=TIMESTAMP}
+     </if>
+     <if test="createUser != null and createUser !=''" >
+       and p.create_user = #{createUser,jdbcType=VARCHAR}
+     </if>
+     <if test="updateTime != null" >
+       and p.update_time = #{updateTime,jdbcType=TIMESTAMP}
+     </if>
+     <if test="updateUser != null and updateUser != ''" >
+       and p.update_user = #{updateUser,jdbcType=VARCHAR}
+     </if>
+     <if test="remark != null" >
+       and p.remark = #{remark,jdbcType=VARCHAR}
+     </if>
+  </select>
+  
+  <select id="getByCondition" resultType="com.ule.oa.base.po.Position" parameterType="com.ule.oa.base.po.Position">
+  	select bp.id, bp.position_code, bp.position_name,bp.create_time, 
+    bp.create_user, bp.update_time, bp.update_user, bp.remark,bp.company_id,bp.parent_id,bp.rank,bp.version,pl.id as 'companyPositionLevel.id',
+    pl.name as 'companyPositionLevel.name',pl.code as 'companyPositionLevel.code',ps.id as 'companyPositionSeq.id',ps.name as 'companyPositionSeq.name'  
+    from base_position bp
+  	left join base_company_position_level pl
+  	on(bp.position_level_id = pl.id and bp.company_id = pl.company_id and pl.del_flag = 0)
+  	left join base_company_position_seq ps
+  	on(bp.position_seq_id = ps.id and bp.company_id = ps.company_id and pl.del_flag = 0)
+  	where bp.del_flag = 0
+  	<if test="id != null">
+   		and bp.id = #{id,jdbcType=BIGINT}
+   	</if>
+    <if test="positionCode != null and positionCode != ''" >
+       and bp.position_code = #{positionCode,jdbcType=VARCHAR}
+     </if>
+     <if test="positionName != null and positionName !=''" >
+       and bp.position_name = #{positionName,jdbcType=VARCHAR}
+     </if>
+     <if test="createTime != null" >
+       and bp.create_time = #{createTime,jdbcType=TIMESTAMP}
+     </if>
+     <if test="createUser != null and createUser !=''" >
+       and bp.create_user = #{createUser,jdbcType=VARCHAR}
+     </if>
+     <if test="updateTime != null" >
+       and bp.update_time = #{updateTime,jdbcType=TIMESTAMP}
+     </if>
+     <if test="updateUser != null and updateUser != ''" >
+       and bp.update_user = #{updateUser,jdbcType=VARCHAR}
+     </if>
+     <if test="remark != null" >
+       and bp.remark = #{remark,jdbcType=VARCHAR}
+     </if>
+  </select>
+  
+  <!-- 根据条件查询职位信息 -->
+  <select id="getListByCondition" resultMap="BaseResultMap" parameterType="com.ule.oa.base.po.Position" >
+    select p.id, p.position_code, p.position_name,p.create_time, pl.code as 'companyPositionLevel.code',
+    p.create_user, p.update_time, p.update_user, p.del_flag, p.remark,p.version from base_depart_position dp
+    left join base_position p
+  	on (
+  		p.id = dp.position_id and dp.del_flag =0 
+  		<if test="null != departId">
+	  		and dp.depart_id = #{departId,jdbcType=BIGINT}
+  		</if>
+  	)
+  	left join base_company_position_level pl
+  	on(p.position_level_id = pl.id and pl.del_flag = 0)
+    where p.del_flag = 0 
+   	<if test="id != null">
+   		and p.id = #{id,jdbcType=BIGINT}
+   	</if>
+    <if test="positionCode != null and positionCode != ''" >
+       and p.position_code = #{positionCode,jdbcType=VARCHAR}
+     </if>
+     <if test="positionName != null and positionName !=''" >
+       and p.position_name = #{positionName,jdbcType=VARCHAR}
+     </if>
+     <if test="createTime != null" >
+       and p.create_time = #{createTime,jdbcType=TIMESTAMP}
+     </if>
+     <if test="createUser != null and createUser !=''" >
+       and p.create_user = #{createUser,jdbcType=VARCHAR}
+     </if>
+     <if test="updateTime != null" >
+       and p.update_time = #{updateTime,jdbcType=TIMESTAMP}
+     </if>
+     <if test="updateUser != null and updateUser != ''" >
+       and p.update_user = #{updateUser,jdbcType=VARCHAR}
+     </if>
+     <if test="remark != null" >
+       and p.remark = #{remark,jdbcType=VARCHAR}
+     </if>
+     ORDER BY convert(p.position_name USING gbk) asc
+  </select>
+  
+  <!-- 保存职位信息 -->
+  <insert id="save" parameterType="com.ule.oa.base.po.Position" >
+  		<selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">
+			SELECT LAST_INSERT_ID() AS id
+		</selectKey>
+		
+	    insert into base_position
+	    <trim prefix="(" suffix=")" suffixOverrides="," >
+	      <if test="positionCode != null" >
+	        position_code,
+	      </if>
+	      <if test="positionName != null" >
+	        position_name,
+	      </if>
+	      <if test="positionLevelId != null" >
+	        position_level_id,
+	      </if>
+	      <if test="positionSeqId != null" >
+	        position_seq_id,
+	      </if>
+	      <if test="createTime != null" >
+	        create_time,
+	      </if>
+	      <if test="createUser != null" >
+	        create_user,
+	      </if>
+	      <if test="updateTime != null" >
+	        update_time,
+	      </if>
+	      <if test="updateUser != null" >
+	        update_user,
+	      </if>
+	      <if test="delFlag != null" >
+	        del_flag,
+	      </if>
+	      <if test="remark != null" >
+	        remark,
+	      </if>
+	      <if test="companyId != null" >
+	        company_id,
+	      </if>
+	      <if test="parentId != null" >
+	        parent_id,
+	      </if>
+	      <if test="rank != null" >
+	        rank,
+	      </if>
+	    </trim>
+	    <trim prefix="values (" suffix=")" suffixOverrides="," >
+	      <if test="positionCode != null" >
+	        #{positionCode,jdbcType=VARCHAR},
+	      </if>
+	      <if test="positionName != null" >
+	        #{positionName,jdbcType=VARCHAR},
+	      </if>
+	      <if test="positionLevelId != null" >
+	        #{positionLevelId,jdbcType=BIGINT},
+	      </if>
+	      <if test="positionSeqId != null" >
+	        #{positionSeqId,jdbcType=BIGINT},
+	      </if>
+	      <if test="createTime != null" >
+	        #{createTime,jdbcType=TIMESTAMP},
+	      </if>
+	      <if test="createUser != null" >
+	        #{createUser,jdbcType=VARCHAR},
+	      </if>
+	      <if test="updateTime != null" >
+	        #{updateTime,jdbcType=TIMESTAMP},
+	      </if>
+	      <if test="updateUser != null" >
+	        #{updateUser,jdbcType=VARCHAR},
+	      </if>
+	      <if test="delFlag != null" >
+	        #{delFlag,jdbcType=INTEGER},
+	      </if>
+	      <if test="remark != null" >
+	        #{remark,jdbcType=VARCHAR},
+	      </if>
+	      <if test="companyId != null" >
+	        #{companyId,jdbcType=INTEGER},
+	      </if>
+	      <if test="parentId != null" >
+	        #{parentId,jdbcType=INTEGER},
+	      </if>
+	      <if test="rank != null" >
+	    	#{rank,jdbcType=INTEGER},
+	      </if>
+	    </trim>
+    </insert>
+    
+    <!-- 根据主键更新位置信息 -->
+    <update id="updateById" parameterType="com.ule.oa.base.po.Position" >
+	    update base_position
+	    <set >
+	      <if test="positionCode != null" >
+	        position_code = #{positionCode,jdbcType=VARCHAR},
+	      </if>
+	      <if test="positionName != null" >
+	        position_name = #{positionName,jdbcType=VARCHAR},
+	      </if>
+	      <if test="positionLevelId != null" >
+	        position_level_id = #{positionLevelId,jdbcType=BIGINT},
+	      </if>
+	      <if test="positionSeqId != null" >
+	        position_seq_id = #{positionSeqId,jdbcType=BIGINT},
+	      </if>
+	      <if test="updateTime != null" >
+	        update_time = #{updateTime,jdbcType=TIMESTAMP},
+	      </if>
+	      <if test="updateUser != null" >
+	        update_user = #{updateUser,jdbcType=VARCHAR},
+	      </if>
+	      <if test="delFlag != null" >
+	        del_flag = #{delFlag,jdbcType=INTEGER},
+	      </if>
+	      <if test="remark != null" >
+	        remark = #{remark,jdbcType=VARCHAR},
+	      </if>
+	      <if test="companyId != null" >
+	        company_id = #{companyId,jdbcType=INTEGER},
+	      </if>
+	      <if test="parentId != null" >
+	        parent_id = #{parentId,jdbcType=INTEGER},
+	      </if>
+	      <if test="rank != null" >
+	    	rank = #{rank,jdbcType=INTEGER},
+	      </if>
+	      version = version + 1
+	    </set>
+	    where id = #{id,jdbcType=BIGINT} and version = #{version,jdbcType=BIGINT}
+  </update>
+</mapper>

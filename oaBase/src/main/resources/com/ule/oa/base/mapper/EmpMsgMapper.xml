@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ule.oa.base.mapper.EmpMsgMapper" >
+
+  <resultMap id="BaseResultMap" type="com.ule.oa.base.po.EmpMsg" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="company_id" property="companyId" jdbcType="BIGINT" />
+    <result column="EMPLOYEE_ID" property="employeeId" jdbcType="BIGINT" />
+    <result column="type" property="type" jdbcType="BIGINT" />
+    <result column="RU_TASK_ID" property="ruTaskId" jdbcType="BIGINT" />
+    <result column="NODE_CODE" property="nodeCode" jdbcType="VARCHAR" />
+    <result column="title" property="title" jdbcType="VARCHAR" />
+    <result column="content" property="content" jdbcType="VARCHAR" />
+    <result column="read_flag" property="readFlag" jdbcType="BIGINT" />
+    <result column="read_date" property="readDate" jdbcType="TIMESTAMP" />
+    <result column="VERSION" property="version" jdbcType="VARCHAR" />
+    <result column="del_flag" property="delFlag" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    id, company_id,EMPLOYEE_ID,type, RU_TASK_ID, NODE_CODE, title, content, read_flag, read_date,VERSION,del_flag,create_time, create_user, update_time, update_user
+  </sql>
+  
+  <select id="getListByCondition" resultType="com.ule.oa.base.po.EmpMsg" parameterType="com.ule.oa.base.po.EmpMsg" >
+    select <include refid="Base_Column_List"/> from base_emp_msg
+    where del_flag = 0
+     <if test="id != null">
+    	and id = #{id,jdbcType=BIGINT}
+     </if>
+   	 <if test="companyId != null" >
+       and company_id = #{companyId,jdbcType=BIGINT}
+     </if>
+     <if test="employeeId != null" >
+       and EMPLOYEE_ID = #{employeeId,jdbcType=BIGINT}
+     </if>
+     <if test="type != null" >
+       and type = #{type,jdbcType=BIGINT}
+     </if>
+     <if test="ruTaskId != null" >
+       and RU_TASK_ID = #{ruTaskId,jdbcType=BIGINT}
+     </if>
+     <if test="nodeCode != null">
+       and NODE_CODE = #{nodeCode,jdbcType=VARCHAR}
+     </if>
+     <if test="title != null and title != ''" >
+       and title = #{title,jdbcType=VARCHAR}
+     </if>
+     <if test="content != null and content != ''" >
+       and content = #{content,jdbcType=VARCHAR}
+     </if>
+     <if test="readFlag != null" >
+       and read_flag = #{readFlag,jdbcType=BIGINT}
+     </if>
+  </select>
+  
+  <select id="getPageList" parameterType="com.ule.oa.base.po.EmpMsg" resultType="com.ule.oa.base.po.EmpMsg">
+	select <include refid="Base_Column_List"/> from base_emp_msg
+    where del_flag = 0
+     <if test="id != null">
+    	and id = #{id,jdbcType=BIGINT}
+     </if>
+   	 <if test="companyId != null" >
+       and company_id = #{companyId,jdbcType=BIGINT}
+     </if>
+     <if test="employeeId != null" >
+       and EMPLOYEE_ID = #{employeeId,jdbcType=BIGINT}
+     </if>
+     <if test="type != null" >
+       and type = #{type,jdbcType=BIGINT}
+     </if>
+     <if test="ruTaskId != null" >
+       and RU_TASK_ID = #{ruTaskId,jdbcType=BIGINT}
+     </if>
+     <if test="nodeCode != null">
+       and NODE_CODE = #{nodeCode,jdbcType=VARCHAR}
+     </if>
+     <if test="title != null and title != ''" >
+       and title = #{title,jdbcType=VARCHAR}
+     </if>
+     <if test="content != null and content != ''" >
+       and content = #{content,jdbcType=VARCHAR}
+     </if>
+     <if test="readFlag != null" >
+       and read_flag = #{readFlag,jdbcType=BIGINT}
+     </if>
+  		order by id desc limit #{offset},#{limit}
+  </select>
+  
+  <select id="getList" parameterType="com.ule.oa.base.po.EmpMsg" resultType="com.ule.oa.base.po.EmpMsg">
+	select <include refid="Base_Column_List"/> from base_emp_msg
+    where del_flag = 0
+     <if test="id != null">
+    	and id = #{id,jdbcType=BIGINT}
+     </if>
+   	 <if test="companyId != null" >
+       and company_id = #{companyId,jdbcType=BIGINT}
+     </if>
+     <if test="employeeId != null" >
+       and EMPLOYEE_ID = #{employeeId,jdbcType=BIGINT}
+     </if>
+     <if test="type != null" >
+       and type = #{type,jdbcType=BIGINT}
+     </if>
+     <if test="ruTaskId != null" >
+       and RU_TASK_ID = #{ruTaskId,jdbcType=BIGINT}
+     </if>
+     <if test="nodeCode != null">
+       and NODE_CODE = #{nodeCode,jdbcType=VARCHAR}
+     </if>
+     <if test="title != null and title != ''" >
+       and title = #{title,jdbcType=VARCHAR}
+     </if>
+     <if test="content != null and content != ''" >
+       and content = #{content,jdbcType=VARCHAR}
+     </if>
+     <if test="readFlag != null" >
+       and read_flag = #{readFlag,jdbcType=BIGINT}
+     </if>
+  		order by id desc
+  </select>
+  
+  
+  
+  <select id="getCount" parameterType="com.ule.oa.base.po.EmpMsg" resultType="java.lang.Integer">
+	select count(1) from base_emp_msg
+    where del_flag = 0
+     <if test="id != null">
+    	and id = #{id,jdbcType=BIGINT}
+     </if>
+   	 <if test="companyId != null" >
+       and company_id = #{companyId,jdbcType=BIGINT}
+     </if>
+     <if test="employeeId != null" >
+       and EMPLOYEE_ID = #{employeeId,jdbcType=BIGINT}
+     </if>
+     <if test="type != null" >
+       and type = #{type,jdbcType=BIGINT}
+     </if>
+     <if test="ruTaskId != null" >
+       and RU_TASK_ID = #{ruTaskId,jdbcType=BIGINT}
+     </if>
+     <if test="nodeCode != null">
+       and NODE_CODE = #{nodeCode,jdbcType=VARCHAR}
+     </if>
+     <if test="title != null and title != ''" >
+       and title = #{title,jdbcType=VARCHAR}
+     </if>
+     <if test="content != null and content != ''" >
+       and content = #{content,jdbcType=VARCHAR}
+     </if>
+     <if test="readFlag != null" >
+       and read_flag = #{readFlag,jdbcType=BIGINT}
+     </if>
+  </select>
+  
+  <insert id="save" parameterType="com.ule.oa.base.po.EmpMsg">
+    insert into base_emp_msg (
+      company_id,
+      EMPLOYEE_ID,
+      type,
+      RU_TASK_ID,
+      NODE_CODE,
+      title,
+      content,
+      read_flag,
+      VERSION,
+      create_time,
+      create_user,  
+      del_flag
+      )
+    values (
+      #{companyId,jdbcType=BIGINT},
+      #{employeeId,jdbcType=BIGINT},
+      #{type,jdbcType=BIGINT},
+      #{ruTaskId,jdbcType=BIGINT},
+      #{nodeCode,jdbcType=VARCHAR},
+      #{title,jdbcType=VARCHAR}, 
+      #{content,jdbcType=VARCHAR}, 
+      #{readFlag,jdbcType=BIGINT},
+      1, 
+      #{createTime,jdbcType=TIMESTAMP}, 
+      #{createUser,jdbcType=VARCHAR},
+      #{delFlag,jdbcType=INTEGER}
+      )
+  </insert>
+  
+  <insert id="batchSave" parameterType="java.util.List">
+		insert into base_emp_msg (
+			COMPANY_ID,
+			EMPLOYEE_ID,
+			TYPE,
+			RU_TASK_ID,
+			NODE_CODE,
+			TITLE,
+			CONTENT,
+			READ_FLAG,
+			VERSION,
+			CREATE_TIME,
+			CREATE_USER,
+			DEL_FLAG
+		)
+		SELECT T.* FROM(
+		<foreach collection="list" item="item" index="index" separator="UNION">
+		SELECT
+			#{item.companyId} AS COMPANY_ID,
+			#{item.employeeId} AS EMPLOYEE_ID,
+			#{item.type} AS TYPE,
+			#{item.ruTaskId} AS RU_TASK_ID,
+			#{item.nodeCode} AS NODE_CODE,
+			#{item.title} AS TITLE,
+			#{item.content} AS CONTENT,
+			#{item.readFlag} AS READ_FLAG,
+			1 AS VERSION,
+			#{item.createTime} AS CREATE_TIME,
+			#{item.createUser} AS CREATE_USER,
+			#{item.delFlag} AS DEL_FLAG
+		FROM DUAL
+		</foreach>
+		)T
+	</insert>
+  
+  <update id="updateById" parameterType="com.ule.oa.base.po.EmpMsg" >
+    update base_emp_msg
+    <set >
+      <if test="readFlag != null" >
+        read_flag = #{readFlag,jdbcType=BIGINT},
+      </if>
+      <if test="readDate != null" >
+        read_date = #{readDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="version != null and version !=''" >
+        version = #{version,jdbcType=VARCHAR},
+      </if>
+      <if test="delFlag != null" >
+        del_flag = #{delFlag,jdbcType=INTEGER},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR}
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+  <update id="delRuTaskIdORNodeCode" parameterType="com.ule.oa.base.po.EmpMsg" >
+    update base_emp_msg
+        set del_flag = #{delFlag,jdbcType=INTEGER}
+    where
+     <if test="ruTaskId != null" >
+        RU_TASK_ID = #{ruTaskId,jdbcType=BIGINT}
+     </if>
+     <if test="nodeCode != null">
+       and NODE_CODE = #{nodeCode,jdbcType=VARCHAR}
+     </if>
+     <if test="readFlag != null" >
+       and read_flag = #{readFlag,jdbcType=BIGINT}
+     </if>
+  </update>
+</mapper>

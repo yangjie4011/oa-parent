@@ -1,0 +1,398 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ule.oa.base.mapper.ApplicationEmployeeDutyMapper" >
+  <resultMap id="BaseResultMap" type="com.ule.oa.base.po.ApplicationEmployeeDuty" >
+    <id column="ID" property="id" jdbcType="BIGINT" />
+    <result column="COMPANY_ID" property="companyId" jdbcType="BIGINT" />
+    <result column="DEPART_ID" property="departId" jdbcType="BIGINT" />
+    <result column="DEPART_NAME" property="departName" jdbcType="VARCHAR" />
+    <result column="DUTY_NUM" property="dutyNum" jdbcType="INTEGER" />
+    <result column="EMPLOYEE_IDS" property="employeeIds" jdbcType="VARCHAR"/>
+    <result column="class_setting_person" property="classSettingPerson" jdbcType="VARCHAR"/>
+    <result column="year" property="year" jdbcType="VARCHAR"/>
+    <result column="VACATION_NAME" property="vacationName" jdbcType="VARCHAR"/>
+    <result column="SUBMIT_DATE" property="submitDate" jdbcType="TIMESTAMP" />
+    <result column="Approval_status" property="approvalStatus" jdbcType="BIGINT" />
+    <result column="approval_Reason" property="approvalReason" jdbcType="VARCHAR" />
+    <result column="del_flag" property="delFlag" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="version" property="version" jdbcType="BIGINT"/> 
+    <result column="employee_id" property="employeeId" jdbcType="BIGINT" />
+    <result column="processInstance_Id" property="processInstanceId" jdbcType="VARCHAR" />
+    <result column="type" property="type" jdbcType="INTEGER" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    ID,COMPANY_ID,DEPART_ID,DEPART_NAME, DUTY_NUM, EMPLOYEE_IDS, class_setting_person,year,VACATION_NAME, SUBMIT_DATE,APPROVAL_STATUS,APPROVAL_REASON,
+    del_flag, create_time, create_user, update_user, update_time,version,employee_id,processInstance_Id,type
+  </sql>
+  
+  <insert id="save" parameterType="com.ule.oa.base.po.ApplicationEmployeeDuty" useGeneratedKeys="true" keyProperty="id">
+  	<selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">
+		SELECT LAST_INSERT_ID() AS id
+	</selectKey>
+    insert into attn_application_employ_duty (
+      COMPANY_ID,
+      DEPART_ID,
+      DEPART_NAME,
+      DUTY_NUM,
+      EMPLOYEE_IDS,
+      class_setting_person,
+      year,
+      VACATION_NAME,
+      VERSION,
+      create_time,
+      create_user,  
+      del_flag,
+      employee_id,
+      processInstance_Id,
+      type
+      )
+    values (
+      #{companyId,jdbcType=BIGINT},
+      #{departId,jdbcType=BIGINT},
+      #{departName,jdbcType=VARCHAR}, 
+      #{dutyNum,jdbcType=INTEGER},
+      #{employeeIds,jdbcType=VARCHAR}, 
+      #{classSettingPerson,jdbcType=VARCHAR}, 
+      #{year,jdbcType=VARCHAR}, 
+      #{vacationName,jdbcType=VARCHAR}, 
+      #{version,jdbcType=VARCHAR}, 
+      #{createTime,jdbcType=TIMESTAMP}, 
+      #{createUser,jdbcType=VARCHAR},
+      #{delFlag,jdbcType=INTEGER},
+      #{employeeId,jdbcType=BIGINT},
+      #{processInstanceId,jdbcType=VARCHAR},
+      #{type,jdbcType=INTEGER}
+      )
+  </insert>
+  
+  <select id="getById" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from attn_application_employ_duty where del_flag = 0 and id = #{id,jdbcType=BIGINT}
+  </select>
+  
+  <select id="queryByProcessInstanceId" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+      <include refid="Base_Column_List" /> from attn_application_employ_duty where del_flag = 0 and processInstance_Id = #{processInstanceId,jdbcType=VARCHAR}
+  </select>
+  
+  <select id="getByCondition" resultMap="BaseResultMap" parameterType="com.ule.oa.base.po.ApplicationEmployeeDuty" >
+    select 
+    <include refid="Base_Column_List" />
+    from attn_application_employ_duty where del_flag = 0
+    <if test="id != null" >
+      and id = #{id,jdbcType=BIGINT}
+    </if>
+    <if test="departId != null " >
+      and DEPART_ID = #{departId,jdbcType=BIGINT}
+    </if>
+    <if test="vacationName != null and vacationName!=''" >
+      and VACATION_NAME = #{vacationName,jdbcType=VARCHAR}
+    </if>
+    <if test="year != null and year != ''" >
+      and year = #{year,jdbcType=VARCHAR}
+    </if>
+    <if test="type != null" >
+      and type = #{type,jdbcType=INTEGER}
+    </if>
+    <if test="typeList != null"> 
+      and type in 
+      <foreach collection="typeList" index="index" item="item" open="(" separator="," close=")">
+         #{item}
+      </foreach>
+    </if>
+    <if test="approvalStatus != null" >
+      and approval_status = #{approvalStatus,jdbcType=BIGINT}
+    </if>
+    <if test="version != null" >
+      and version = #{version,jdbcType=BIGINT}
+    </if>
+    <if test="createTime !=null">
+      and create_time &gt;=  #{createTime,jdbcType=TIMESTAMP}
+    </if>
+    <if test="departIds != null"> 
+	    and DEPART_ID in 
+	    <foreach collection="departIds" index="index" item="item" open="(" separator="," close=")">
+             #{item}
+        </foreach>
+  	</if>
+  	<if test="null != approvalStatusList and approvalStatusList.size > 0">
+    	    and approval_status  in
+    	<foreach collection="approvalStatusList" item="appStatus" open="(" separator="," close=")">
+    		#{appStatus}
+    	</foreach>
+    </if>
+    <if test="assignee != null and assignee != ''" >
+        and PROCESSINSTANCE_ID in (select DISTINCT
+			* 
+		FROM
+			(
+		SELECT
+			rt.PROC_INST_ID_ 
+		FROM
+			ACT_RU_IDENTITYLINK ri
+			LEFT JOIN ACT_RU_TASK rt ON ri.TASK_ID_ = rt.ID_ 
+		WHERE
+			ri.TYPE_ = 'candidate' 
+			AND ri.USER_ID_ = #{assignee,jdbcType=VARCHAR}
+			
+			UNION ALL
+			
+		SELECT
+			PROC_INST_ID_ 
+		FROM
+			ACT_RU_TASK 
+		WHERE
+			ASSIGNEE_ = #{assignee,jdbcType=VARCHAR}
+			) instance_id
+			)
+    </if>
+  	ORDER BY SUBMIT_DATE DESC
+ 	<if test="offset != null and limit != null">
+		limit #{offset},#{limit}
+	</if>
+  </select>
+  
+  <select id="myDutyTaskList" resultMap="BaseResultMap" parameterType="com.ule.oa.base.po.ApplicationEmployeeDuty" >
+  		SELECT
+			ad.ID,ad.COMPANY_ID,ad.DEPART_ID,ad.DEPART_NAME,ad.DUTY_NUM,ad.EMPLOYEE_IDS,ad.class_setting_person,ad.YEAR,ad.VACATION_NAME,ad.SUBMIT_DATE,
+			ad.APPROVAL_STATUS,ad.APPROVAL_REASON,ad.del_flag,ad.create_time,ad.create_user,ad.update_user,ad.update_time,ad.version,
+			ad.employee_id,ad.processInstance_Id,ad.type
+		FROM
+			attn_application_employ_duty ad
+		LEFT JOIN ACT_HI_TASKINST t 
+			ON ad.PROCESSINSTANCE_ID = t.PROC_INST_ID_
+		WHERE
+		 	ad.del_flag = 0
+			and t.ASSIGNEE_ = #{assignee,jdbcType=VARCHAR}
+	    	AND t.TASK_DEF_KEY_ != 'proposer' 
+	    	AND t.TASK_DEF_KEY_ != 'usertask1' 
+	    	AND t.END_TIME_ IS NOT NULL 
+	    	AND t.PROC_DEF_ID_ LIKE '%duty%'
+			<if test="id != null" >
+		      and ad.id = #{id,jdbcType=BIGINT}
+		    </if>
+		    <if test="departId != null " >
+		      and ad.DEPART_ID = #{departId,jdbcType=BIGINT}
+		    </if>
+		    <if test="vacationName != null and vacationName!=''" >
+		      and ad.VACATION_NAME = #{vacationName,jdbcType=VARCHAR}
+		    </if>
+		    <if test="year != null and year != ''" >
+		      and ad.year = #{year,jdbcType=VARCHAR}
+		    </if>
+		    <if test="type != null" >
+		      and ad.type = #{type,jdbcType=INTEGER}
+		    </if>
+		    <if test="typeList != null"> 
+		      and ad.type in 
+		      <foreach collection="typeList" index="index" item="item" open="(" separator="," close=")">
+		         #{item}
+		      </foreach>
+		    </if>
+		    <if test="approvalStatus != null" >
+		      and ad.approval_status = #{approvalStatus,jdbcType=BIGINT}
+		    </if>
+		    <if test="version != null" >
+		      and ad.version = #{version,jdbcType=BIGINT}
+		    </if>
+		    <if test="createTime !=null">
+		      and ad.create_time &gt;=  #{createTime,jdbcType=TIMESTAMP}
+		    </if>
+		    <if test="null != approvalStatusList and approvalStatusList.size > 0">
+		 	    and ad.approval_status  in
+			 	<foreach collection="approvalStatusList" item="appStatus" open="(" separator="," close=")">
+			 		#{appStatus}
+			 	</foreach>
+			</if>
+			ORDER BY ad.SUBMIT_DATE DESC
+			<if test="offset != null and limit != null">
+				limit #{offset},#{limit}
+			</if>
+				
+  </select>
+  
+   <select id="myDutyTaskListCount" resultType="java.lang.Integer" parameterType="com.ule.oa.base.po.ApplicationEmployeeDuty" >
+  		SELECT
+			count(1)
+		FROM
+			attn_application_employ_duty ad
+		LEFT JOIN ACT_HI_TASKINST t 
+			ON ad.PROCESSINSTANCE_ID = t.PROC_INST_ID_
+		WHERE
+			ad.del_flag = 0
+			and t.ASSIGNEE_ = #{assignee,jdbcType=VARCHAR}
+	    	AND t.TASK_DEF_KEY_ != 'proposer' 
+	    	AND t.TASK_DEF_KEY_ != 'usertask1' 
+	    	AND t.END_TIME_ IS NOT NULL 
+	    	AND t.PROC_DEF_ID_ LIKE '%duty%'
+			<if test="id != null" >
+		      and ad.id = #{id,jdbcType=BIGINT}
+		    </if>
+		    <if test="departId != null " >
+		      and ad.DEPART_ID = #{departId,jdbcType=BIGINT}
+		    </if>
+		    <if test="vacationName != null and vacationName!=''" >
+		      and ad.VACATION_NAME = #{vacationName,jdbcType=VARCHAR}
+		    </if>
+		    <if test="year != null and year != ''" >
+		      and ad.year = #{year,jdbcType=VARCHAR}
+		    </if>
+		    <if test="type != null" >
+		      and ad.type = #{type,jdbcType=INTEGER}
+		    </if>
+		    <if test="typeList != null"> 
+		      and ad.type in 
+		      <foreach collection="typeList" index="index" item="item" open="(" separator="," close=")">
+		         #{item}
+		      </foreach>
+		    </if>
+		    <if test="approvalStatus != null" >
+		      and ad.approval_status = #{approvalStatus,jdbcType=BIGINT}
+		    </if>
+		    <if test="version != null" >
+		      and ad.version = #{version,jdbcType=BIGINT}
+		    </if>
+		    <if test="createTime !=null">
+		      and ad.create_time &gt;=  #{createTime,jdbcType=TIMESTAMP}
+		    </if>
+		    <if test="null != approvalStatusList and approvalStatusList.size > 0">
+		 	    and ad.approval_status  in
+			 	<foreach collection="approvalStatusList" item="appStatus" open="(" separator="," close=")">
+			 		#{appStatus}
+			 	</foreach>
+			</if>
+				
+  </select>
+  
+  
+  
+  <select id="getByConditionCount" resultType="java.lang.Integer" parameterType="com.ule.oa.base.po.ApplicationEmployeeDuty" >
+    select 
+    count(1)
+    from attn_application_employ_duty where del_flag = 0
+    <if test="id != null" >
+      and id = #{id,jdbcType=BIGINT}
+    </if>
+    <if test="departId != null" >
+      and DEPART_ID = #{departId,jdbcType=BIGINT}
+    </if>
+      <if test="vacationName != null and vacationName!=''" >
+      and VACATION_NAME = #{vacationName,jdbcType=VARCHAR}
+    </if>
+    <if test="year != null and year != ''" >
+      and year = #{year,jdbcType=VARCHAR}
+    </if>
+    <if test="version != null" >
+      and version = #{version,jdbcType=BIGINT}
+    </if>
+    <if test="createTime !=null">
+      and create_time &gt;=  #{createTime,jdbcType=TIMESTAMP}
+    </if>
+    <if test="processInstanceId != null and processInstanceId != ''" >
+      and  processInstance_Id = #{processInstanceId,jdbcType=VARCHAR}
+    </if>
+     <if test="approvalStatus != null" >
+      and approval_status = #{approvalStatus,jdbcType=BIGINT}
+    </if>
+    <if test="type != null" >
+      and type = #{type,jdbcType=INTEGER}
+    </if>
+    <if test="departIds != null"> 
+	    and DEPART_ID in 
+	    <foreach collection="departIds" index="index" item="item" open="(" separator="," close=")">
+             #{item}
+        </foreach>
+  	</if>
+  	<if test="assignee != null and assignee != ''" >
+        and PROCESSINSTANCE_ID in (select DISTINCT
+			* 
+		FROM
+			(
+		SELECT
+			rt.PROC_INST_ID_ 
+		FROM
+			ACT_RU_IDENTITYLINK ri
+			LEFT JOIN ACT_RU_TASK rt ON ri.TASK_ID_ = rt.ID_ 
+		WHERE
+			ri.TYPE_ = 'candidate' 
+			AND ri.USER_ID_ = #{assignee,jdbcType=VARCHAR}
+			
+			UNION ALL
+			
+		SELECT
+			PROC_INST_ID_ 
+		FROM
+			ACT_RU_TASK 
+		WHERE
+			ASSIGNEE_ = #{assignee,jdbcType=VARCHAR}
+			) instance_id
+			)
+    </if>
+  	<if test="null != approvalStatusList and approvalStatusList.size > 0">
+    	    and approval_status  in
+    	<foreach collection="approvalStatusList" item="appStatus" open="(" separator="," close=")">
+    		#{appStatus}
+    	</foreach>
+    	</if>
+  </select>
+  
+  
+  <update id="updateById" parameterType="com.ule.oa.base.po.ApplicationEmployeeDuty" >
+    update attn_application_employ_duty
+    <set>
+      Approval_status = #{approvalStatus,jdbcType=BIGINT},
+      <if test="approvalReason != null" >
+        approval_Reason = #{approvalReason,jdbcType=VARCHAR},
+      </if>
+      <if test="dutyNum != null" >
+        DUTY_NUM = #{dutyNum,jdbcType=INTEGER},
+      </if>
+       <if test="employeeIds != null" >
+        EMPLOYEE_IDS = #{employeeIds,jdbcType=VARCHAR},
+      </if>
+      <if test="version != null" >
+        version = #{version,jdbcType=BIGINT},
+      </if>
+      <if test="processInstanceId != null and processInstanceId != ''" >
+        processInstance_Id = #{processInstanceId,jdbcType=VARCHAR},
+      </if>
+      <if test="classSettingPerson != null" >
+        CLASS_SETTING_PERSON = #{classSettingPerson,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="submitDate != null">
+      	SUBMIT_DATE = #{submitDate,jdbcType=TIMESTAMP}
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+  <update id="deleteById" parameterType="com.ule.oa.base.po.ApplicationEmployeeDuty" >
+    update attn_application_employ_duty
+    <set>
+      del_flag = 1,
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP}
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+  
+  
+  
+</mapper>

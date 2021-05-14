@@ -1,0 +1,202 @@
+
+
+/* 鍓╀綑鍋囨湡table甯冨眬 */
+ul,li{list-style: none;}
+body,div,ul,li,span,table,th,thead,tr,td,h2,h3{margin:0;padding:0;}
+table{
+    border-collapse: collapse;
+    width: 100%;
+    text-align: center;
+    font-size: 14px;
+}
+th{
+    font-weight: normal;
+}
+em{font-style: normal;}
+.fl{
+    float: left;
+}
+.clearfix:after{
+    content: '';
+    display: block;
+    clear: both;
+}
+.hide{
+    display: none !important;
+}
+.hgc_restHoliday{
+    width: 100%;
+}
+.hgc_restHoliday table,.hgc_restHoliday th,
+.hgc_restHoliday tr,.hgc_restHoliday thead,
+.hgc_restHoliday td{
+    border:1px solid #ddd;
+}
+.hgc_restHoliday th,
+.hgc_restHoliday td{
+    height: 25px;
+}
+.hgc_restHoliday .title{
+    background: #f8f8f8;
+}
+.hgc_restHoliday .baseInfo span{
+    float: left;
+    width: 13%;
+    height: 35px;
+    text-align: center;
+    line-height: 35px;
+    font-size: 12px;
+}
+.hgc_restHoliday .showHolidayInfoBtn{
+    cursor: pointer;
+    height: 35px;
+    background: url('//i0.beta.ule.com/ule/oa/backstage/i/icon_add.png') no-repeat center;
+}
+.hgc_restHoliday .showHolidayInfoBtn.icon_add{
+	background-image:url('//i0.beta.ule.com/ule/oa/backstage/i/u259.png');
+}
+
+.hgc_restHoliday .holidayBox .showHolidayInfoBtn{
+    display: inline-block;
+    height: 15px;
+    width: 30px;
+}
+
+.hgc_restHoliday li .title .showHolidayInfoBtn{
+	background: none;
+}
+.hgc_restHoliday .baseInfo .showHolidayInfoBtn{
+    width: 5%;
+}
+.hgc_restHoliday .baseInfo .calculator{
+    background: url('//i0.beta.ule.com/ule/oa/backstage/i/u374.png') no-repeat center;
+}
+.hgc_restHoliday  .holidayBox.holiday_year{
+    width:90%;
+    padding-left: 5%;
+}
+.hgc_restHoliday  .holidayBox.holiday_ill{
+    width: 70%;
+    padding-left: 5%;
+}
+.hgc_restHoliday  .holidayBox.holiday_off{
+    width: 50%;
+    padding-left: 5%;
+}
+.hgc_restHoliday  .holidayBox.holiday_other{
+    width: 75%;
+    padding-left: 5%;
+}
+.hgc_restHoliday  .holidayBox h3{
+    padding:5px 0;
+    font-weight: normal;
+    font-size: 14px;
+}
+.hgc_restHoliday  .holidayBox h3 em{
+    display: inline-block;
+    padding:0  20px;
+}
+
+/* 涓婁笅绠ご */
+
+.triangle {
+    width: 12px;
+    display: inline-block;
+}
+
+.border-down,
+.border-up {
+    width: 0;
+    height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    position: relative;
+}
+
+.border-down span,
+.border-up span {
+    display: block;
+    width: 0;
+    height: 0;
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    position: absolute;
+    left: -4px;
+}
+
+.border-up {
+    margin-bottom: 3px;
+    border-bottom: 6px solid #333;
+}
+
+.border-down {
+    border-top: 6px solid #333;
+}
+
+.border-up span {
+    border-bottom: 4px solid #fff;
+    top: 1px;
+}
+
+.border-down span {
+    border-top: 4px solid #fff;
+    top: -5px;
+}
+
+
+/* 鍔犲噺鎸夐挳 */
+input {
+    background: none;
+    outline: none;
+    border: 0px;
+}
+.num_btn {
+    height: 35px;
+    display: inline-block;
+    text-align: center;
+}
+
+.num_btn .num {
+    width: 30px;
+    height: 33px;
+    line-height: 33px;
+    float: left;
+    text-align: center;
+}
+
+.num_btn .my_rl {
+    width: 19px;
+    height: 35px;
+    float: right;
+}
+
+.num_btn .add,
+.num_btn .reduce {
+    width: 19px;
+    height: 17px;
+    line-height: 17px;
+    float: left;
+    background-color: #F1F1F1;
+    cursor:pointer;
+}
+
+.num_btn .add {
+    border-bottom: 1px solid;
+}
+
+
+/* 鍑�  绛変簬 */
+
+.my_decrease {
+    width: 20px;
+    height: 32px;
+    display: inline-block;
+    padding: auto 0;
+}
+
+.my_decrease div {
+    width: 20px;
+    height: 4px;
+    background-color: #000;
+    margin-top: 8px;
+}

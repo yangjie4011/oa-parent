@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ule.oa.base.mapper.HrEmpCheckListMapper" >
+
+  <resultMap id="BaseResultMap" type="com.ule.oa.base.po.HrEmpCheckList" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="EMP_RESIGN_ID" property="empResignId" jdbcType="BIGINT" />
+    <result column="DEPART_NAME" property="departName" jdbcType="VARCHAR" />
+    <result column="CHECK_ITEM" property="checkItem" jdbcType="VARCHAR" />
+    <result column="CHECK_STATUS" property="checkStatus" jdbcType="BIGINT" />
+    <result column="APPROVER" property="approver" jdbcType="VARCHAR" />
+    <result column="APPROVER_ID" property="approverId" jdbcType="BIGINT" />
+    <result column="APPROVER_DATE" property="approverDate" jdbcType="TIMESTAMP" />
+    <result column="REMARK" property="remark" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="del_flag" property="delFlag" jdbcType="INTEGER" />
+    <result column="VERSION" property="version" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    id,EMP_RESIGN_ID,DEPART_NAME,CHECK_ITEM,CHECK_STATUS,APPROVER,APPROVER_ID,APPROVER_DATE,REMARK,
+    create_time,create_user,update_time,update_user,del_flag,VERSION
+  </sql>
+  
+  <select id="getListByCondition" resultType="com.ule.oa.base.po.HrEmpCheckList" parameterType="com.ule.oa.base.po.HrEmpCheckList" >
+    select <include refid="Base_Column_List"/> from hr_emp_check_list
+    where del_flag = 0
+     <if test="id != null">
+    	and id = #{id,jdbcType=BIGINT}
+     </if>
+     <if test="empResignId != null" >
+       and EMP_RESIGN_ID = #{empResignId,jdbcType=BIGINT}
+     </if>
+     <if test="departName != null and departName != ''" >
+       and DEPART_NAME = #{departName,jdbcType=VARCHAR}
+     </if>
+     <if test="approver != null and approver != ''" >
+       and APPROVER = #{approver,jdbcType=VARCHAR}
+     </if>
+     <if test="approverId != null" >
+       and APPROVER_ID = #{approverId,jdbcType=BIGINT}
+     </if>
+  </select>
+  
+  <insert id="save" parameterType="com.ule.oa.base.po.HrEmpCheckList" >
+    insert into hr_emp_check_list (
+      EMP_RESIGN_ID,
+      DEPART_NAME,
+      CHECK_ITEM,
+      CHECK_STATUS,
+      create_time, 
+      create_user, 
+      del_flag,
+      VERSION 
+      )
+    values(
+      #{empResignId,jdbcType=BIGINT},
+      #{departName,jdbcType=VARCHAR},
+      #{checkItem,jdbcType=VARCHAR},
+      #{checkStatus,jdbcType=BIGINT},
+      #{createTime,jdbcType=TIMESTAMP}, 
+      #{createUser,jdbcType=VARCHAR},
+      #{delFlag,jdbcType=INTEGER}, 
+      #{version,jdbcType=VARCHAR}
+      )
+  </insert>
+  
+  <update id="updateById" parameterType="com.ule.oa.base.po.HrEmpCheckList" >
+    update hr_emp_check_list
+    <set >
+      <if test="checkStatus != null" >
+        CHECK_STATUS = #{checkStatus,jdbcType=BIGINT},
+      </if>
+      <if test="approver != null and approver != ''" >
+        APPROVER = #{approver,jdbcType=VARCHAR},
+      </if>
+      <if test="approverId != null" >
+        APPROVER_ID = #{approverId,jdbcType=BIGINT},
+      </if>
+      <if test="approverDate != null" >
+        APPROVER_DATE = #{approverDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="remark != null" >
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR}
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

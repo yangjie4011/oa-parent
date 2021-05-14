@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ule.oa.base.mapper.LeaveApplyRegisterMapper" >
+
+  <resultMap id="BaseResultMap" type="com.ule.oa.base.po.LeaveApplyRegister" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="employee_id" property="employeeId" jdbcType="BIGINT" />
+    <result column="code" property="code" jdbcType="VARCHAR" />
+    <result column="cn_name" property="cnName" jdbcType="VARCHAR" />
+    <result column="depart_name" property="departName" jdbcType="VARCHAR" />
+    <result column="position_name" property="positionName" jdbcType="VARCHAR" />
+    <result column="type_of_work" property="typeOfWork" jdbcType="VARCHAR" />
+    <result column="leave_type" property="leaveType" jdbcType="INTEGER" />
+    <result column="start_time" property="startTime" jdbcType="TIMESTAMP" />
+    <result column="end_time" property="endTime" jdbcType="TIMESTAMP" />
+    <result column="leave_days" property="leaveDays" jdbcType="DECIMAL" />
+    <result column="leave_hours" property="leaveHours" jdbcType="DECIMAL" />
+    <result column="children_num" property="childrenNum" jdbcType="INTEGER" />
+    <result column="day_type" property="dayType" jdbcType="INTEGER" />
+    <result column="living_state" property="livingState" jdbcType="INTEGER" />
+    <result column="children_birthday" property="childrenBirthday" jdbcType="DATE" />
+    <result column="relatives" property="relatives" jdbcType="INTEGER" />
+    <result column="reason" property="reason" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="del_flag" property="delFlag" jdbcType="INTEGER" />
+    <result column="row_create_time" property="rowCreateTime" jdbcType="TIMESTAMP" />
+    <result column="row_lastupdate_time" property="rowLastUpdateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    id, employee_id,code,cn_name,depart_name,position_name,type_of_work,leave_type,start_time,end_time,leave_days,leave_hours,children_num,
+    day_type,living_state,children_birthday,relatives,reason,create_time,create_user,update_time,update_user,del_flag,row_create_time,row_lastupdate_time
+  </sql>
+  
+  <insert id="save" parameterType="com.ule.oa.base.po.LeaveApplyRegister" useGeneratedKeys="true" keyProperty="id">
+    insert into leave_apply_register (
+      employee_id,
+      code,
+      cn_name,
+      depart_name,
+      position_name,
+      type_of_work,
+      leave_type,
+      start_time,
+      end_time,
+      leave_days,
+      leave_hours,
+      children_num,
+      day_type,
+      living_state,
+      children_birthday,
+      relatives,
+      reason,
+      create_time,
+      create_user,
+      del_flag
+      )
+    values (
+      #{employeeId,jdbcType=BIGINT},
+      #{code,jdbcType=VARCHAR}, 
+      #{cnName,jdbcType=VARCHAR}, 
+      #{departName,jdbcType=VARCHAR}, 
+      #{positionName,jdbcType=VARCHAR}, 
+      #{typeOfWork,jdbcType=VARCHAR}, 
+      #{leaveType,jdbcType=INTEGER},
+      #{startTime,jdbcType=TIMESTAMP}, 
+      #{endTime,jdbcType=TIMESTAMP}, 
+      #{leaveDays,jdbcType=DOUBLE},
+      #{leaveHours,jdbcType=DOUBLE},
+      #{childrenNum,jdbcType=INTEGER},
+      #{dayType,jdbcType=INTEGER},
+      #{livingState,jdbcType=INTEGER},
+      #{childrenBirthday,jdbcType=DATE},
+      #{relatives,jdbcType=INTEGER},
+      #{reason,jdbcType=VARCHAR},
+      #{createTime,jdbcType=TIMESTAMP}, 
+      #{createUser,jdbcType=VARCHAR},
+      #{delFlag,jdbcType=INTEGER}
+      )
+  </insert>
+  
+  <select id="getRegisterLeaveListByCondition" parameterType="com.ule.oa.base.po.LeaveApplyRegister" resultType="com.ule.oa.base.po.LeaveApplyRegister">
+	 select <include refid="Base_Column_List"/> from leave_apply_register where del_flag = 0
+	  	<if test="code != null and code != ''">
+	  		and code like concat('%',#{code,jdbcType=VARCHAR},'%')
+	  	</if>
+  		<if test="cnName != null and cnName != ''">
+  			and cn_name like concat('%',#{cnName,jdbcType=VARCHAR},'%')
+  		</if>
+  		<if test="leaveType != null" >
+	        and leave_type = #{leaveType,jdbcType=BIGINT}
+        </if>
+       <if test="departName != null and departName !='' " >
+	        and depart_name = #{departName,jdbcType=VARCHAR}
+        </if>
+        <if test="startDate != null and endDate !=null">
+  		  and ( date_format(start_time,'%Y-%m-%d') BETWEEN #{startDate,jdbcType=DATE} AND #{endDate,jdbcType=DATE}
+  		   or #{startDate,jdbcType=DATE} BETWEEN date_format(start_time,'%Y-%m-%d') and date_format(end_time,'%Y-%m-%d')
+  		   or date_format(end_time,'%Y-%m-%d') BETWEEN #{startDate,jdbcType=DATE} AND #{endDate,jdbcType=DATE}
+  		   or #{endDate,jdbcType=DATE} BETWEEN date_format(start_time,'%Y-%m-%d') and date_format(end_time,'%Y-%m-%d'))
+  		</if>
+        ORDER BY create_time DESC
+		<if test="offset != null and limit != null">
+			limit #{offset},#{limit}
+		</if>
+  </select>
+  
+  <select id="getRegisterLeaveCountByCondition" parameterType="com.ule.oa.base.po.LeaveApplyRegister" resultType="java.lang.Integer">
+	 select count(1) from leave_apply_register where del_flag = 0
+	  	<if test="code != null and code != ''">
+	  		and code like concat('%',#{code,jdbcType=VARCHAR},'%')
+	  	</if>
+  		<if test="cnName != null and cnName != ''">
+  			and cn_name like concat('%',#{cnName,jdbcType=VARCHAR},'%')
+  		</if>
+  		<if test="leaveType != null" >
+	        and leave_type = #{leaveType,jdbcType=BIGINT}
+        </if>
+        <if test="departName != null and departName !='' " >
+	        and depart_name = #{departName,jdbcType=VARCHAR}
+        </if>
+        <if test="startDate != null and endDate !=null">
+  		   and ( date_format(start_time,'%Y-%m-%d') BETWEEN #{startDate,jdbcType=DATE} AND #{endDate,jdbcType=DATE}
+  		   or #{startDate,jdbcType=DATE} BETWEEN date_format(start_time,'%Y-%m-%d') and date_format(end_time,'%Y-%m-%d')
+  		   or date_format(end_time,'%Y-%m-%d') BETWEEN #{startDate,jdbcType=DATE} AND #{endDate,jdbcType=DATE}
+  		   or #{endDate,jdbcType=DATE} BETWEEN date_format(start_time,'%Y-%m-%d') and date_format(end_time,'%Y-%m-%d'))
+  		</if>
+  </select>
+  
+</mapper>

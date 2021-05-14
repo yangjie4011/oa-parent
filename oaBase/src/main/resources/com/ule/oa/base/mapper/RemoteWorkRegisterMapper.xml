@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ule.oa.base.mapper.RemoteWorkRegisterMapper" >
+
+  <resultMap id="BaseResultMap" type="com.ule.oa.base.po.RemoteWorkRegister" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="employee_id" property="employeeId" jdbcType="BIGINT" />
+    <result column="register_date" property="registerDate" jdbcType="TIMESTAMP" />
+    <result column="classs_setting_id" property="classsSettingId" jdbcType="BIGINT" />
+    <result column="is_remote" property="isRemote" jdbcType="BIGINT" />
+    <result column="approve_status" property="approveStatus" jdbcType="BIGINT" />
+    <result column="resaon" property="resaon" jdbcType="VARCHAR" />
+    <result column="del_flag" property="delFlag" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    id, employee_id,register_date,classs_setting_id, is_remote, approve_status, resaon, del_flag,create_time, create_user, update_time, update_user
+  </sql>
+  <select id="getDetailByEidAndMonth" resultType="com.ule.oa.base.po.RemoteWorkRegister"  parameterType="com.ule.oa.base.po.RemoteWorkRegister">
+	select rwr.id, rwr.employee_id,rwr.register_date,rwr.classs_setting_id, rwr.is_remote, rwr.approve_status, rwr.resaon, rwr.del_flag,rwr.create_time, rwr.create_user, rwr.update_time, rwr.update_user,
+		acs.name as classsSetName
+		from remote_work_register rwr
+	left JOIN attn_class_setting acs 
+	on rwr.classs_setting_id = acs.ID and  acs.del_flag=0
+    where rwr.del_flag = 0
+    	and rwr.employee_id = #{employeeId,jdbcType=BIGINT}
+  		<if test="startTime != null and startTime != ''">
+  			AND rwr.register_date &gt;= #{startTime,jdbcType=DATE}
+  		</if>
+  		<if test="endTime != null and endTime != ''" >
+	        AND rwr.register_date &lt;= #{endTime,jdbcType=DATE}
+        </if>
+  </select>
+  
+  <select id="getListByCondition" resultMap="BaseResultMap" parameterType="com.ule.oa.base.po.RemoteWorkRegister" >
+     select <include refid="Base_Column_List"/> from remote_work_register where del_flag = 0 
+  </select>
+  
+  <insert id="save" parameterType="com.ule.oa.base.po.RemoteWorkRegister">
+    insert into remote_work_register (
+      employee_id,
+      register_date,
+      classs_setting_id,
+      is_remote, 
+      approve_status, 
+      resaon, 
+      del_flag,
+      create_time, 
+      create_user
+      )
+    values (
+      #{employeeId,jdbcType=BIGINT},
+      #{registerDate,jdbcType=TIMESTAMP},
+      #{classsSettingId,jdbcType=BIGINT},
+      #{isRemote,jdbcType=BIGINT},
+      #{approveStatus,jdbcType=VARCHAR},
+      #{resaon,jdbcType=VARCHAR}, 
+      #{delFlag,jdbcType=INTEGER}, 
+      #{createTime,jdbcType=TIMESTAMP}, 
+      #{createUser,jdbcType=VARCHAR}
+      )
+  </insert>
+  
+  
+  <update id="updateById" parameterType="com.ule.oa.base.po.RemoteWorkRegister">
+ 	update  remote_work_register
+    <set >
+	  <if test="classsSettingId!=null">
+	    classs_setting_id = #{classsSettingId,jdbcType=BIGINT}, 
+	  </if>
+	  <if test="isRemote">
+	    is_remote = #{isRemote,jdbcType=BIGINT}, 
+	  </if>
+	  <if test="approveStatus!=null">
+	    approve_status = #{approveStatus,jdbcType=BIGINT}, 
+	  </if>
+	  <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUser != null and updateUser != ''" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="resaon!=null">
+	    resaon = #{resaon,jdbcType=VARCHAR}, 
+	  </if>
+	  <if test="delFlag!=null">
+	    del_Flag = #{delFlag,jdbcType=BIGINT}
+	  </if>
+  </set>
+  where id =#{id,jdbcType=BIGINT}
+  </update>
+  
+  <!-- 
+  
+  <insert id="batchSave" parameterType="java.util.List">
+		insert into base_emp_msg (
+		  employee_id,
+	      register_date,
+	      classs_setting_id,
+	      is_remote, 
+	      approve_status, 
+	      resaon, 
+	      del_flag,
+	      create_time, 
+	      create_user, 
+	      update_time, 
+	      update_user
+		)
+		SELECT T.* FROM(
+		<foreach collection="list" item="item" index="index" separator="UNION">
+		SELECT
+			#{item.companyId} AS COMPANY_ID,
+			#{item.employeeId} AS EMPLOYEE_ID,
+			#{item.type} AS TYPE,
+			#{item.ruTaskId} AS RU_TASK_ID,
+			#{item.nodeCode} AS NODE_CODE,
+			#{item.title} AS TITLE,
+			#{item.content} AS CONTENT,
+			#{item.readFlag} AS READ_FLAG,
+			1 AS VERSION,
+			#{item.createTime} AS CREATE_TIME,
+			#{item.createUser} AS CREATE_USER,
+			#{item.delFlag} AS DEL_FLAG
+		FROM DUAL
+		</foreach>
+		)T
+	</insert> -->
+  
+</mapper>

@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ule.oa.base.mapper.EmpApplicationLeaveDetailMapper" >
+
+  <resultMap id="BaseResultMap" type="com.ule.oa.base.po.EmpApplicationLeaveDetail" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="leave_ID" property="leaveId" jdbcType="BIGINT" />
+    <result column="LEAVE_TYPE" property="leaveType" jdbcType="BIGINT" />
+    <result column="START_TIME" property="startTime" jdbcType="TIMESTAMP" />
+    <result column="END_TIME" property="endTime" jdbcType="TIMESTAMP" />
+    <result column="LEAVE_DAYS" property="leaveDays" jdbcType="DOUBLE" />
+    <result column="LEAVE_HOURS" property="leaveHours" jdbcType="DOUBLE" />
+    <result column="children_num" property="childrenNum" jdbcType="INTEGER" />
+    <result column="BIRTH_TYPE" property="birthType" jdbcType="INTEGER" />
+    <result column="DAY_TYPE" property="dayType" jdbcType="INTEGER" />
+    <result column="relatives" property="relatives" jdbcType="INTEGER" />
+    <result column="expected_Date" property="expectedDate" jdbcType="DATE" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="del_flag" property="delFlag" jdbcType="INTEGER" />
+    <result column="VERSION" property="version" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    id, leave_ID, LEAVE_TYPE, START_TIME, END_TIME,LEAVE_DAYS,LEAVE_HOURS,children_num,BIRTH_TYPE,DAY_TYPE,relatives,expected_Date,create_time, create_user, update_time, update_user,del_flag,VERSION
+  </sql>
+  
+  <select id="getListByCondition" resultMap="BaseResultMap" parameterType="java.lang.Long">
+    select <include refid="Base_Column_List" /> from base_emp_application_leave_detail
+    where del_flag = 0
+     <if test="leaveId != null">
+    	and leave_ID = #{leaveId,jdbcType=BIGINT}
+     </if>	
+  </select>
+  
+  <select id="getListByEmployee" resultMap="BaseResultMap" parameterType="com.ule.oa.base.po.EmpApplicationLeaveDetail">
+   SELECT ld.* FROM base_emp_application_leave_detail ld LEFT JOIN base_emp_application_leave l ON ld.leave_ID = l.ID 
+     WHERE l.EMPLOYEE_ID = #{employeeId,jdbcType=BIGINT}
+       AND l.APPROVAL_STATUS = 200
+       AND ld.LEAVE_TYPE = 6 
+       ORDER BY ld.START_TIME DESC
+  </select>
+  
+  
+  
+  <insert id="save" parameterType="com.ule.oa.base.po.EmpApplicationLeaveDetail" >
+    insert into base_emp_application_leave_detail (
+        leave_ID,
+        LEAVE_TYPE,
+        START_TIME,
+        END_TIME,
+        LEAVE_DAYS,
+        LEAVE_HOURS,
+        children_num,
+        BIRTH_TYPE,
+        DAY_TYPE,
+        relatives,
+        expected_Date,
+        create_time,
+        create_user,
+        del_flag,
+        VERSION
+      )
+    values (
+      #{leaveId,jdbcType=BIGINT},
+      #{leaveType,jdbcType=BIGINT},
+      #{startTime,jdbcType=TIMESTAMP}, 
+      #{endTime,jdbcType=TIMESTAMP}, 
+      #{leaveDays,jdbcType=DOUBLE}, 
+      #{leaveHours,jdbcType=DOUBLE}, 
+      #{childrenNum,jdbcType=INTEGER}, 
+      #{birthType,jdbcType=INTEGER}, 
+      #{dayType,jdbcType=INTEGER}, 
+      #{relatives,jdbcType=INTEGER}, 
+      #{expectedDate,jdbcType=DATE}, 
+      #{createTime,jdbcType=TIMESTAMP}, 
+      #{createUser,jdbcType=VARCHAR},
+      #{delFlag,jdbcType=INTEGER}, 
+      #{version,jdbcType=VARCHAR}
+      )
+  </insert>
+  
+  <insert id="batchSave" parameterType="java.util.List">
+	insert into base_emp_application_leave_detail (
+	    leave_ID,
+        LEAVE_TYPE,
+        START_TIME,
+        END_TIME,
+        LEAVE_DAYS,
+        LEAVE_HOURS,
+        children_num,
+        BIRTH_TYPE,
+        DAY_TYPE,
+        relatives,
+        expected_Date,
+        create_time,
+        create_user,
+        del_flag,
+        VERSION
+	)
+	select T.* FROM (
+     	<foreach collection="list" item="item" index="index" separator="UNION">
+		SELECT
+			#{item.leaveId} as leave_ID,
+			#{item.leaveType} as LEAVE_TYPE,
+			#{item.startTime} as START_TIME,
+			#{item.endTime} as END_TIME,
+			#{item.leaveDays} as LEAVE_DAYS,
+			#{item.leaveHours} as LEAVE_HOURS, 
+            #{item.childrenNum} as children_num, 
+            #{item.birthType} as BIRTH_TYPE, 
+            #{item.dayType} as DAY_TYPE, 
+            #{item.relatives} as relatives, 
+            #{item.expectedDate} as expected_Date, 
+			#{item.createTime} as create_time,
+			#{item.createUser} as create_user,
+			#{item.delFlag} as del_flag,
+			#{item.version} as VERSION
+		FROM DUAL
+	</foreach>
+       ) T
+  </insert>
+  
+  <update id="updateById" parameterType="com.ule.oa.base.po.EmpApplicationLeaveDetail" >
+    update base_emp_application_leave_detail
+    <set >
+      <if test="leaveDays != null" >
+        leave_Days = #{leaveDays,jdbcType=DOUBLE},
+      </if>
+   	  <if test="startTime != null" >
+        START_TIME = #{startTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endTime != null" >
+        END_TIME = #{endTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR}
+      </if>
+      <if test="cutLeaveDetail != null">
+      	CUT_LEAVE_DETAIL = #{cutLeaveDetail,jdbcType=VARCHAR}
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+  <update id="updateByLeaveId" parameterType="com.ule.oa.base.po.EmpApplicationLeaveDetail" >
+    update base_emp_application_leave_detail
+    <set >
+   	  <if test="startTime != null" >
+        START_TIME = #{startTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endTime != null" >
+        END_TIME = #{endTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR}
+      </if>
+    </set>
+    where leave_id = #{leaveId,jdbcType=BIGINT}
+  </update>
+  
+  
+  <update id="delete" parameterType="com.ule.oa.base.po.EmpApplicationLeaveDetail" >
+    update base_emp_application_leave_detail set del_flag=#{delFlag,jdbcType=NUMERIC}
+     <if test="updateTime != null" >
+       ,update_time = #{updateTime,jdbcType=TIMESTAMP}
+     </if>
+     <if test="updateUser != null" >
+       ,update_user = #{updateUser,jdbcType=VARCHAR}
+     </if>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+   <select id="continuityDate" parameterType="com.ule.oa.base.po.EmpApplicationLeaveDetail" resultType="java.lang.Integer">
+	   SELECT
+			count(*)
+		FROM
+			base_emp_application_leave
+		WHERE
+			APPROVAL_STATUS IN ('100', '200')
+		AND EMPLOYEE_ID = #{employeeId}
+		and (
+			(START_TIME &lt;  #{startTime}
+			and 
+			END_TIME &gt; #{startTime}
+			)
+			or 
+			(START_TIME &lt; #{endTime}
+			and 
+			END_TIME &gt; #{endTime}
+			)
+			or 
+			(START_TIME &gt; #{startTime}
+			and 
+			END_TIME &lt; #{endTime}
+			)
+		)
+   </select>
+  
+  	<!-- 后台假期余额报表定制sql(目前不考虑跨年问题，后面存在跨年问题，需要根据开始时间抓取数据，然后根据跨年节点拆分假期) -->
+  	<select id="getOtherReprt" parameterType="com.ule.oa.base.po.EmpApplicationLeave" resultType="java.util.Map">
+  		select ld.leave_type leaveType,sum(ld.leave_days) leaveDays from base_emp_application_leave al
+		left join base_emp_application_leave_detail ld
+		on al.id = ld.leave_id
+		where al.del_flag = 0
+		and ld.del_flag = 0
+		and al.start_time &gt;= #{startTime,jdbcType=TIMESTAMP}
+		and al.end_time &lt;= #{endTime,jdbcType=TIMESTAMP}
+		and al.approval_status = 200
+		and al.employee_id = #{employeeId,jdbcType=BIGINT}
+		and ld.leave_type not in(1,2,5)
+		group by ld.leave_type
+  	</select>
+</mapper>

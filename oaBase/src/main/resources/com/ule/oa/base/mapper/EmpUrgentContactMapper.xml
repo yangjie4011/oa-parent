@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ule.oa.base.mapper.EmpUrgentContactMapper" >
+  <resultMap id="BaseResultMap" type="com.ule.oa.base.po.EmpUrgentContact" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="employee_id" property="employeeId" jdbcType="BIGINT" />
+    <result column="priority" property="priority" jdbcType="INTEGER" />
+    <result column="short_name" property="shortName" jdbcType="VARCHAR" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="age" property="age" jdbcType="INTEGER" />
+    <result column="sex" property="sex" jdbcType="INTEGER" />
+    <result column="company_name" property="companyName" jdbcType="VARCHAR" />
+    <result column="mobile" property="mobile" jdbcType="VARCHAR" />
+    <result column="telphone" property="telphone" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="del_flag" property="delFlag" jdbcType="INTEGER" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="version" property="version" jdbcType="BIGINT"/>
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    id, employee_id, priority,short_name,name, age, sex, company_name, mobile, telphone, create_time, 
+    create_user, update_time, update_user, del_flag, remark,version
+  </sql>
+  
+  <select id="getListByCondition" parameterType="com.ule.oa.base.po.EmpUrgentContact" resultMap="BaseResultMap">
+  	select <include refid="Base_Column_List"/> from base_emp_urgent_contact
+  	where del_flag = 0
+  	<if test="employeeId != null" >
+       and employee_id = #{employeeId,jdbcType=BIGINT}
+     </if>
+     <if test="priority != null" >
+       and priority = #{priority,jdbcType=INTEGER}
+     </if>
+     <if test="name != null and name != ''" >
+       and name = #{name,jdbcType=VARCHAR}
+     </if>
+     <if test="age != null" >
+       and age = #{age,jdbcType=INTEGER}
+     </if>
+     <if test="sex != null" >
+       and sex = #{sex,jdbcType=INTEGER}
+     </if>
+     <if test="companyName != null and companyName != ''" >
+       and company_name = #{companyName,jdbcType=VARCHAR}
+     </if>
+     <if test="mobile != null and mobile != ''" >
+       and mobile = #{mobile,jdbcType=VARCHAR}
+     </if>
+     <if test="telphone != null and telphone != ''" >
+       and telphone = #{telphone,jdbcType=VARCHAR}
+     </if>
+     <if test="createTime != null" >
+       and create_time = #{createTime,jdbcType=TIMESTAMP}
+     </if>
+     <if test="createUser != null and createUser != ''" >
+       and create_user = #{createUser,jdbcType=VARCHAR}
+     </if>
+     <if test="updateTime != null" >
+       and update_time = #{updateTime,jdbcType=TIMESTAMP}
+     </if>
+     <if test="updateUser != null and updateUser != ''" >
+       and update_user = #{updateUser,jdbcType=VARCHAR}
+     </if>
+     <if test="delFlag != null" >
+       and del_flag = #{delFlag,jdbcType=INTEGER}
+     </if>
+     <if test="remark != null and remark != ''" >
+       and remark = #{remark,jdbcType=VARCHAR}
+     </if>
+  </select>
+  
+  <select id="getListByEmployeeId" resultMap="BaseResultMap">
+  	select <include refid="Base_Column_List"/> from base_emp_urgent_contact
+  	where del_flag = 0
+       and employee_id = #{employeeId,jdbcType=BIGINT} order by priority
+  </select>
+  
+  <insert id="save" parameterType="com.ule.oa.base.po.EmpUrgentContact" >
+    insert into base_emp_urgent_contact (id, employee_id, priority, 
+      short_name,name, age, sex, company_name, 
+      mobile, telphone, create_time, 
+      create_user, update_time, update_user, 
+      del_flag, remark)
+    values (#{id,jdbcType=BIGINT}, #{employeeId,jdbcType=BIGINT}, #{priority,jdbcType=INTEGER}, 
+      #{shortName,jdbcType=VARCHAR},#{name,jdbcType=VARCHAR}, #{age,jdbcType=INTEGER}, #{sex,jdbcType=INTEGER}, #{companyName,jdbcType=VARCHAR}, 
+      #{mobile,jdbcType=VARCHAR}, #{telphone,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{createUser,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP}, #{updateUser,jdbcType=VARCHAR}, 
+      #{delFlag,jdbcType=INTEGER}, #{remark,jdbcType=VARCHAR})
+  </insert>
+  
+  <insert id="saveBatch" parameterType="com.ule.oa.base.po.EmpUrgentContact" >
+    insert into base_emp_urgent_contact (employee_id, priority, 
+      short_name,name, age, sex, company_name, 
+      mobile, telphone, create_time, 
+      create_user, update_time, update_user, 
+      del_flag, remark)
+      values
+      <foreach collection ="list" item="item" index= "index" separator =",">
+	      (#{item.employeeId,jdbcType=BIGINT}, #{item.priority,jdbcType=INTEGER}, 
+	      #{item.shortName,jdbcType=VARCHAR},#{item.name,jdbcType=VARCHAR}, #{item.age,jdbcType=INTEGER}, 
+	      #{item.sex,jdbcType=INTEGER}, #{item.companyName,jdbcType=VARCHAR}, 
+	      #{item.mobile,jdbcType=VARCHAR}, #{item.telphone,jdbcType=VARCHAR}, #{item.createTime,jdbcType=TIMESTAMP}, 
+	      #{item.createUser,jdbcType=VARCHAR}, #{item.updateTime,jdbcType=TIMESTAMP}, #{item.updateUser,jdbcType=VARCHAR}, 
+	      #{item.delFlag,jdbcType=INTEGER}, #{item.remark,jdbcType=VARCHAR})
+      </foreach >
+  </insert>
+  
+  <update id="deleteBatchNotApply">
+    update base_emp_urgent_contact set del_flag = 1,update_time=#{updateTime,jdbcType=TIMESTAMP}
+    ,update_user = #{updateUser,jdbcType=VARCHAR}
+    where employee_id = #{employeeId,jdbcType=BIGINT} and id not in
+    <foreach collection ="list" item="item" index= "index" open="(" separator="," close=")">
+        #{item.id}
+    </foreach>
+  </update>
+  
+  <update id="deleteByEmployeeId">
+    update base_emp_urgent_contact set del_flag = 1,update_time=#{updateTime,jdbcType=TIMESTAMP}
+    ,update_user = #{updateUser,jdbcType=VARCHAR}
+    where del_flag=0 and employee_id = #{employeeId,jdbcType=BIGINT}
+  </update>
+  
+  <update id="updateById" parameterType="com.ule.oa.base.po.EmpUrgentContact" >
+    update base_emp_urgent_contact
+    <set >
+      <if test="employeeId != null" >
+        employee_id = #{employeeId,jdbcType=BIGINT},
+      </if>
+      <if test="priority != null" >
+        priority = #{priority,jdbcType=INTEGER},
+      </if>
+      <if test="shortName != null" >
+        short_name = #{shortName,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null" >
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="age != null" >
+        age = #{age,jdbcType=INTEGER},
+      </if>
+      <if test="sex != null" >
+        sex = #{sex,jdbcType=INTEGER},
+      </if>
+      <if test="companyName != null" >
+        company_name = #{companyName,jdbcType=VARCHAR},
+      </if>
+      <if test="mobile != null" >
+        mobile = #{mobile,jdbcType=VARCHAR},
+      </if>
+      <if test="telphone != null" >
+        telphone = #{telphone,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="delFlag != null" >
+        del_flag = #{delFlag,jdbcType=INTEGER},
+      </if>
+      <if test="remark != null" >
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+		version = version + 1      
+    </set>
+    where id = #{id,jdbcType=BIGINT} and version = #{version,jdbcType=BIGINT}
+  </update>
+</mapper>

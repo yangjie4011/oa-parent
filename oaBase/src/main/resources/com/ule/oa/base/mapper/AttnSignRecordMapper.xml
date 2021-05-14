@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ule.oa.base.mapper.AttnSignRecordMapper" >
+  <resultMap id="BaseResultMap" type="com.ule.oa.base.po.AttnSignRecord" >
+    <id column="ID" property="id" jdbcType="BIGINT" />
+    <result column="company_id" property="companyId" jdbcType="BIGINT" />
+    <result column="employee_id" property="employeeId" jdbcType="BIGINT" />
+    <result column="employee_name" property="employeeName" jdbcType="VARCHAR" />
+    <result column="sign_time" property="signTime" jdbcType="TIMESTAMP" />
+    <result column="attn_record_id" property="attnRecordId" jdbcType="BIGINT" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="del_flag" property="delFlag" jdbcType="INTEGER" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="type" property="type" jdbcType="INTEGER" />
+    <result column="ip" property="ip" jdbcType="VARCHAR" />
+    <result column="location_result" property="locationResult" jdbcType="VARCHAR" />
+    <result column="address" property="address" jdbcType="VARCHAR" />
+    <result column="distance" property="distance" jdbcType="DOUBLE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ID, company_id, employee_id, employee_name, sign_time, attn_record_id, create_time, 
+    create_user, update_time, update_user, del_flag, remark,type,ip,location_result,address,distance
+  </sql>
+  
+  <select id="getMaxAttnId" resultType="INTEGER" >
+    select 
+    IFNULL(max(attn_record_id),0) maxRecordId
+    from attn_sign_record
+    where del_flag = 0 and sign_time &gt;= #{startTime,jdbcType=TIMESTAMP}
+  </select>
+  
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from attn_sign_record
+    where ID = #{id,jdbcType=BIGINT}
+  </select>
+  
+  <select id="getSignRecordList" resultMap="BaseResultMap" parameterType="com.ule.oa.base.po.AttnSignRecord">
+    select 
+    <include refid="Base_Column_List" />
+    from attn_sign_record
+    where del_flag = 0
+    <if test="employeeId != null" >
+       and employee_id = #{employeeId,jdbcType=BIGINT}
+    </if>
+    <if test="signTime != null" >
+       and sign_time &gt;= #{signTime,jdbcType=TIMESTAMP}
+    </if>
+    order by sign_time asc
+  </select>
+  
+   <select id="getListBefore9" resultMap="BaseResultMap" parameterType="com.ule.oa.base.po.AttnSignRecord">
+    select 
+    <include refid="Base_Column_List" />
+    from attn_sign_record
+    where del_flag = 0
+    <if test="employeeId != null" >
+       and employee_id = #{employeeId,jdbcType=BIGINT}
+    </if>
+    <if test="startTime != null" >
+       and sign_time &gt;= #{startTime,jdbcType=TIMESTAMP}
+    </if>
+    <if test="endTime != null" >
+       and sign_time &lt;= #{endTime,jdbcType=TIMESTAMP}
+    </if>
+    ORDER BY sign_time DESC
+  </select>
+  
+  <insert id="insert" parameterType="com.ule.oa.base.po.AttnSignRecord" >
+    insert into attn_sign_record (ID, company_id, employee_id, 
+      employee_name, sign_time, attn_record_id, 
+      create_time, create_user, update_time, 
+      update_user, del_flag, remark,type,ip,location_result,address,distance
+      )
+    values (#{id,jdbcType=BIGINT}, #{companyId,jdbcType=BIGINT}, #{employeeId,jdbcType=BIGINT}, 
+      #{employeeName,jdbcType=VARCHAR}, #{signTime,jdbcType=TIMESTAMP}, #{attnRecordId,jdbcType=BIGINT}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{createUser,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP}, 
+      #{updateUser,jdbcType=VARCHAR}, #{delFlag,jdbcType=INTEGER}, #{remark,jdbcType=VARCHAR},
+      #{type,jdbcType=INTEGER},#{ip,jdbcType=VARCHAR},#{locationResult,jdbcType=VARCHAR},#{address,jdbcType=VARCHAR},#{distance,jdbcType=DOUBLE}
+      )
+  </insert>
+  
+  <insert id="saveTransToAttnSignBatch">
+	    insert into attn_sign_record (company_id, employee_id, 
+	      employee_name, sign_time, attn_record_id, 
+	      create_time, create_user, update_time, 
+	      update_user, del_flag, remark,type
+	      )
+	    values 
+	    <foreach collection ="list" item="item" index= "index" separator =",">
+		  (#{uleId,jdbcType=BIGINT}, #{item.oaEmpId,jdbcType=BIGINT}, 
+	      #{item.name,jdbcType=VARCHAR}, #{item.evttime,jdbcType=TIMESTAMP}, #{item.autoid,jdbcType=BIGINT}, 
+	      #{currentTime,jdbcType=TIMESTAMP}, #{createUser,jdbcType=VARCHAR}, #{currentTime,jdbcType=TIMESTAMP}, 
+	      #{createUser,jdbcType=VARCHAR}, 0, null,0
+	      )
+	    </foreach >
+  </insert>
+
+  <update id="updateByPrimaryKeySelective" parameterType="com.ule.oa.base.po.AttnSignRecord" >
+    update attn_sign_record
+    <set >
+      <if test="companyId != null" >
+        company_id = #{companyId,jdbcType=BIGINT},
+      </if>
+      <if test="employeeId != null" >
+        employee_id = #{employeeId,jdbcType=BIGINT},
+      </if>
+      <if test="employeeName != null" >
+        employee_name = #{employeeName,jdbcType=VARCHAR},
+      </if>
+      <if test="signTime != null" >
+        sign_time = #{signTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="attnRecordId != null" >
+        attn_record_id = #{attnRecordId,jdbcType=BIGINT},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUser != null" >
+        create_user = #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="delFlag != null" >
+        del_flag = #{delFlag,jdbcType=INTEGER},
+      </if>
+      <if test="remark != null" >
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=BIGINT}
+  </update>
+  
+  <select id="getEmpSignRecordReport" resultType="Map">
+    SELECT be.code,be.cn_name,bd.id departId,bd.name departName,scs.display_name workTypeName,DATE_FORMAT(asr.sign_time,'%Y-%m-%d') attn_date,
+	CASE dayofweek(asr.sign_time) 
+	WHEN 1 THEN '星期日' WHEN 2 THEN '星期一' WHEN 3 THEN '星期二' WHEN 4 THEN '星期三'
+	WHEN 5 THEN '星期四' WHEN 6 THEN '星期五' WHEN 7 THEN '星期六' END dayofweek,
+    CASE WHEN acs.name IS NULL THEN CASE dayofweek(asr.sign_time) WHEN 1 THEN '休息' WHEN 7 THEN '休息' ELSE '常白班' END
+    ELSE acs.name END className,
+    DATE_FORMAT(asr.sign_time,'%T') sign_time
+	FROM attn_sign_record asr
+	INNER JOIN base_employee be on asr.employee_id = be.id and be.del_flag = 0
+	LEFT JOIN base_emp_depart bed on be.id = bed.employee_id and bed.del_flag = 0
+	LEFT JOIN base_depart bd on bed.depart_id = bd.id and bd.del_flag = 0
+	LEFT JOIN sys_company_config scs on be.work_type = scs.id and scs.del_flag = 0
+	LEFT JOIN attn_employ_class aec on asr.employee_id = aec.employ_id AND aec.class_date=DATE_FORMAT(asr.sign_time,'%Y-%m-%d') and aec.del_flag = 0
+	LEFT JOIN attn_class_setting acs on acs.id = aec.class_setting_id
+	where asr.del_flag = 0 and asr.type in(0,2,4) and be.work_address_type = 0
+    <if test="departId != null" >
+        and bed.depart_id = #{departId,jdbcType=BIGINT}
+    </if>
+    <if test="startTime != null" >
+        and DATE_FORMAT(asr.sign_time,'%Y-%m-%d') &gt;= #{startTime,jdbcType=DATE}
+    </if>
+    <if test="endTime != null" >
+        and DATE_FORMAT(asr.sign_time,'%Y-%m-%d') &lt;= #{endTime,jdbcType=DATE}
+    </if>
+    <if test="empTypeIdList != null and empTypeIdList.size > 0" >
+        and be.emp_type_id in
+           <foreach collection="empTypeIdList" index="index" item="item" open="(" separator="," close=")">
+	           #{item}
+	       </foreach>
+     </if>
+    ORDER BY bd.name,be.code,asr.sign_time
+  </select>
+  
+  <select id="getSSDKMXReport" resultType="com.ule.oa.base.po.AttnSignRecord">
+    SELECT 
+    asr.employee_id employeeId,
+    asr.sign_time signTime
+	FROM attn_sign_record asr
+	where asr.del_flag = 0 and asr.type in(0,2,4)
+	<if test="employeeIdList != null and employeeIdList.size > 0" >
+        and asr.employee_id in
+           <foreach collection="employeeIdList" index="index" item="item" open="(" separator="," close=")">
+	           #{item}
+	       </foreach>
+    </if>
+    <if test="startTime != null" >
+        and DATE_FORMAT(asr.sign_time,'%Y-%m-%d') &gt;= #{startTime,jdbcType=DATE}
+    </if>
+    <if test="endTime != null" >
+        and DATE_FORMAT(asr.sign_time,'%Y-%m-%d') &lt;= #{endTime,jdbcType=DATE}
+    </if>
+    ORDER BY asr.sign_time
+  </select>
+  
+  <select id="getFirstSignRecordByCondition" resultType="com.ule.oa.base.po.AttnSignRecord" parameterType="com.ule.oa.base.po.AttnSignRecord">
+  	select min(sign_time) signTime from attn_sign_record 
+  	where employee_id = #{employeeId,jdbcType=BIGINT}
+  	and del_flag = 0
+  	and sign_time &gt;= #{startTime,jdbcType=TIMESTAMP}
+  	and sign_time &lt;= #{endTime,jdbcType=TIMESTAMP}
+  </select>
+  
+  <select id="getAbsenteeismWhiteList" resultType="Long">
+  	select DISTINCT(employee_id) from base_emp_application_leave 
+		where PROCESSINSTANCE_ID in ( select process_id from act_task_info where process_key in ('leave','outgoing','businessReport','abnormalAttendance','business') and statu not in (300,400))
+		 and(	
+				(
+					start_time &gt;= #{startTime,jdbcType=TIMESTAMP} and start_time &lt;= #{endTime,jdbcType=TIMESTAMP}
+				)or 						<!--开始时间是否包含在其他时间段-->
+				(
+					start_time &lt;= #{startTime,jdbcType=TIMESTAMP} and end_time &gt;= #{endTime,jdbcType=TIMESTAMP}
+				)or							<!-- 开始时间和结束时间在外的都包括 外包-->
+				(
+					end_time &gt;= #{startTime,jdbcType=TIMESTAMP} and end_time &lt;= #{endTime,jdbcType=TIMESTAMP}
+				)or(						<!-- 结束时间是否包含在其他时间段-->
+					start_time &gt;= #{startTime,jdbcType=TIMESTAMP} and end_time &lt;= #{endTime,jdbcType=TIMESTAMP}
+				)								<!-- 开始时间和结束时间内-->
+			)
+  </select>
+  
+  <select id="queryAlertMaxTime" resultType="com.ule.oa.base.po.AttnSignRecord"  >
+  	select max(endTime) as endTime from (
+		select max(ABNORMAL_DATE) as endTime from base_emp_application_abnormal_attendance where employee_id = #{employeeId,jdbcType=BIGINT} and ABNORMAL_DATE &gt;= #{startTime,jdbcType=TIMESTAMP} and APPROVAL_STATUS in(100,200,600)
+		union all
+		select max(END_TIME) as endTime  from base_emp_application_leave where employee_id = #{employeeId,jdbcType=BIGINT} and end_time &gt;= #{startTime,jdbcType=TIMESTAMP} and APPROVAL_STATUS in(100,200,600)
+		union all
+		select max(END_TIME) as endTime from base_emp_application_business where employee_id = #{employeeId,jdbcType=BIGINT} and end_time &gt;= #{startTime,jdbcType=TIMESTAMP} and APPROVAL_STATUS in(100,200,600)
+		union all
+		select max(END_TIME) as endTime from base_emp_application_outgoing where employee_id = #{employeeId,jdbcType=BIGINT} and end_time &gt;= #{startTime,jdbcType=TIMESTAMP} and APPROVAL_STATUS in(100,200,600)
+	    union all
+	    select max(attendance_date) as endTime from remove_subordinate_absence where employee_id = #{employeeId,jdbcType=BIGINT} and attendance_date &gt;= #{startTime,jdbcType=TIMESTAMP} and approal_status in(100,200,600)	
+	)str
+  </select>
+
+  <select id="getADepartmentLeaders" resultType="Long">	
+  	select leader from base_depart where  leader is not null
+  </select>
+  
+  <select id="getAttnThirdAbsenteeismAlertEmp" resultType="Long" parameterType="com.ule.oa.base.po.AttnSignRecord">	
+  		select id from attn_statistics where  absenteeism_time = 0 and lack_attn_time &lt;=3 and employ_id= #{employeeId,jdbcType=BIGINT} and attn_date &gt;= #{startTime,jdbcType=DATE} and attn_date &lt;= #{endTime,jdbcType=DATE}
+   </select>
+   
+   <select id="getAttnLastDayAbsenteeismAlertEmp" resultType="com.ule.oa.base.po.AttnSignRecord" parameterType="com.ule.oa.base.po.AttnSignRecord">
+		select employ_id as employeeId,max(attn_date) as alertStartTime from attn_statistics where absenteeism_time = 0 and employ_id= #{employeeId,jdbcType=BIGINT}  and end_work_time &lt;= #{endTime,jdbcType=TIMESTAMP} and lack_attn_time &lt;=3
+   </select>
+</mapper>

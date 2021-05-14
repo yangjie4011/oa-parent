@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ule.oa.base.mapper.ApplyEmployDutyDetailMapper" >
+  <resultMap id="BaseResultMap" type="com.ule.oa.base.po.ApplyEmployDutyDetail" >
+    <id column="ID" property="id" jdbcType="BIGINT" />
+    <result column="attn_application_employ_duty_id" property="attnApplicationEmployDutyId" jdbcType="BIGINT" />
+    <result column="vacation_date" property="vacationDate" jdbcType="DATE" />
+    <result column="duty_item" property="dutyItem" jdbcType="VARCHAR" />
+    <result column="EMPLOYEE_IDS" property="employeeIds" jdbcType="VARCHAR" />
+    <result column="start_time" property="startTime" jdbcType="TIMESTAMP" />
+    <result column="end_time" property="endTime" jdbcType="TIMESTAMP" />
+    <result column="work_hours" property="workHours" jdbcType="DOUBLE" />
+    <result column="del_flag" property="delFlag" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    ID, attn_application_employ_duty_id,vacation_date, duty_item, EMPLOYEE_IDS, start_time, end_time, work_hours,
+    del_flag, create_time, create_user, update_user, update_time
+  </sql>
+  
+  <select id="getList" resultMap="BaseResultMap" parameterType="com.ule.oa.base.po.ApplyEmployDutyDetail" >
+      SELECT * FROM attn_application_employ_duty_detail a 
+          LEFT JOIN attn_application_employ_duty b ON a.attn_application_employ_duty_id=b.ID 
+      WHERE b.APPROVAL_STATUS=200 AND b.VERSION = 0
+  </select>
+</mapper>

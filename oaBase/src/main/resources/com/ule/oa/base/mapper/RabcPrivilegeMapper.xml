@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ule.oa.base.mapper.RabcPrivilegeMapper" >
+  <resultMap id="BaseResultMap" type="com.ule.oa.base.po.RabcPrivilege" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="type" property="type" jdbcType="TINYINT" />
+    <result column="resource_id" property="resourceId" jdbcType="BIGINT" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="del_flag" property="delFlag" jdbcType="INTEGER" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    id, type, resource_id, create_time,
+    update_time, create_user, update_user, del_flag
+  </sql>
+  
+  <!-- 根据角色id查询菜单 -->
+  <select id="getResourceByPrivilege" resultType="long">
+  	select resource_id from rabc_privilege p
+  	left join rabc_role_privilege rp on rp.privilege_id = p.id
+  	where rp.role_id = #{roleId}
+  	and p.del_flag = 0
+  	and rp.del_flag= 0;
+  </select>
+  <!-- 根据角色id查询操作 -->
+  <select id="getOperationByPrivilege" resultType="long">
+  	select resource_id from rabc_privilege p
+  	left join rabc_role_privilege rp on rp.privilege_id = p.id
+  	where rp.role_id = #{roleId}
+  	and p.type = 2
+  	and p.del_flag = 0
+  	and rp.del_flag= 0;
+  </select>
+   <!-- 根据角色删除菜单 -->
+  <update id="deleteResourceByRoleId">
+    update rabc_role_privilege
+    <set>
+        update_time = NOW(),
+        update_user = #{updateUser},
+        del_flag = 1
+    </set>
+    where role_id = #{roleId};
+  </update>
+  <!-- 保存菜单 -->
+  <insert id="saveResource">
+  	insert into rabc_role_privilege
+  	(role_id,privilege_id,create_time,create_user,del_flag)
+  	select T.* FROM (
+   	<foreach collection="list" item="item" index="index" separator="UNION">
+		SELECT
+		#{item.roleId} as role_id,
+		#{item.privilegeId} as privilege_id,
+		#{item.createTime} as create_time,
+		#{item.createUser} as create_user,
+		#{item.delflag} as del_flag
+		FROM DUAL
+		</foreach>
+      ) T
+  </insert>
+  <select id="getByResourceId" resultMap="BaseResultMap">
+  	select <include refid="Base_Column_List"/> from rabc_privilege 
+	where del_flag = 0
+	and resource_id = #{resourceId};
+  </select>
+  
+  <select id="getListByBelongRole" resultType="Long">
+    SELECT 
+	  a.id 
+	FROM
+	  rabc_privilege a 
+	  LEFT JOIN rabc_resource b 
+	    ON a.resource_id = b.id 
+	WHERE a.del_flag = 0 
+	  AND b.del_flag = 0 
+	  AND b.belong_role LIKE concat('%',#{belongRole},'%') 
+  </select>
+  
+  <select id="getListOfHrAdmin" resultType="Long">
+    SELECT 
+	  a.id 
+	FROM
+	  rabc_privilege a 
+	  LEFT JOIN rabc_resource b 
+	    ON a.resource_id = b.id 
+	WHERE a.del_flag = 0 
+	  AND b.del_flag = 0 
+	  AND b.resource_name != '员工签到'
+  </select>
+  
+  <select id="getAllList" resultType="Long">
+    SELECT 
+	  a.id 
+	FROM
+	  rabc_privilege a 
+	  LEFT JOIN rabc_resource b 
+	    ON a.resource_id = b.id 
+	WHERE a.del_flag = 0 
+	  AND b.del_flag = 0 
+  </select>
+  
+</mapper>

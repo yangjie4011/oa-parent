@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ule.oa.base.mapper.CompanyPositionSeqMapper" >
+  <resultMap id="BaseResultMap" type="com.ule.oa.base.po.CompanyPositionSeq" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="company_id" property="companyId" jdbcType="BIGINT" />
+    <result column="company_name" property="companyName" jdbcType="VARCHAR" />
+    <result column="code" property="code" jdbcType="VARCHAR" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="rank" property="rank" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="del_flag" property="delFlag" jdbcType="INTEGER" />
+    <result column="version" property="version" jdbcType="BIGINT" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    cps.id, cps.company_id,bc.name company_name, cps.code, cps.name, cps.rank, cps.create_time, cps.create_user, cps.update_time, cps.update_user, 
+    cps.remark, cps.del_flag
+  </sql>
+  
+  <select id="getById" parameterType="java.lang.Long" resultType="com.ule.oa.base.po.CompanyPositionSeq">
+  	select id, company_id companyId,code, name, rank, create_time createTime, create_user createUser, update_time updateTime, update_user updateUser, 
+    remark, del_flag delFlag,version
+    from base_company_position_seq
+  	where id = #{id,jdbcType=BIGINT}
+  </select>
+  
+  <select id="getListByEmployeeId" parameterType="java.lang.Long" resultType="com.ule.oa.base.po.CompanyPositionSeq">
+	  	SELECT 
+		  a.id as id,a.name as name 
+		FROM
+		  base_company_position_seq a 
+		  LEFT JOIN base_position b 
+		    ON a.id = b.position_seq_id 
+		  LEFT JOIN base_emp_position c 
+		    ON b.id = c.position_id 
+		WHERE c.del_flag = 0 
+		  AND c.employee_id = #{employeeId,jdbcType=BIGINT}
+  </select>
+  
+  <select id="getPositionSeqById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+  	select <include refid="Base_Column_List" />
+    from base_company_position_seq cps 
+    LEFT JOIN base_company bc on cps.company_id = bc.id
+  	where cps.id = #{id,jdbcType=BIGINT} and cps.del_flag=0
+  </select>
+  
+  <select id="getListByCondition" resultMap="BaseResultMap" parameterType="com.ule.oa.base.po.CompanyPositionSeq" >
+    select <include refid="Base_Column_List" />
+    from base_company_position_seq cps 
+    LEFT JOIN base_company bc on cps.company_id = bc.id
+    where 1=1
+     <if test="id != null" >
+       and cps.id = #{id,jdbcType=BIGINT}
+     </if>
+    <if test="code != null and code !=''">
+    	and cps.code = #{code,jdbcType=VARCHAR}
+    </if>
+	<if test="name != null and name != '' ">
+		and cps.name like CONCAT('%',#{name,jdbcType=VARCHAR},'%')
+	</if>
+
+     <if test="rank != null" >
+       and cps.rank = #{rank,jdbcType=INTEGER}
+     </if>
+     <if test="createTime != null" >
+       and cps.create_time = #{createTime,jdbcType=TIMESTAMP}
+     </if>
+     <if test="createUser != null" >
+       and cps.create_user = #{createUser,jdbcType=VARCHAR}
+     </if>
+     <if test="updateTime != null" >
+       and cps.update_time = #{updateTime,jdbcType=TIMESTAMP}
+     </if>
+     <if test="updateUser != null" >
+       and cps.update_user = #{updateUser,jdbcType=VARCHAR}
+     </if>
+     <if test="remark != null" >
+       and cps.remark = #{remark,jdbcType=VARCHAR}
+     </if>
+   		and cps.del_flag = 0
+  </select>
+
+  <insert id="insert" parameterType="com.ule.oa.base.po.CompanyPositionSeq" >
+    insert into base_company_position_seq (company_id,code, 
+      name, rank, create_time, 
+      create_user, update_time, update_user, 
+      remark, del_flag)
+    values (#{companyId,jdbcType=BIGINT}, #{code,jdbcType=VARCHAR}, 
+      #{name,jdbcType=VARCHAR}, #{rank,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{createUser,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP}, #{updateUser,jdbcType=VARCHAR}, 
+      #{remark,jdbcType=VARCHAR}, #{delFlag,jdbcType=INTEGER})
+  </insert>
+ 
+<update id="updateById" parameterType="com.ule.oa.base.po.CompanyPositionSeq" >
+    update base_company_position_seq
+    <set >
+      <if test="companyId != null" >
+        company_id = #{companyId,jdbcType=BIGINT},
+      </if>
+      <if test="code != null" >
+        code = #{code,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null" >
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="rank != null" >
+        rank = #{rank,jdbcType=INTEGER},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="delFlag != null" >
+        del_flag = #{delFlag,jdbcType=INTEGER},
+      </if>
+      version = version + 1
+    </set>
+    where id = #{id,jdbcType=BIGINT} and version = {version,jdbcType=BIGINT}
+  </update>
+  
+  
+  <update id="updatePositionSeqById" parameterType="com.ule.oa.base.po.CompanyPositionSeq" >
+    update base_company_position_seq
+    <set >
+      <if test="companyId != null" >
+        company_id = #{companyId,jdbcType=BIGINT},
+      </if>
+      <if test="code != null" >
+        code = #{code,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null" >
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="rank != null" >
+        rank = #{rank,jdbcType=INTEGER},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="delFlag != null" >
+        del_flag = #{delFlag,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+  <select id="count" resultType="integer" parameterType="com.ule.oa.base.po.CompanyPositionSeq">
+		select  count(1) from base_company_position_seq cps
+		<where>
+			1=1
+			<if test="code != null and code !=''">and cps.code = #{code,jdbcType=VARCHAR}</if>
+			<if test="name != null and name != '' ">and cps.name like CONCAT('%',#{name,jdbcType=VARCHAR},'%')</if>
+			<if test="delFlag != null">and cps.del_flag =#{delFlag,jdbcType=NUMERIC}</if>
+		</where>	
+		and cps.del_flag = 0
+  </select>
+	
+	<select id="getByPagenation"  parameterType="com.ule.oa.base.po.CompanyPositionSeq" resultMap="BaseResultMap">
+		select <include refid="Base_Column_List"></include>
+	    from base_company_position_seq cps
+        LEFT JOIN base_company bc on cps.company_id = bc.id
+		<where>
+			1=1
+			<if test="code != null and code !=''">and cps.code = #{code,jdbcType=VARCHAR}</if>
+			<if test="name != null and name != '' ">and cps.name like CONCAT('%',#{name,jdbcType=VARCHAR},'%')</if>
+			<if test="delFlag != null">and cps.del_flag =#{delFlag,jdbcType=NUMERIC}</if>
+		</where>	
+		and cps.del_flag = 0 order by cps.create_time desc limit #{offset} , #{limit}
+	</select>
+  
+  	<select id="queryName" resultType="int">
+  		select count(1) from base_company_position_seq cps where cps.name=#{name} and cps.del_flag = 0
+  		<if test="id != 0">
+  			and cps.id= #{id}
+  		</if>
+  	</select>
+  	
+  	<select id="queryCode" resultType="int">
+  		select count(1) from base_company_position_seq cps where cps.code=#{code} and cps.del_flag = 0
+  		<if test="id != 0">
+  			and cps.id= #{id}
+  		</if>
+  	</select>
+  
+</mapper>

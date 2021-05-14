@@ -1,0 +1,637 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ule.oa.base.mapper.EmpProbationAssessmentMapper" >
+  <resultMap id="BaseResultMap" type="com.ule.oa.base.po.EmpProbationAssessment" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="employee_id" property="employeeId" jdbcType="BIGINT" />
+    <result column="employment_date" property="employmentDate" jdbcType="TIMESTAMP" />
+    <result column="probation_expire" property="probationExpire" jdbcType="TIMESTAMP" />
+    <result column="one_week_date" property="oneWeekDate" jdbcType="TIMESTAMP" />
+    <result column="one_month_date" property="oneMonthDate" jdbcType="TIMESTAMP" />
+    <result column="three_month_date" property="threeMonthDate" jdbcType="TIMESTAMP" />
+    <result column="five_month_date" property="fiveMonthDate" jdbcType="TIMESTAMP" />
+    <result column="entry_status" property="entryStatus" jdbcType="INTEGER" />
+    <result column="mid_work_skills" property="midWorkSkills" jdbcType="INTEGER" />
+    <result column="mid_work_quality" property="midWorkQuality" jdbcType="INTEGER" />
+    <result column="mid_work_efficiency" property="midWorkEfficiency" jdbcType="INTEGER" />
+    <result column="mid_work_related_knowledge" property="midWorkRelatedKnowledge" jdbcType="INTEGER" />
+    <result column="mid_problem_solving_skills" property="midProblemSolvingSkills" jdbcType="INTEGER" />
+    <result column="mid_attitude" property="midAttitude" jdbcType="INTEGER" />
+    <result column="mid_communication_skills" property="midCommunicationSkills" jdbcType="INTEGER" />
+    <result column="mid_initiative_independence" property="midInitiativeIndependence" jdbcType="INTEGER" />
+    <result column="mid_management_ability" property="midManagementAbility" jdbcType="INTEGER" />
+    <result column="mid_whole_score" property="midWholeScore" jdbcType="INTEGER" />
+    <result column="mid_leader_process_status" property="midLeaderProcessStatus" jdbcType="INTEGER" />
+    <result column="mid_hr_process_status" property="midHrProcessStatus" jdbcType="INTEGER" />
+    <result column="final_work_skills" property="finalWorkSkills" jdbcType="INTEGER" />
+    <result column="final_work_quality" property="finalWorkQuality" jdbcType="INTEGER" />
+    <result column="final_work_efficiency" property="finalWorkEfficiency" jdbcType="INTEGER" />
+    <result column="final_work_related_knowledge" property="finalWorkRelatedKnowledge" jdbcType="INTEGER" />
+    <result column="final_problem_solving_skills" property="finalProblemSolvingSkills" jdbcType="INTEGER" />
+    <result column="final_attitude" property="finalAttitude" jdbcType="INTEGER" />
+    <result column="final_communication_skills" property="finalCommunicationSkills" jdbcType="INTEGER" />
+    <result column="final_initiative_independence" property="finalInitiativeIndependence" jdbcType="INTEGER" />
+    <result column="final_management_ability" property="finalManagementAbility" jdbcType="INTEGER" />
+    <result column="final_whole_score" property="finalWholeScore" jdbcType="INTEGER" />
+    <result column="hr_id" property="hrId" jdbcType="INTEGER" />
+    <result column="hr_date" property="hrDate" jdbcType="TIMESTAMP" />
+    <result column="dh_id" property="dhId" jdbcType="INTEGER" />
+    <result column="dh_date" property="dhDate" jdbcType="TIMESTAMP" />
+    <result column="dh_status" property="dhStatus" jdbcType="INTEGER" />
+    <result column="leader_id" property="leaderId" jdbcType="INTEGER" />
+    <result column="leader_date" property="leaderDate" jdbcType="TIMESTAMP" />
+    <result column="version" property="version" jdbcType="VARCHAR" />
+    <result column="process_status" property="processStatus" jdbcType="BIGINT" />
+    <result column="del_flag" property="delFlag" jdbcType="INTEGER" />
+    <result column="mid_employee_status" property="midEmployeeStatus" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="leader_status" property="leaderStatus" jdbcType="INTEGER" />
+    <result column="one_week_evaluation" property="oneWeekEvaluation" jdbcType="LONGVARCHAR" />
+    <result column="one_month_evaluation" property="oneMonthEvaluation" jdbcType="LONGVARCHAR" />
+    <result column="three_month_evaluation" property="threeMonthEvaluation" jdbcType="LONGVARCHAR" />
+    <result column="five_month_evaluation" property="fiveMonthEvaluation" jdbcType="LONGVARCHAR" />
+    <result column="mid_leader_comments" property="midLeaderComments" jdbcType="LONGVARCHAR" />
+    <result column="mid_hr_comments" property="midHrComments" jdbcType="LONGVARCHAR" />
+    <result column="final_leader_comments" property="finalLeaderComments" jdbcType="LONGVARCHAR" />
+    <result column="employee_achievement" property="employeeAchievement" jdbcType="LONGVARCHAR" />
+    <result column="employee_advantages_and_disadvantages" property="employeeAdvantagesAndDisadvantages" jdbcType="LONGVARCHAR" />
+    <result column="employee_work_objective" property="employeeWorkObjective" jdbcType="LONGVARCHAR" />
+    <result column="final_employee_comments" property="finalEmployeeComments" jdbcType="LONGVARCHAR" />
+    <result column="final_hr_comments" property="finalHrComments" jdbcType="LONGVARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, employee_id, employment_date, probation_expire, one_week_date, one_month_date, 
+    three_month_date, five_month_date, entry_status, mid_work_skills, mid_work_quality, 
+    mid_work_efficiency, mid_work_related_knowledge, mid_problem_solving_skills, mid_attitude, 
+    mid_communication_skills, mid_initiative_independence, mid_management_ability, mid_whole_score, 
+    mid_leader_process_status, mid_hr_process_status, final_work_skills, final_work_quality, 
+    final_work_efficiency, final_work_related_knowledge, final_problem_solving_skills, 
+    final_attitude, final_communication_skills, final_initiative_independence, final_management_ability, 
+    final_whole_score, hr_id, hr_date, dh_id, dh_date, dh_status, leader_id, leader_date, 
+    version, process_status, del_flag, mid_employee_status, create_time, update_time, 
+    create_user, update_user, leader_status
+    one_week_evaluation, one_month_evaluation, three_month_evaluation, five_month_evaluation, 
+    mid_leader_comments, mid_hr_comments, final_leader_comments, employee_achievement, 
+    employee_advantages_and_disadvantages, employee_work_objective, final_employee_comments, 
+    final_hr_comments
+  </sql>
+  
+  <select id="getByEmpId" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select <include refid="Base_Column_List" />
+     from base_emp_probation_assessment
+    where del_flag = 0
+      and employee_id = #{employeeId,jdbcType=BIGINT}
+  </select>
+  
+  <select id="getById" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select <include refid="Base_Column_List" />
+      from base_emp_probation_assessment
+     where del_flag = 0
+       and id = #{id,jdbcType=BIGINT}
+  </select>
+
+  <insert id="save" parameterType="com.ule.oa.base.po.EmpProbationAssessment" >
+    <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">
+		SELECT LAST_INSERT_ID() AS id
+	</selectKey>
+    insert into base_emp_probation_assessment
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="employeeId != null" >
+        employee_id,
+      </if>
+      <if test="employmentDate != null" >
+        employment_date,
+      </if>
+      <if test="probationExpire != null" >
+        probation_expire,
+      </if>
+      <if test="oneWeekDate != null" >
+        one_week_date,
+      </if>
+      <if test="oneMonthDate != null" >
+        one_month_date,
+      </if>
+      <if test="threeMonthDate != null" >
+        three_month_date,
+      </if>
+      <if test="fiveMonthDate != null" >
+        five_month_date,
+      </if>
+      <if test="entryStatus != null" >
+        entry_status,
+      </if>
+      <if test="midWorkSkills != null" >
+        mid_work_skills,
+      </if>
+      <if test="midWorkQuality != null" >
+        mid_work_quality,
+      </if>
+      <if test="midWorkEfficiency != null" >
+        mid_work_efficiency,
+      </if>
+      <if test="midWorkRelatedKnowledge != null" >
+        mid_work_related_knowledge,
+      </if>
+      <if test="midProblemSolvingSkills != null" >
+        mid_problem_solving_skills,
+      </if>
+      <if test="midAttitude != null" >
+        mid_attitude,
+      </if>
+      <if test="midCommunicationSkills != null" >
+        mid_communication_skills,
+      </if>
+      <if test="midInitiativeIndependence != null" >
+        mid_initiative_independence,
+      </if>
+      <if test="midManagementAbility != null" >
+        mid_management_ability,
+      </if>
+      <if test="midWholeScore != null" >
+        mid_whole_score,
+      </if>
+      <if test="midLeaderProcessStatus != null" >
+        mid_leader_process_status,
+      </if>
+      <if test="midHrProcessStatus != null" >
+        mid_hr_process_status,
+      </if>
+      <if test="finalWorkSkills != null" >
+        final_work_skills,
+      </if>
+      <if test="finalWorkQuality != null" >
+        final_work_quality,
+      </if>
+      <if test="finalWorkEfficiency != null" >
+        final_work_efficiency,
+      </if>
+      <if test="finalWorkRelatedKnowledge != null" >
+        final_work_related_knowledge,
+      </if>
+      <if test="finalProblemSolvingSkills != null" >
+        final_problem_solving_skills,
+      </if>
+      <if test="finalAttitude != null" >
+        final_attitude,
+      </if>
+      <if test="finalCommunicationSkills != null" >
+        final_communication_skills,
+      </if>
+      <if test="finalInitiativeIndependence != null" >
+        final_initiative_independence,
+      </if>
+      <if test="finalManagementAbility != null" >
+        final_management_ability,
+      </if>
+      <if test="finalWholeScore != null" >
+        final_whole_score,
+      </if>
+      <if test="hrId != null" >
+        hr_id,
+      </if>
+      <if test="hrDate != null" >
+        hr_date,
+      </if>
+      <if test="dhId != null" >
+        dh_id,
+      </if>
+      <if test="dhDate != null" >
+        dh_date,
+      </if>
+      <if test="dhStatus != null" >
+        dh_status,
+      </if>
+      <if test="leaderId != null" >
+        leader_id,
+      </if>
+      <if test="leaderDate != null" >
+        leader_date,
+      </if>
+      <if test="version != null" >
+        version,
+      </if>
+      <if test="processStatus != null" >
+        process_status,
+      </if>
+      <if test="delFlag != null" >
+        del_flag,
+      </if>
+      <if test="midEmployeeStatus != null" >
+        mid_employee_status,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+      <if test="createUser != null" >
+        create_user,
+      </if>
+      <if test="updateUser != null" >
+        update_user,
+      </if>
+      <if test="leaderStatus != null" >
+        leader_status,
+      </if>
+      <if test="oneWeekEvaluation != null" >
+        one_week_evaluation,
+      </if>
+      <if test="oneMonthEvaluation != null" >
+        one_month_evaluation,
+      </if>
+      <if test="threeMonthEvaluation != null" >
+        three_month_evaluation,
+      </if>
+      <if test="fiveMonthEvaluation != null" >
+        five_month_evaluation,
+      </if>
+      <if test="midLeaderComments != null" >
+        mid_leader_comments,
+      </if>
+      <if test="midHrComments != null" >
+        mid_hr_comments,
+      </if>
+      <if test="finalLeaderComments != null" >
+        final_leader_comments,
+      </if>
+      <if test="employeeAchievement != null" >
+        employee_achievement,
+      </if>
+      <if test="employeeAdvantagesAndDisadvantages != null" >
+        employee_advantages_and_disadvantages,
+      </if>
+      <if test="employeeWorkObjective != null" >
+        employee_work_objective,
+      </if>
+      <if test="finalEmployeeComments != null" >
+        final_employee_comments,
+      </if>
+      <if test="finalHrComments != null" >
+        final_hr_comments,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="employeeId != null" >
+        #{employeeId,jdbcType=BIGINT},
+      </if>
+      <if test="employmentDate != null" >
+        #{employmentDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="probationExpire != null" >
+        #{probationExpire,jdbcType=TIMESTAMP},
+      </if>
+      <if test="oneWeekDate != null" >
+        #{oneWeekDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="oneMonthDate != null" >
+        #{oneMonthDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="threeMonthDate != null" >
+        #{threeMonthDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="fiveMonthDate != null" >
+        #{fiveMonthDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="entryStatus != null" >
+        #{entryStatus,jdbcType=INTEGER},
+      </if>
+      <if test="midWorkSkills != null" >
+        #{midWorkSkills,jdbcType=INTEGER},
+      </if>
+      <if test="midWorkQuality != null" >
+        #{midWorkQuality,jdbcType=INTEGER},
+      </if>
+      <if test="midWorkEfficiency != null" >
+        #{midWorkEfficiency,jdbcType=INTEGER},
+      </if>
+      <if test="midWorkRelatedKnowledge != null" >
+        #{midWorkRelatedKnowledge,jdbcType=INTEGER},
+      </if>
+      <if test="midProblemSolvingSkills != null" >
+        #{midProblemSolvingSkills,jdbcType=INTEGER},
+      </if>
+      <if test="midAttitude != null" >
+        #{midAttitude,jdbcType=INTEGER},
+      </if>
+      <if test="midCommunicationSkills != null" >
+        #{midCommunicationSkills,jdbcType=INTEGER},
+      </if>
+      <if test="midInitiativeIndependence != null" >
+        #{midInitiativeIndependence,jdbcType=INTEGER},
+      </if>
+      <if test="midManagementAbility != null" >
+        #{midManagementAbility,jdbcType=INTEGER},
+      </if>
+      <if test="midWholeScore != null" >
+        #{midWholeScore,jdbcType=INTEGER},
+      </if>
+      <if test="midLeaderProcessStatus != null" >
+        #{midLeaderProcessStatus,jdbcType=INTEGER},
+      </if>
+      <if test="midHrProcessStatus != null" >
+        #{midHrProcessStatus,jdbcType=INTEGER},
+      </if>
+      <if test="finalWorkSkills != null" >
+        #{finalWorkSkills,jdbcType=INTEGER},
+      </if>
+      <if test="finalWorkQuality != null" >
+        #{finalWorkQuality,jdbcType=INTEGER},
+      </if>
+      <if test="finalWorkEfficiency != null" >
+        #{finalWorkEfficiency,jdbcType=INTEGER},
+      </if>
+      <if test="finalWorkRelatedKnowledge != null" >
+        #{finalWorkRelatedKnowledge,jdbcType=INTEGER},
+      </if>
+      <if test="finalProblemSolvingSkills != null" >
+        #{finalProblemSolvingSkills,jdbcType=INTEGER},
+      </if>
+      <if test="finalAttitude != null" >
+        #{finalAttitude,jdbcType=INTEGER},
+      </if>
+      <if test="finalCommunicationSkills != null" >
+        #{finalCommunicationSkills,jdbcType=INTEGER},
+      </if>
+      <if test="finalInitiativeIndependence != null" >
+        #{finalInitiativeIndependence,jdbcType=INTEGER},
+      </if>
+      <if test="finalManagementAbility != null" >
+        #{finalManagementAbility,jdbcType=INTEGER},
+      </if>
+      <if test="finalWholeScore != null" >
+        #{finalWholeScore,jdbcType=INTEGER},
+      </if>
+      <if test="hrId != null" >
+        #{hrId,jdbcType=INTEGER},
+      </if>
+      <if test="hrDate != null" >
+        #{hrDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="dhId != null" >
+        #{dhId,jdbcType=INTEGER},
+      </if>
+      <if test="dhDate != null" >
+        #{dhDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="dhStatus != null" >
+        #{dhStatus,jdbcType=INTEGER},
+      </if>
+      <if test="leaderId != null" >
+        #{leaderId,jdbcType=INTEGER},
+      </if>
+      <if test="leaderDate != null" >
+        #{leaderDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="version != null" >
+        #{version,jdbcType=VARCHAR},
+      </if>
+      <if test="processStatus != null" >
+        #{processStatus,jdbcType=BIGINT},
+      </if>
+      <if test="delFlag != null" >
+        #{delFlag,jdbcType=INTEGER},
+      </if>
+      <if test="midEmployeeStatus != null" >
+        #{midEmployeeStatus,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUser != null" >
+        #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUser != null" >
+        #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="leaderStatus != null" >
+        #{leaderStatus,jdbcType=INTEGER},
+      </if>
+      <if test="oneWeekEvaluation != null" >
+        #{oneWeekEvaluation,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="oneMonthEvaluation != null" >
+        #{oneMonthEvaluation,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="threeMonthEvaluation != null" >
+        #{threeMonthEvaluation,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="fiveMonthEvaluation != null" >
+        #{fiveMonthEvaluation,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="midLeaderComments != null" >
+        #{midLeaderComments,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="midHrComments != null" >
+        #{midHrComments,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="finalLeaderComments != null" >
+        #{finalLeaderComments,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="employeeAchievement != null" >
+        #{employeeAchievement,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="employeeAdvantagesAndDisadvantages != null" >
+        #{employeeAdvantagesAndDisadvantages,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="employeeWorkObjective != null" >
+        #{employeeWorkObjective,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="finalEmployeeComments != null" >
+        #{finalEmployeeComments,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="finalHrComments != null" >
+        #{finalHrComments,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="update" parameterType="com.ule.oa.base.po.EmpProbationAssessment" >
+     <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">
+		SELECT LAST_INSERT_ID() AS id
+	</selectKey>
+    update base_emp_probation_assessment
+    <set >
+      <if test="employeeId != null" >
+        employee_id = #{employeeId,jdbcType=BIGINT},
+      </if>
+      <if test="employmentDate != null" >
+        employment_date = #{employmentDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="probationExpire != null" >
+        probation_expire = #{probationExpire,jdbcType=TIMESTAMP},
+      </if>
+      <if test="oneWeekDate != null" >
+        one_week_date = #{oneWeekDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="oneMonthDate != null" >
+        one_month_date = #{oneMonthDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="threeMonthDate != null" >
+        three_month_date = #{threeMonthDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="fiveMonthDate != null" >
+        five_month_date = #{fiveMonthDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="entryStatus != null" >
+        entry_status = #{entryStatus,jdbcType=INTEGER},
+      </if>
+      <if test="midWorkSkills != null" >
+        mid_work_skills = #{midWorkSkills,jdbcType=INTEGER},
+      </if>
+      <if test="midWorkQuality != null" >
+        mid_work_quality = #{midWorkQuality,jdbcType=INTEGER},
+      </if>
+      <if test="midWorkEfficiency != null" >
+        mid_work_efficiency = #{midWorkEfficiency,jdbcType=INTEGER},
+      </if>
+      <if test="midWorkRelatedKnowledge != null" >
+        mid_work_related_knowledge = #{midWorkRelatedKnowledge,jdbcType=INTEGER},
+      </if>
+      <if test="midProblemSolvingSkills != null" >
+        mid_problem_solving_skills = #{midProblemSolvingSkills,jdbcType=INTEGER},
+      </if>
+      <if test="midAttitude != null" >
+        mid_attitude = #{midAttitude,jdbcType=INTEGER},
+      </if>
+      <if test="midCommunicationSkills != null" >
+        mid_communication_skills = #{midCommunicationSkills,jdbcType=INTEGER},
+      </if>
+      <if test="midInitiativeIndependence != null" >
+        mid_initiative_independence = #{midInitiativeIndependence,jdbcType=INTEGER},
+      </if>
+      <if test="midManagementAbility != null" >
+        mid_management_ability = #{midManagementAbility,jdbcType=INTEGER},
+      </if>
+      <if test="midWholeScore != null" >
+        mid_whole_score = #{midWholeScore,jdbcType=INTEGER},
+      </if>
+      <if test="midLeaderProcessStatus != null" >
+        mid_leader_process_status = #{midLeaderProcessStatus,jdbcType=INTEGER},
+      </if>
+      <if test="midHrProcessStatus != null" >
+        mid_hr_process_status = #{midHrProcessStatus,jdbcType=INTEGER},
+      </if>
+      <if test="finalWorkSkills != null" >
+        final_work_skills = #{finalWorkSkills,jdbcType=INTEGER},
+      </if>
+      <if test="finalWorkQuality != null" >
+        final_work_quality = #{finalWorkQuality,jdbcType=INTEGER},
+      </if>
+      <if test="finalWorkEfficiency != null" >
+        final_work_efficiency = #{finalWorkEfficiency,jdbcType=INTEGER},
+      </if>
+      <if test="finalWorkRelatedKnowledge != null" >
+        final_work_related_knowledge = #{finalWorkRelatedKnowledge,jdbcType=INTEGER},
+      </if>
+      <if test="finalProblemSolvingSkills != null" >
+        final_problem_solving_skills = #{finalProblemSolvingSkills,jdbcType=INTEGER},
+      </if>
+      <if test="finalAttitude != null" >
+        final_attitude = #{finalAttitude,jdbcType=INTEGER},
+      </if>
+      <if test="finalCommunicationSkills != null" >
+        final_communication_skills = #{finalCommunicationSkills,jdbcType=INTEGER},
+      </if>
+      <if test="finalInitiativeIndependence != null" >
+        final_initiative_independence = #{finalInitiativeIndependence,jdbcType=INTEGER},
+      </if>
+      <if test="finalManagementAbility != null" >
+        final_management_ability = #{finalManagementAbility,jdbcType=INTEGER},
+      </if>
+      <if test="finalWholeScore != null" >
+        final_whole_score = #{finalWholeScore,jdbcType=INTEGER},
+      </if>
+      <if test="hrId != null" >
+        hr_id = #{hrId,jdbcType=INTEGER},
+      </if>
+      <if test="hrDate != null" >
+        hr_date = #{hrDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="dhId != null" >
+        dh_id = #{dhId,jdbcType=INTEGER},
+      </if>
+      <if test="dhDate != null" >
+        dh_date = #{dhDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="dhStatus != null" >
+        dh_status = #{dhStatus,jdbcType=INTEGER},
+      </if>
+      <if test="leaderId != null" >
+        leader_id = #{leaderId,jdbcType=INTEGER},
+      </if>
+      <if test="leaderDate != null" >
+        leader_date = #{leaderDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="version != null" >
+        version = #{version,jdbcType=VARCHAR},
+      </if>
+      <if test="processStatus != null" >
+        process_status = #{processStatus,jdbcType=BIGINT},
+      </if>
+      <if test="delFlag != null" >
+        del_flag = #{delFlag,jdbcType=INTEGER},
+      </if>
+      <if test="midEmployeeStatus != null" >
+        mid_employee_status = #{midEmployeeStatus,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUser != null" >
+        create_user = #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="leaderStatus != null" >
+        leader_status = #{leaderStatus,jdbcType=INTEGER},
+      </if>
+      <if test="oneWeekEvaluation != null" >
+        one_week_evaluation = #{oneWeekEvaluation,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="oneMonthEvaluation != null" >
+        one_month_evaluation = #{oneMonthEvaluation,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="threeMonthEvaluation != null" >
+        three_month_evaluation = #{threeMonthEvaluation,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="fiveMonthEvaluation != null" >
+        five_month_evaluation = #{fiveMonthEvaluation,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="midLeaderComments != null" >
+        mid_leader_comments = #{midLeaderComments,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="midHrComments != null" >
+        mid_hr_comments = #{midHrComments,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="finalLeaderComments != null" >
+        final_leader_comments = #{finalLeaderComments,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="employeeAchievement != null" >
+        employee_achievement = #{employeeAchievement,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="employeeAdvantagesAndDisadvantages != null" >
+        employee_advantages_and_disadvantages = #{employeeAdvantagesAndDisadvantages,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="employeeWorkObjective != null" >
+        employee_work_objective = #{employeeWorkObjective,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="finalEmployeeComments != null" >
+        final_employee_comments = #{finalEmployeeComments,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="finalHrComments != null" >
+        final_hr_comments = #{finalHrComments,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

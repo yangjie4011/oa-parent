@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ule.oa.base.mapper.ReProcdefMapper">
+
+	<resultMap id="BaseResultMap" type="com.ule.oa.base.po.ReProcdef">
+		<result column="ID" property="id" jdbcType="BIGINT"/>
+		<result column="CODE" property="code" jdbcType="BIGINT"/>
+		<result column="PROCESS_TYPE" property="processType" jdbcType="BIGINT"/>
+		<result column="PROCESS_NAME" property="processName" jdbcType="VARCHAR"/>
+		<result column="PROCESS_DESCRIPTION" property="processDescription" jdbcType="VARCHAR"/>
+		<result column="RANGE_OF_USE" property="rangeOfUse" jdbcType="BIGINT"/>
+		<result column="APPROVAL_TYPE" property="approvalType" jdbcType="BIGINT"/>
+		<result column="AUTHORIZATION" property="authorization" jdbcType="BIGINT"/>
+		<result column="PROCESS_STATUS" property="processStatus" jdbcType="BIGINT"/>
+		<result column="REDIRECT_URL" property="redirectUrl" jdbcType="VARCHAR"/>
+		<result column="VERSION" property="version" jdbcType="BIGINT"/>
+		<result column="DEL_FLAG" property="delFlag" jdbcType="BIGINT"/>
+		<result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP"/>
+		<result column="UPDATE_TIME" property="updateTime" jdbcType="TIMESTAMP"/>
+		<result column="CREATE_USER" property="createUser" jdbcType="VARCHAR"/>
+		<result column="UPDATE_USER" property="updateUser" jdbcType="VARCHAR"/>
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		ID,PROCESS_TYPE,PROCESS_NAME,PROCESS_DESCRIPTION,RANGE_OF_USE,CODE,
+		APPROVAL_TYPE,AUTHORIZATION,PROCESS_STATUS,REDIRECT_URL,VERSION,
+		DEL_FLAG,CREATE_TIME,UPDATE_TIME,CREATE_USER,UPDATE_USER
+	</sql>
+
+	<select id="getById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from bpm_re_procdef
+		where id = #{id,jdbcType=BIGINT}
+	</select>
+	
+	<select id="getByCode" parameterType="java.lang.String" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from bpm_re_procdef
+		where CODE = #{code,jdbcType=BIGINT}
+	</select>
+
+	<!-- 分页查询 -->
+	<select id="getPageList" parameterType="com.ule.oa.base.po.ReProcdef" resultMap="BaseResultMap">
+		select * from bpm_re_procdef r
+		where r.del_flag != ${@com.ule.oa.common.po.CommonPo@STATUS_DELETE}
+		<if test="processType != null"> and r.PROCESS_TYPE = #{processType}</if>
+		order by r.id desc limit #{offset},#{limit}
+	</select>
+
+	<!-- 查询总记录数 -->
+	<select id="getCount" parameterType="com.ule.oa.base.po.ReProcdef" resultType="java.lang.Integer">
+		select count(*) from bpm_re_procdef r
+		where r.del_flag != ${@com.ule.oa.common.po.CommonPo@STATUS_DELETE}
+		<if test="processType != null"> and r.PROCESS_TYPE = #{processType}</if>
+	</select>
+	
+	<!-- 根据条件查询 -->
+	<select id="getListByCondition" parameterType="com.ule.oa.base.po.ReProcdef" resultMap="BaseResultMap">
+		select * from bpm_re_procdef r
+		where r.del_flag != ${@com.ule.oa.common.po.CommonPo@STATUS_DELETE}
+		<if test="processType != null"> and r.PROCESS_TYPE = #{processType}</if>
+		order by r.id desc
+	</select>
+
+	<!-- 保存信息 -->
+	<insert id="save" parameterType="com.ule.oa.base.po.ReProcdef" useGeneratedKeys="true" keyProperty="id">
+		insert into bpm_re_procdef
+		(  
+			CODE,
+			PROCESS_TYPE,
+			PROCESS_NAME,
+			PROCESS_DESCRIPTION,
+			RANGE_OF_USE,
+			APPROVAL_TYPE,
+			AUTHORIZATION,
+			PROCESS_STATUS,
+			REDIRECT_URL,
+			VERSION,
+			DEL_FLAG,
+			CREATE_TIME,
+			UPDATE_TIME,
+			CREATE_USER,
+			UPDATE_USER
+		)
+		values  ( 
+			#{code,jdbcType=BIGINT},
+			#{processType,jdbcType=BIGINT},
+			#{processName,jdbcType=VARCHAR},
+			#{processDescription,jdbcType=VARCHAR},
+			#{rangeOfUse,jdbcType=BIGINT},
+			#{approvalType,jdbcType=BIGINT},
+			#{authorization,jdbcType=BIGINT},
+			#{processStatus,jdbcType=BIGINT},
+			#{redirectUrl,jdbcType=VARCHAR},
+			1,
+			#{delFlag,jdbcType=BIGINT},
+			#{createTime,jdbcType=TIMESTAMP},
+			#{updateTime,jdbcType=TIMESTAMP},
+			#{createUser,jdbcType=VARCHAR},
+			#{updateUser,jdbcType=VARCHAR}
+		)
+	</insert>
+	<!-- 批量信息 -->
+	<insert id="batchSave" parameterType="java.util.List" >
+   		insert into bpm_re_procdef 
+   		(       
+   			CODE,
+			PROCESS_TYPE,
+			PROCESS_NAME,
+			PROCESS_DESCRIPTION,
+			RANGE_OF_USE,
+			APPROVAL_TYPE,
+			AUTHORIZATION,
+			PROCESS_STATUS,
+			REDIRECT_URL,
+			VERSION,
+			DEL_FLAG,
+			CREATE_TIME,
+			UPDATE_TIME,
+			CREATE_USER,
+			UPDATE_USER
+	    )
+        select T.* FROM (
+      	<foreach collection="list" item="item" index="index" separator="UNION">
+			SELECT
+				#{item.code,jdbcType=BIGINT} as CODE,
+				#{item.processType,jdbcType=BIGINT} as PROCESS_TYPE,
+				#{item.processName,jdbcType=VARCHAR} as PROCESS_NAME,
+				#{item.processDescription,jdbcType=VARCHAR} as PROCESS_DESCRIPTION,
+				#{item.rangeOfUse,jdbcType=BIGINT} as RANGE_OF_USE,
+				#{item.approvalType,jdbcType=BIGINT} as APPROVAL_TYPE,
+				#{item.authorization,jdbcType=BIGINT} as AUTHORIZATION,
+				#{item.processStatus,jdbcType=BIGINT} as PROCESS_STATUS,
+				#{item.redirectUrl,jdbcType=VARCHAR} as REDIRECT_URL,
+				1 as VERSION,
+				#{item.delFlag,jdbcType=BIGINT} as DEL_FLAG,
+				#{item.createTime,jdbcType=TIMESTAMP} as CREATE_TIME,
+				#{item.updateTime,jdbcType=TIMESTAMP} as UPDATE_TIME,
+				#{item.createUser,jdbcType=VARCHAR} as CREATE_USER,
+				#{item.updateUser,jdbcType=VARCHAR} as UPDATE_USER
+			FROM DUAL
+		</foreach>
+      ) T
+    </insert>
+
+	<!-- 根据主键更新信息 -->
+	<update id="updateById" parameterType="com.ule.oa.base.po.ReProcdef">
+		update bpm_re_procdef
+		<set>
+			<if test="code != null"> CODE=#{code,jdbcType=BIGINT},</if>
+			<if test="processType != null">PROCESS_TYPE=#{processType,jdbcType=BIGINT},</if>
+			<if test="processName != null">PROCESS_NAME=#{processName,jdbcType=VARCHAR},</if>
+			<if test="processDescription != null">PROCESS_DESCRIPTION=#{processDescription,jdbcType=VARCHAR},</if>
+			<if test="rangeOfUse != null">RANGE_OF_USE=#{rangeOfUse,jdbcType=BIGINT},</if>
+			<if test="approvalType != null">APPROVAL_TYPE=#{approvalType,jdbcType=BIGINT},</if>
+			<if test="authorization != null">AUTHORIZATION=#{authorization,jdbcType=BIGINT},</if>
+			<if test="processStatus != null">PROCESS_STATUS=#{processStatus,jdbcType=BIGINT},</if>
+			<if test="redirectUrl != null">REDIRECT_URL=#{redirectUrl,jdbcType=VARCHAR},</if>
+			<if test="version != null">VERSION=#{version,jdbcType=BIGINT},</if>
+			<if test="delFlag != null">DEL_FLAG=#{delFlag,jdbcType=BIGINT},</if>
+			<if test="createTime != null">CREATE_TIME=#{createTime,jdbcType=TIMESTAMP},</if>
+			<if test="updateTime != null">UPDATE_TIME=#{updateTime,jdbcType=TIMESTAMP},</if>
+			<if test="createUser != null">CREATE_USER=#{createUser,jdbcType=VARCHAR},</if>
+			<if test="updateUser != null">UPDATE_USER=#{updateUser,jdbcType=VARCHAR},</if>
+	    </set>
+		where id = #{id,jdbcType=BIGINT}
+	</update>
+</mapper>

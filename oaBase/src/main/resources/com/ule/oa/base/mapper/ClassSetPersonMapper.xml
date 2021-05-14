@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ule.oa.base.mapper.ClassSetPersonMapper" >
+  <resultMap id="BaseResultMap" type="com.ule.oa.base.po.ClassSetPerson" >
+    <id column="ID" property="id" jdbcType="BIGINT" />
+    <result column="DEPART_ID" property="departId" jdbcType="BIGINT" />
+    <result column="DEPART_NAME" property="departName" jdbcType="VARCHAR" />
+    <result column="EMPLOYEE_ID" property="employeeId" jdbcType="BIGINT" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="APPROVAL_ID" property="approvalId" jdbcType="BIGINT" />
+    <result column="APPROVAL_Name" property="approvalName" jdbcType="VARCHAR" />
+    <result column="del_flag" property="delFlag" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="version" property="version" jdbcType="BIGINT"/>
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    ID, DEPART_ID,DEPART_NAME,EMPLOYEE_ID,name,APPROVAL_ID,APPROVAL_Name,del_flag, create_time, create_user, update_user, update_time,version
+  </sql>
+  
+  <select id="getByEmployeeId" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from class_set_person where del_flag = 0 and EMPLOYEE_ID = #{employeeId,jdbcType=BIGINT}
+  </select>
+  
+  <select id="getAll" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from class_set_person where del_flag = 0
+  </select>
+  
+</mapper>

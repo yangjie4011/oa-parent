@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ule.oa.base.mapper.SchedulePlanMapper" >
+
+  <resultMap id="BaseResultMap" type="com.ule.oa.base.po.SchedulePlan" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="plan_name" property="planName" jdbcType="VARCHAR" />
+    <result column="color" property="color" jdbcType="VARCHAR" />
+    <result column="total_time" property="totalTime" jdbcType="BIGINT" />
+    <result column="start_time" property="startTime" jdbcType="TIMESTAMP" />
+    <result column="end_time" property="endTime" jdbcType="TIMESTAMP" />
+    <result column="version" property="version" jdbcType="BIGINT" />
+    <result column="rank" property="rank" jdbcType="INTEGER" />
+    <result column="del_flag" property="delFlag" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+     id, plan_name, color, total_time, start_time, end_time, version, rank, del_flag, create_time, update_time, create_user, update_user
+  </sql>
+  
+  <select id="getById" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from base_schedule_plan
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  
+  <select id="getListByCondition" resultMap="BaseResultMap" parameterType="com.ule.oa.base.po.SchedulePlan" >
+    select 
+    <include refid="Base_Column_List" />
+    from base_schedule_plan
+    where del_flag = 0
+	    <if test="id != null" >
+	        and id = #{id,jdbcType=BIGINT}
+	    </if>
+	    <if test="planName != null" >
+	        and plan_name = #{planName,jdbcType=VARCHAR}
+	    </if>
+	    <if test="color != null" >
+	        and color = #{color,jdbcType=VARCHAR}
+	    </if>
+	    <if test="totalTime != null" >
+	        and total_time = #{totalTime,jdbcType=BIGINT}
+	    </if>
+	    <if test="startTime != null" >
+	        and start_time = #{startTime,jdbcType=TIMESTAMP}
+	    </if>
+	    <if test="endTime != null" >
+	        and end_time = #{endTime,jdbcType=TIMESTAMP}
+	    </if>
+	    <if test="version != null" >
+	        and version = #{version,jdbcType=BIGINT}
+	    </if>
+	    <if test="rank != null" >
+	        and rank = #{rank,jdbcType=INTEGER}
+	    </if>
+	    <if test="delFlag != null" >
+	        and del_flag = #{delFlag,jdbcType=INTEGER}
+	    </if>
+  </select>
+  
+  <!-- 分页查询List -->
+  <select id="getByPagenation"  parameterType="com.ule.oa.base.po.SchedulePlan" resultMap="BaseResultMap">
+		select <include refid="Base_Column_List"></include>
+	    from base_schedule_plan 
+		<where>
+			del_flag = 0
+		</where>	
+		order by create_time desc limit #{offset} , #{limit}
+  </select>
+  
+  <!-- 分页查询count -->
+  <select id="count" resultType="integer" parameterType="com.ule.oa.base.po.SchedulePlan">
+		select count(1) from base_schedule_plan
+		<where>
+			del_flag = 0
+		</where>	
+  </select>
+  
+  <!-- 新增 -->
+  <insert id="save" useGeneratedKeys="true" keyProperty="id" parameterType="com.ule.oa.base.po.SchedulePlan">  
+      insert into base_schedule_plan(
+      	plan_name, 
+      	color, 
+      	total_time, 
+      	start_time, 
+      	end_time, 
+      	version, 
+      	rank,
+      	del_flag, 
+      	create_time, 
+      	create_user
+      ) values
+      (
+        #{planName,jdbcType=VARCHAR},
+        #{color,jdbcType=VARCHAR},
+        #{totalTime,jdbcType=BIGINT},
+        #{startTime,jdbcType=TIMESTAMP},
+        #{endTime,jdbcType=TIMESTAMP},
+        #{version,jdbcType=BIGINT},
+        #{rank,jdbcType=INTEGER},
+        #{delFlag,jdbcType=INTEGER},
+        #{createTime,jdbcType=TIMESTAMP},
+        #{createUser,jdbcType=VARCHAR}
+      )  
+    </insert>
+  
+  <!-- 修改 -->
+  <update id="updateById" parameterType="com.ule.oa.base.po.SchedulePlan" >
+    update base_schedule_plan
+    <set >
+      <if test="planName != null" >
+        plan_name = #{planName,jdbcType=VARCHAR},
+      </if>
+      <if test="color != null" >
+        color = #{color,jdbcType=VARCHAR},
+      </if>
+      <if test="totalTime != null" >
+        total_time = #{totalTime,jdbcType=BIGINT},
+      </if>
+      <if test="startTime != null" >
+        start_time = #{startTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endTime != null" >
+        end_time = #{endTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="version != null" >
+        version = #{version,jdbcType=BIGINT},
+      </if>
+      <if test="rank != null" >
+        rank = #{rank,jdbcType=INTEGER},
+      </if>
+      <if test="delFlag != null" >
+        del_flag = #{delFlag,jdbcType=INTEGER},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+</mapper>

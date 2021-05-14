@@ -1,0 +1,458 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ule.oa.base.mapper.ScheduleGroupMapper" >
+  <resultMap id="BaseResultMap" type="com.ule.oa.base.po.ScheduleGroup" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="depart_id" property="departId" jdbcType="BIGINT" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="scheduler" property="scheduler" jdbcType="BIGINT" />
+    <result column="auditor" property="auditor" jdbcType="BIGINT" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="del_flag" property="delFlag" jdbcType="INTEGER" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    id, depart_id, name, scheduler, auditor,create_time,
+    update_time, create_user, update_user, del_flag
+  </sql>
+  
+  <!-- 根据部门id查询班组信息 -->
+  <select id="getListByDepartId" resultMap="BaseResultMap">
+  	select <include refid="Base_Column_List"/> from base_schedule_group 
+	where depart_id = #{departId}
+	and del_flag = 0;
+  </select>
+  <!-- 统计组下员工数量 -->
+  <select id="getEmpCount" resultType="int">
+  	select
+		count(e.id)
+		from base_employee e
+		left join base_emp_schedule_group g on e.id = g.emp_id
+		where g.group_id = #{groupId}
+		and g.del_flag = 0
+		and e.job_status in(0,2)
+		and e.del_flag = 0
+  </select>
+  <!-- 根据id查询班组信息 -->
+  <select id="getGroupById" resultMap="BaseResultMap">
+  	select <include refid="Base_Column_List"/> from base_schedule_group 
+	where id = #{groupId}
+	and del_flag = 0;
+  </select>
+  <!-- 查询同名的班组 -->
+  <select id="isNotSameName" parameterType="com.ule.oa.base.po.ScheduleGroup" resultType="int">
+  	select count(1) from base_schedule_group
+  	<where>
+  		del_flag = 0
+  		<if test="departId != null">
+  			and depart_id = #{departId}
+  		</if>
+  		<if test="name != null">
+  			and name = #{name}
+  		</if>
+  		<if test="id != null">
+  			and id != #{id}
+  		</if>
+  	</where>
+  </select>
+  <!-- 新建分组 -->
+  <insert id="insertScheduleGroup" parameterType="com.ule.oa.base.po.ScheduleGroup" >
+    insert into base_schedule_group
+    <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">
+		SELECT LAST_INSERT_ID() AS id
+	</selectKey>
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="departId != null" >
+        depart_id,
+      </if>
+      <if test="name != null" >
+        name,
+      </if>
+      <if test="scheduler != null" >
+        scheduler,
+      </if>
+      <if test="auditor != null" >
+        auditor,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+      <if test="createUser != null" >
+        create_user,
+      </if>
+      <if test="updateUser != null" >
+        update_user,
+      </if>
+      <if test="delFlag != null" >
+        del_flag,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="departId != null" >
+        #{departId,jdbcType=BIGINT},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="scheduler != null" >
+        #{scheduler,jdbcType=BIGINT},
+      </if>
+      <if test="auditor != null" >
+        #{auditor,jdbcType=BIGINT},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUser != null" >
+        #{createUser,jdbcType=BIGINT},
+      </if>
+      <if test="updateUser != null" >
+        #{updateUser,jdbcType=BIGINT},
+      </if>
+      <if test="delFlag != null" >
+        #{delFlag,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <!-- 分组信息 -->
+  <update id="updateScheduleGroup" parameterType="com.ule.oa.base.po.ScheduleGroup" >
+    update base_schedule_group
+    <set >
+       <if test="departId != null" >
+        depart_id = #{departId,jdbcType=BIGINT},
+      </if>
+      <if test="name != null" >
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="scheduler != null" >
+        scheduler = #{scheduler,jdbcType=BIGINT},
+      </if>
+      <if test="auditor != null" >
+        auditor = #{auditor,jdbcType=BIGINT},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUser != null" >
+        create_user = #{createUser,jdbcType=BIGINT},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=BIGINT},
+      </if>
+      <if test="delFlag != null" >
+        del_flag = #{delFlag,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+	<!-- 查询组下所有员工 -->
+	<select id="getAllGroupEmp" resultType="com.ule.oa.base.po.Employee">
+		select e.*
+		from base_employee e
+		left join base_emp_schedule_group g on e.id = g.emp_id
+		where g.group_id = #{groupId}
+		and g.del_flag = 0
+		and e.job_status in(0,2)
+		and e.del_flag = 0
+		<if test="classMonth != null">
+		    AND CASE WHEN e.quit_time IS NOT NULL THEN DATE_FORMAT(e.quit_time,'%Y-%m-%d') &gt;= #{classMonth,jdbcType=DATE} ELSE 1=1 END
+		</if>
+		<if test="condition != null">
+			and (e.code like concat('%',#{condition,jdbcType=VARCHAR},'%')
+				or e.cn_name like concat('%',#{condition,jdbcType=VARCHAR},'%'))
+		</if>
+	</select>
+	<select id="getDepartNameByGroupId" resultType = "string">
+		select
+		d.name
+		from base_depart d 
+		left join base_schedule_group g on d.id = g.depart_id
+		where 
+		g.id = #{groupId,jdbcType=BIGINT}
+		and g.del_flag = 0
+		and d.del_flag = 0
+		limit 1
+	</select>
+	
+	<!-- 根据员工id查询班组信息 -->
+    <select id="getGroupByEmployeeId" resultMap="BaseResultMap" parameterType="java.lang.Long">
+  	    SELECT a.* FROM base_schedule_group a LEFT JOIN base_emp_schedule_group b ON a.id = b.group_id 
+           WHERE a.del_flag = 0 AND b.del_flag = 0 AND b.emp_id = #{employeeId,jdbcType=BIGINT};
+    </select>
+	
+	<!-- 查询部门下所有未分组的员工 -->
+	<select id="getUngroupedEmp" resultType="com.ule.oa.base.po.Employee">
+		select
+		e.id as id,e.cn_name as cnName,e.code as code
+		from base_employee e
+		left join base_emp_depart d on e.id = d.employee_id
+		where d.depart_id = #{emp.departId}
+		and e.id not in (select g.emp_id from base_emp_schedule_group g where g.del_flag = 0)
+		and d.del_flag = 0
+		and e.job_status = 0
+		and e.del_flag = 0
+		<if test="emp.workType != null">
+			and e.work_type = #{emp.workType,jdbcType=BIGINT}
+		</if>
+		<if test="emp.whetherScheduling != null">
+			and e.whether_scheduling = #{emp.whetherScheduling,jdbcType=BIGINT}
+		</if>
+		<if test="emp.code != null">
+			and e.code like concat('%',#{emp.code,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="emp.cnName != null">
+			and e.cn_name like concat('%',#{emp.cnName,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="emp.firstEntryTime != null">
+			and e.first_Entry_time = #{emp.firstEntryTime}
+		</if>
+	</select>
+	<!-- 添加分组成员 -->
+    <insert id="addMember" parameterType="com.ule.oa.base.po.EmpScheduleGroup">
+    	insert into base_emp_schedule_group
+	    <trim prefix="(" suffix=")" suffixOverrides="," >
+	      <if test="empId != null" >
+	        emp_id,
+	      </if>
+	      <if test="groupId != null" >
+	        group_id,
+	      </if>
+	      <if test="createTime != null" >
+	        create_time,
+	      </if>
+	      <if test="updateTime != null" >
+	        update_time,
+	      </if>
+	      <if test="createUser != null" >
+	        create_user,
+	      </if>
+	      <if test="updateUser != null" >
+	        update_user,
+	      </if>
+	      <if test="delFlag != null" >
+	        del_flag,
+	      </if>
+	      <if test="remark != null">
+	      	remark,
+	      </if>
+	      <if test="version != null">
+	      	version,
+	      </if>
+	    </trim>
+	    <trim prefix="values (" suffix=")" suffixOverrides="," >
+	      <if test="empId != null" >
+	        #{empId,jdbcType=BIGINT},
+	      </if>
+	      <if test="groupId != null" >
+	        #{groupId,jdbcType=VARCHAR},
+	      </if>
+	      <if test="createTime != null" >
+	        #{createTime,jdbcType=TIMESTAMP},
+	      </if>
+	      <if test="updateTime != null" >
+	        #{updateTime,jdbcType=TIMESTAMP},
+	      </if>
+	      <if test="createUser != null" >
+	        #{createUser,jdbcType=BIGINT},
+	      </if>
+	      <if test="updateUser != null" >
+	        #{updateUser,jdbcType=BIGINT},
+	      </if>
+	      <if test="delFlag != null" >
+	        #{delFlag,jdbcType=INTEGER},
+	      </if>
+	      <if test="remark != null" >
+	        #{remark,jdbcType=VARCHAR},
+	      </if>
+	      <if test="version != null" >
+	        #{version,jdbcType=INTEGER},
+	      </if>
+	    </trim>
+    </insert>
+    <!-- 删除分组成员 -->
+    <update id="delMember">
+	     update base_emp_schedule_group
+		    <set >
+		      	<if test="updateTime != null" >
+		       		update_time = #{updateTime,jdbcType=TIMESTAMP},
+		      	</if>
+		      	<if test="updateUser != null" >
+		        	update_user = #{updateUser,jdbcType=BIGINT},
+		      	</if>
+		      	del_flag = 1
+		    </set>
+	    where emp_id = #{empId,jdbcType=BIGINT}
+	    <if test="groupId != null" >
+	   	 and group_id = #{groupId,jdbcType=BIGINT}
+	    </if>
+    </update>
+   
+	<select id="getListByCondition" resultMap="BaseResultMap" parameterType="com.ule.oa.base.po.ScheduleGroup">
+	  	select <include refid="Base_Column_List"/> from base_schedule_group 
+		where del_flag = 0
+		<if test="departId != null" >
+		     and depart_id = #{departId,jdbcType=BIGINT},
+		</if>
+		<if test="scheduler != null" >
+		     and scheduler = #{scheduler,jdbcType=BIGINT},
+		</if>
+		<if test="auditor != null" >
+		     and auditor = #{auditor,jdbcType=BIGINT}
+		</if>
+	</select>
+	
+	<select id="getAllListByCondition" resultType="com.ule.oa.base.po.ScheduleGroup" parameterType="com.ule.oa.base.po.ScheduleGroup">
+	  	select 
+			bs.id, bs.depart_id, bs.name, bs.scheduler, bs.auditor,bs.create_time,
+		    bs.update_time, bs.create_user, bs.update_user, bs.del_flag,bd.name as departName
+		from base_schedule_group bs
+		LEFT JOIN base_depart bd on bs.depart_id=bd.id
+		where bs.del_flag = 0
+		<if test="departId != null" >
+		     and bs.depart_id = #{departId,jdbcType=BIGINT},
+		</if>
+		<if test="scheduler != null" >
+		     and bs.scheduler = #{scheduler,jdbcType=BIGINT},
+		</if>
+		<if test="auditor != null" >
+		     and bs.auditor = #{auditor,jdbcType=BIGINT}
+		</if>
+	</select>
+	
+	<select id="getListByScheduler" resultMap="BaseResultMap" parameterType="java.lang.Long">
+	  	select <include refid="Base_Column_List"/> from base_schedule_group 
+		where del_flag = 0 and scheduler = #{scheduler,jdbcType=BIGINT}
+	</select>
+	
+	<select id="getListBySchedulerOrAuditor" resultMap="BaseResultMap" parameterType="java.lang.Long">
+	  	select <include refid="Base_Column_List"/> from base_schedule_group 
+		where del_flag = 0 and (scheduler = #{employeeId,jdbcType=BIGINT} or auditor = #{employeeId,jdbcType=BIGINT})
+	</select>
+	
+	<select id="getScheduleDepartList" resultType="com.ule.oa.base.po.Depart">
+	  	select id,name
+		from base_depart 
+	  	where type = 1
+	  	and whether_scheduling = 1
+	  	and del_flag = 0
+  	</select>
+  	<update id="delByEmpId">
+  		update base_emp_schedule_group
+  		set del_flag = 1
+	    where emp_id = #{empId,jdbcType=BIGINT}
+  	</update>
+  	<select id="getAllEmpIdByGroupId" resultType="long">
+  		select e.id
+		from base_employee e
+		left join base_emp_schedule_group g on e.id = g.emp_id
+		where g.group_id = #{groupId}
+		<if test="classMonth != null">
+		    AND CASE WHEN e.quit_time IS NOT NULL THEN DATE_FORMAT(e.quit_time,'%Y-%m-%d') &gt;= #{classMonth,jdbcType=DATE} ELSE 1=1 END
+		</if>
+		and g.del_flag = 0
+		and e.job_status in(0,2)
+		and e.del_flag = 0
+  	</select>
+  	
+  	<select id="getEmpClassListByCondition" resultType="com.ule.oa.base.po.Employee" parameterType="com.ule.oa.base.po.Employee">
+  	select DISTINCT(e.id) as id,e.cn_name as cnName,e.code as code,
+		bd.name as departName,e.whether_scheduling as whetherScheduling,
+			(select cn_name from base_employee where id = bsg.scheduler )as scheduleCnName,
+		bsg.name as scheduleGroupName 
+	from base_employee e
+	left join  base_emp_schedule_group besg on  e.id = besg.emp_id and besg.del_flag=0
+	left join base_emp_depart d on e.id = d.employee_id
+	LEFT JOIN base_depart bd on bd.id = d.depart_id
+	left JOIN base_schedule_group bsg on  bsg.id= besg.group_id and   bsg.depart_id=bd.id and bsg.del_flag=0
+	where 1=1
+		and d.del_flag = 0
+		and e.job_status = 0
+		and e.del_flag = 0
+		and work_type=169
+  	
+		<if test="cnName != null and cnName != ''" >
+		  and e.cn_name like concat('%',#{cnName,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="code != null and code != ''" >
+		  and e.code  like concat('%',#{code,jdbcType=VARCHAR},'%')
+		</if>
+		
+		<if test="groupId != null and groupId !=''">
+  			and bsg.id = #{groupId,jdbcType=BIGINT}
+  		</if>
+  		
+  		<!-- 用于汇报对象模糊查询 -->
+  		<if test="pageStr != null and pageStr !=''">
+  			and e.report_to_leader in 
+			(select id from base_employee where cn_name like concat('%',#{pageStr,jdbcType=VARCHAR},'%'))
+  			
+  		</if>
+  		<!-- 用于排班人模糊查询 -->
+  		<if test="scheduleCnName != null and scheduleCnName !=''">
+  			and bsg.scheduler in 
+			(select id from base_employee where cn_name like concat('%',#{scheduleCnName,jdbcType=VARCHAR},'%')) 			
+  		</if>
+  		
+		 <if test="departId != null and departId!=''" >
+	        and bd.id = #{departId,jdbcType=BIGINT}
+	    </if>
+				
+				
+		<if test="offset != null and limit != null">
+			limit #{offset},#{limit}
+		</if>
+  	</select>
+  	<select id="getEmpClassListByConditionCount" resultType="int"  parameterType="com.ule.oa.base.po.Employee">
+  	
+		select
+				count(DISTINCT(e.id))
+		from base_employee e
+		left join  base_emp_schedule_group besg on  e.id = besg.emp_id and besg.del_flag=0
+	left join base_emp_depart d on e.id = d.employee_id
+	LEFT JOIN base_depart bd on bd.id = d.depart_id
+	left JOIN base_schedule_group bsg on  bsg.id= besg.group_id and   bsg.depart_id=bd.id and bsg.del_flag=0
+		where 1=1
+			and d.del_flag = 0
+			and e.job_status = 0
+			and e.del_flag = 0
+			and work_type=169
+		<if test="cnName != null and cnName != ''" >
+		  and e.cn_name like concat('%',#{cnName,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="code != null and code != ''" >
+		  and e.code  like concat('%',#{code,jdbcType=VARCHAR},'%')
+		</if>
+		
+		<if test="groupId != null and groupId !=''">
+  			and bsg.id = #{groupId,jdbcType=BIGINT}
+  		</if>
+  		<!-- 用于汇报对象模糊查询 -->
+  		<if test="pageStr != null and pageStr !=''">
+  			and e.report_to_leader in 
+			(select id from base_employee where cn_name like concat('%',#{pageStr,jdbcType=VARCHAR},'%'))
+  			
+  		</if>
+  		<!-- 用于排班人模糊查询 -->
+  		<if test="scheduleCnName != null and scheduleCnName !=''">
+  			and bsg.scheduler in 
+			(select id from base_employee where cn_name like concat('%',#{scheduleCnName,jdbcType=VARCHAR},'%')) 			
+  		</if>
+		 <if test="departId != null and departId!=''" >
+	        and bd.id = #{departId,jdbcType=BIGINT}
+	    </if>
+			
+  	</select>
+  	
+</mapper>

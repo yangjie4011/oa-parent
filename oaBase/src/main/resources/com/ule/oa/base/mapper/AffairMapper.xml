@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ule.oa.base.mapper.AffairMapper" >
+
+  <resultMap id="BaseResultMap" type="com.ule.oa.base.po.Affair" >
+    <id column="ID" property="id" jdbcType="BIGINT" />
+    <result column="EMPLOYEE_ID" property="employeeId" jdbcType="VARCHAR" />
+    <result column="BEGIN_TIME" property="beginTime" jdbcType="TIMESTAMP" />
+    <result column="END_TIEM" property="endTime" jdbcType="TIMESTAMP" />
+    <result column="TYPE" property="type" jdbcType="VARCHAR" />
+    <result column="REMIND_DATE" property="remindDate" jdbcType="TIMESTAMP" />
+    <result column="CONTENT" property="content" jdbcType="VARCHAR" />
+    <result column="LAST_REMIND" property="lastRemind" jdbcType="TIMESTAMP" />
+    <result column="MOBILE_REMIND" property="mobileRemind" jdbcType="VARCHAR" />
+    <result column="LAST_MOBILE_REMIND" property="lastMobileRemind" jdbcType="TIMESTAMP" />
+    <result column="EMAIL_REMIND" property="emailRemind" jdbcType="VARCHAR" />
+    <result column="LAST_EMAIL_REMIND" property="lastEmailRemind" jdbcType="TIMESTAMP" />
+    <result column="TAKER" property="taker" jdbcType="VARCHAR" />
+    <result column="VERSION" property="version" jdbcType="VARCHAR" />
+    <result column="DEL_FLAG" property="delFlag" jdbcType="INTEGER" />
+    <result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="CREATE_USER" property="createUser" jdbcType="VARCHAR" />
+    <result column="UPDATE_TIME" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="UPDATE_USER" property="updateUser" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    ID, EMPLOYEE_ID, BEGIN_TIME, END_TIEM, TYPE, REMIND_DATE, CONTENT, LAST_REMIND, 
+    MOBILE_REMIND, LAST_MOBILE_REMIND, EMAIL_REMIND, LAST_EMAIL_REMIND, TAKER, VERSION, 
+    DEL_FLAG, CREATE_TIME, CREATE_USER, UPDATE_TIME, UPDATE_USER
+  </sql>
+  
+  <!-- 新增 -->
+  <insert id="save" parameterType="com.ule.oa.base.po.Affair" >
+    insert into base_affair 
+    	(
+    		EMPLOYEE_ID, 
+	    	BEGIN_TIME, 
+	    	END_TIEM, 
+	    	TYPE, 
+	    	REMIND_DATE, 
+	    	CONTENT, 
+	    	LAST_REMIND, 
+	   	 	MOBILE_REMIND, 
+	   	 	LAST_MOBILE_REMIND, 
+	   	 	EMAIL_REMIND, 
+	   	 	LAST_EMAIL_REMIND, 
+	   	 	TAKER, 
+	   	 	VERSION, 
+	    	DEL_FLAG, 
+	    	CREATE_TIME, 
+	    	CREATE_USER, 
+	    	UPDATE_TIME, 
+	    	UPDATE_USER
+    	)
+    values (
+    	  #{employeeId,jdbcType=VARCHAR}, 
+    	  #{beginTime,jdbcType=TIMESTAMP}, 
+	      #{endTime,jdbcType=TIMESTAMP}, 
+	      #{type,jdbcType=VARCHAR}, 
+	      #{remindDate,jdbcType=TIMESTAMP}, 
+	      #{content,jdbcType=VARCHAR}, 
+	      #{lastRemind,jdbcType=TIMESTAMP}, 
+	      #{mobileRemind,jdbcType=VARCHAR}, 
+	      #{lastMobileRemind,jdbcType=TIMESTAMP}, 
+	      #{emailRemind,jdbcType=VARCHAR}, 
+	      #{lastEmailRemind,jdbcType=TIMESTAMP}, 
+	      #{taker,jdbcType=VARCHAR}, 
+	      #{version,jdbcType=VARCHAR}, 
+	      #{delFlag,jdbcType=INTEGER}, 
+	      #{createTime,jdbcType=TIMESTAMP},
+	      #{createUser,jdbcType=VARCHAR}, 
+	      #{updateTime,jdbcType=TIMESTAMP}, 
+	      #{updateUser,jdbcType=VARCHAR})
+  </insert>
+  
+  <!-- 查询 -->
+  <select id="getListByCondition" resultMap="BaseResultMap" parameterType="com.ule.oa.base.po.Affair" >
+    select 
+    <include refid="Base_Column_List" />
+    from base_affair
+    where DEL_FLAG = 1
+      <if test="id != null" >
+        and ID = #{id,jdbcType=VARCHAR}
+      </if>
+	  <if test="employeeId != null" >
+        and EMPLOYEE_ID = #{employeeId,jdbcType=VARCHAR}
+      </if>
+      <if test="beginTime != null" >
+        and BEGIN_TIME &gt;= #{beginTime,jdbcType=VARCHAR}
+      </if>
+      <if test="endTime != null" >
+        and END_TIEM &lt;= #{endTime,jdbcType=VARCHAR}
+      </if>
+      <if test="type != null" >
+        and TYPE = #{type,jdbcType=BIGINT}
+      </if>
+      <if test="remindDate != null" >
+        and REMIND_DATE = #{remindDate,jdbcType=BIGINT}
+      </if>
+      <if test="content != null" >
+        and CONTENT = #{content,jdbcType=INTEGER}
+      </if>
+      <if test="lastRemind != null" >
+        and LAST_REMIND = #{lastRemind,jdbcType=TIMESTAMP}
+      </if>
+      <if test="mobileRemind != null" >
+        and MOBILE_REMIND = #{mobileRemind,jdbcType=VARCHAR}
+      </if>
+      <if test="lastMobileRemind != null" >
+        and LAST_MOBILE_REMIND = #{lastMobileRemind,jdbcType=INTEGER}
+      </if>
+      <if test="emailRemind != null" >
+        and EMAIL_REMIND = #{emailRemind,jdbcType=TIMESTAMP}
+      </if>
+      <if test="lastEmailRemind != null" >
+        and LAST_EMAIL_REMIND = #{lastEmailRemind,jdbcType=VARCHAR}
+      </if>
+      <if test="taker != null" >
+        and TAKER = #{taker,jdbcType=INTEGER}
+      </if>
+      <if test="version != null" >
+        and VERSION = #{version,jdbcType=VARCHAR}
+      </if>
+      <if test="delFlag != null" >
+        and DEL_FLAG = #{delFlag,jdbcType=INTEGER}
+      </if>
+      <if test="createTime != null" >
+        and CREATE_TIME = #{createTime,jdbcType=TIMESTAMP}
+      </if>
+      <if test="createUser != null" >
+        and CREATE_USER = #{createUser,jdbcType=VARCHAR}
+      </if>
+      <if test="updateTime != null" >
+        and UPDATE_TIME = #{updateTime,jdbcType=INTEGER}
+      </if>
+      <if test="updateUser != null" >
+        and UPDATE_USER = #{updateUser,jdbcType=VARCHAR}
+      </if>
+  </select>
+  
+  <!-- 修改 -->
+  <update id="updateById" parameterType="com.ule.oa.base.po.Affair" >
+    update base_affair
+    <set >
+      <if test="employeeId != null" >
+        EMPLOYEE_ID = #{employeeId,jdbcType=VARCHAR},
+      </if>
+      <if test="beginTime != null" >
+        BEGIN_TIME = #{beginTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endTime != null" >
+        END_TIEM = #{endTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="type != null" >
+        TYPE = #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="remindDate != null" >
+        REMIND_DATE = #{remindDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="content != null" >
+        CONTENT = #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="lastRemind != null" >
+        LAST_REMIND = #{lastRemind,jdbcType=TIMESTAMP},
+      </if>
+      <if test="mobileRemind != null" >
+        MOBILE_REMIND = #{mobileRemind,jdbcType=VARCHAR},
+      </if>
+      <if test="lastMobileRemind != null" >
+        LAST_MOBILE_REMIND = #{lastMobileRemind,jdbcType=TIMESTAMP},
+      </if>
+      <if test="emailRemind != null" >
+        EMAIL_REMIND = #{emailRemind,jdbcType=VARCHAR},
+      </if>
+      <if test="lastEmailRemind != null" >
+        LAST_EMAIL_REMIND = #{lastEmailRemind,jdbcType=TIMESTAMP},
+      </if>
+      <if test="taker != null" >
+        TAKER = #{taker,jdbcType=VARCHAR},
+      </if>
+      <if test="version != null" >
+        VERSION = #{version,jdbcType=VARCHAR},
+      </if>
+       <if test="delFlag != null" >
+        DEL_FLAG = #{delFlag,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUser != null" >
+        CREATE_USER = #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUser != null" >
+        UPDATE_USER = #{updateUser,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+</mapper>

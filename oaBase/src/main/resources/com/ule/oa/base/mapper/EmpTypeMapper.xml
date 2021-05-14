@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ule.oa.base.mapper.EmpTypeMapper" >
+  <resultMap id="BaseResultMap" type="com.ule.oa.base.po.EmpType" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="company_id" property="companyId" jdbcType="BIGINT" />
+    <result column="type_c_name" property="typeCName" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="del_flag" property="delFlag" jdbcType="INTEGER" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    id, company_id, type_c_name, create_time, create_user, update_time, update_user, 
+    del_flag, remark
+  </sql>
+  
+  <select id="getById" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from base_emp_type
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  
+  <select id="getListByCondition" parameterType="com.ule.oa.base.po.EmpType" resultMap="BaseResultMap">
+  	select <include refid="Base_Column_List"/> from base_emp_type
+  	where del_flag = 0
+  	<if test="companyId != null and companyId !='' ">
+  		and company_id = #{companyId,jdbcType=BIGINT}
+  	</if>
+  	<if test="typeCName != null and typeCName != '' ">
+  		and type_c_name = #{typeCName,jdbcType=VARCHAR}
+  	</if>
+  	<if test="remark != null  and remark !=''">
+  		and remark = #{remark,jdbcType=VARCHAR}
+  	</if>
+  	<if test="id != null  and id !=''">
+  		and id = #{id,jdbcType=BIGINT}
+  	</if>
+  </select>
+
+  <insert id="save" parameterType="com.ule.oa.base.po.EmpType" >
+    insert into base_emp_type (company_id, type_c_name, 
+      create_time, create_user, update_time, 
+      update_user, del_flag, remark
+      )
+    values (#{companyId,jdbcType=BIGINT}, #{typeCName,jdbcType=VARCHAR}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{createUser,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP}, 
+      #{updateUser,jdbcType=VARCHAR}, #{delFlag,jdbcType=INTEGER}, #{remark,jdbcType=VARCHAR}
+      )
+  </insert>
+ 
+  <update id="updateById" parameterType="com.ule.oa.base.po.EmpType" >
+    update base_emp_type
+    <set >
+      <if test="companyId != null" >
+        company_id = #{companyId,jdbcType=BIGINT},
+      </if>
+      <if test="typeCName != null" >
+        type_c_name = #{typeCName,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUser != null" >
+        create_user = #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="delFlag != null" >
+        del_flag = #{delFlag,jdbcType=INTEGER},
+      </if>
+      <if test="remark != null" >
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

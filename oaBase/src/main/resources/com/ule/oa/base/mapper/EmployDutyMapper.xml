@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ule.oa.base.mapper.EmployDutyMapper" >
+  <resultMap id="BaseResultMap" type="com.ule.oa.base.po.EmployDuty" >
+    <id column="ID" property="id" jdbcType="BIGINT" />
+    <result column="company_id" property="companyId" jdbcType="BIGINT" />
+    <result column="depart_id" property="departId" jdbcType="BIGINT" />
+    <result column="employ_id" property="employId" jdbcType="BIGINT" />
+    <result column="employ_name" property="employName" jdbcType="VARCHAR" />
+    <result column="year" property="year" jdbcType="VARCHAR" />
+    <result column="VACATION_NAME" property="vacationName" jdbcType="VARCHAR" />
+    <result column="duty_date" property="dutyDate" jdbcType="DATE" />
+    <result column="duty_item" property="dutyItem" jdbcType="VARCHAR" />
+    <result column="start_time" property="startTime" jdbcType="TIMESTAMP" />
+    <result column="end_time" property="endTime" jdbcType="TIMESTAMP" />
+    <result column="WORK_HOURS" property="workHours" jdbcType="DOUBLE" />
+    <result column="class_setting_person" property="classSettingPerson" jdbcType="VARCHAR"/>
+    <result column="source" property="source" jdbcType="INTEGER" />
+    <result column="del_flag" property="delFlag" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    ID, company_id, depart_id,employ_id, employ_name, year, VACATION_NAME, duty_date, duty_item, start_time,
+    end_time, WORK_HOURS, class_setting_person, source, del_flag, create_time, create_user, update_user, update_time
+  </sql>
+  
+  <select id="selectByCondition" resultMap="BaseResultMap" parameterType="com.ule.oa.base.po.EmployDuty" >
+    SELECT  <include refid="Base_Column_List" /> FROM
+	  attn_employ_duty  where del_flag=0
+    <if test="dutyDate != null" >
+      and duty_date = #{dutyDate,jdbcType=DATE}
+    </if>
+    <if test="employId != null" >
+      and employ_id = #{employId,jdbcType=BIGINT}
+    </if>
+    <if test="departId != null" >
+      and depart_id = #{departId,jdbcType=BIGINT}
+    </if>
+    <if test="vacationName != null" >
+      and VACATION_NAME = #{vacationName,jdbcType=VARCHAR}
+    </if>
+    <if test="year != null" >
+      and year = #{year,jdbcType=VARCHAR}
+    </if>
+  </select>
+  
+</mapper>

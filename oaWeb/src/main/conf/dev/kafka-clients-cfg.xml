@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kafka-clients>
+	<!-- 通行证账号对接-->
+	<producer>
+        <!-- 唯一ID -->
+        <id>com.ule.oa.web.oaStaffDepart</id>
+        <!-- 生产的topic -->
+        <topic>KAFKA_OA_STAFF_DEPART</topic>
+        <!-- kafka的链接url（不是zookeeper） -->
+        <kafka.broker.list>kafka01.beta.uledns.com:9092,kafka02.beta.uledns.com:9092,kafka03.beta.uledns.com:9092</kafka.broker.list>
+        <!-- 处理类，继承AbstractProducerHandler，可以不写，不写的话使用DefaultProducerHandler -->
+        <handler.class></handler.class>
+        <!--  producer是否等待服务器确认回复（acks）的选择，三种选择 -->
+        <!--  0，意味着producer永远不会等待一个来自broker的ack。这个选项提供了最低的延迟，但是持久化的保证是最弱的，当server挂掉的时候会丢失一些数据。-->
+        <!--  1，意味着在leader replica已经接收到数据后，producer会得到一个ack。这个选项提供了更好的持久性，因为在server确认请求成功处理后，client才会返回。如果刚写到leader上，还没来得及复制leader就挂了，那么消息才可能会丢失。-->
+        <!-- -1，意味着在所有的ISR都接收到数据后，producer才得到一个ack。这个选项提供了最好的持久性，只要还有一个replica存活，那么数据就不会丢失。-->
+        <request.required.acks>1</request.required.acks>
+    </producer>
+</kafka-clients>
+

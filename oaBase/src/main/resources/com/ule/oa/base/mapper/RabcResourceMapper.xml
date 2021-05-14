@@ -1,0 +1,360 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ule.oa.base.mapper.RabcResourceMapper" >
+  <resultMap id="BaseResultMap" type="com.ule.oa.base.po.RabcResource" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="type" property="type" jdbcType="INTEGER" />
+    <result column="code" property="code" jdbcType="VARCHAR" />
+    <result column="resource_name" property="resourceName" jdbcType="VARCHAR" />
+    <result column="url" property="url" jdbcType="VARCHAR" />
+    <result column="rank" property="rank" jdbcType="INTEGER" />
+    <result column="parent_id" property="parentId" jdbcType="INTEGER" />
+    <result column="level" property="level" jdbcType="INTEGER" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="del_flag" property="delFlag" jdbcType="INTEGER" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    id, type, code, resource_name, url, rank, parent_id, level, remark, create_time, create_user, 
+    update_time, update_user, del_flag
+  </sql>
+  
+  <select id="getById" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select <include refid="Base_Column_List" /> from rabc_resource
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  
+  <select id="getListByCondition" parameterType="com.ule.oa.base.po.RabcResource" resultMap="BaseResultMap">
+  	select <include refid="Base_Column_List"/> from rabc_resource
+  	where del_flag = 0
+  	<if test="null != id">
+  		and id = #{id,jdbcType=BIGINT}
+  	</if>
+  	<if test="null != type">
+  		and type = #{type,jdbcType=BIGINT}
+  	</if>
+  	<if test="null != parentId">
+  		and parent_id = #{parentId,jdbcType=BIGINT}
+  	</if>
+  	<if test="null != level">
+  		and level = #{level,jdbcType=BIGINT}
+  	</if>
+	 <if test="ids != null"> 
+	      and id in 
+	      <foreach collection="ids" index="index" item="item" open="(" separator="," close=")">
+               #{item}
+          </foreach>
+	 </if>
+	 <if test="typeList != null"> 
+	      and type in 
+	      <foreach collection="typeList" index="index" item="item" open="(" separator="," close=")">
+               #{item}
+          </foreach>
+	 </if>
+  	order by rank
+  </select>
+  
+  <select id="getFristAdminMenuList" parameterType="java.util.List" resultMap="BaseResultMap">
+  	SELECT a.* FROM
+	  rabc_resource a 
+    WHERE a.del_flag=0 AND a.level=1
+    <if test="idList != null"> 
+      and a.id in 
+      <foreach collection="idList" index="index" item="item" open="(" separator="," close=")">
+              #{item}
+      </foreach>
+    </if>
+    ORDER BY a.rank
+  </select>
+  
+  <select id="getIdListByUserId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+	SELECT f.* FROM (SELECT 
+		  DISTINCT a.resource_id
+		FROM
+		  rabc_privilege a 
+		  LEFT JOIN rabc_role_privilege b 
+		    ON a.id = b.privilege_id 
+		  LEFT JOIN rabc_role c 
+		    ON b.role_id = c.id 
+		  LEFT JOIN rabc_user_role d 
+		    ON c.id = d.role_id 
+		  LEFT JOIN base_user e ON d.user_id = e.id WHERE 
+		   a.del_flag = 0 
+		  AND b.del_flag = 0 
+		  AND c.del_flag = 0 
+		  AND d.del_flag = 0 
+		  AND e.del_flag = 0 
+		  AND e.id = #{userId,jdbcType=BIGINT}) temp LEFT JOIN rabc_resource f ON f.id=temp.resource_id 
+ 	  WHERE f.del_flag = 0 AND f.TYPE=1 AND f.level=1
+  </select>
+  
+  <select id="getAllAdminMenuListByUserId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+	SELECT f.* FROM (SELECT 
+		  DISTINCT a.resource_id
+		FROM
+		  rabc_privilege a 
+		  LEFT JOIN rabc_role_privilege b 
+		    ON a.id = b.privilege_id 
+		  LEFT JOIN rabc_role c 
+		    ON b.role_id = c.id 
+		  LEFT JOIN rabc_user_role d 
+		    ON c.id = d.role_id 
+		  LEFT JOIN base_user e ON d.user_id = e.id WHERE 
+		   a.del_flag = 0 
+		  AND b.del_flag = 0 
+		  AND c.del_flag = 0 
+		  AND d.del_flag = 0 
+		  AND e.del_flag = 0 
+		  AND e.id = #{userId,jdbcType=BIGINT}) temp LEFT JOIN rabc_resource f ON f.id=temp.resource_id 
+ 	  WHERE f.del_flag = 0 AND f.TYPE=1 ORDER BY f.rank
+  </select>
+  
+  <select id="getAllAdminTabListByUserIdAndParentId" resultMap="BaseResultMap">
+	SELECT f.* FROM (SELECT 
+		  DISTINCT a.resource_id
+		FROM
+		  rabc_privilege a 
+		  LEFT JOIN rabc_role_privilege b 
+		    ON a.id = b.privilege_id 
+		  LEFT JOIN rabc_role c 
+		    ON b.role_id = c.id 
+		  LEFT JOIN rabc_user_role d 
+		    ON c.id = d.role_id 
+		  LEFT JOIN base_user e ON d.user_id = e.id WHERE 
+		   a.del_flag = 0 
+		  AND b.del_flag = 0 
+		  AND c.del_flag = 0 
+		  AND d.del_flag = 0 
+		  AND e.del_flag = 0 
+		  AND e.id = #{userId,jdbcType=BIGINT}) temp LEFT JOIN rabc_resource f ON f.id=temp.resource_id 
+ 	  WHERE f.del_flag = 0 AND f.TYPE=1 AND f.parent_id= #{parentId,jdbcType=INTEGER} ORDER BY f.rank
+  </select>
+  
+  <select id="getMenuByUserIdAndUrl" resultMap="BaseResultMap">
+     SELECT 
+		  DISTINCT f.id,f.url 
+		FROM
+		  base_user a 
+		  LEFT JOIN rabc_user_role b 
+		    ON a.id = b.user_id 
+		  LEFT JOIN rabc_role c 
+		    ON b.role_id = c.id
+		  LEFT JOIN rabc_role_privilege d
+		    ON d.role_id = c.id
+		  LEFT JOIN rabc_privilege e 
+		    ON d.privilege_id = e.id
+		  LEFT JOIN rabc_resource f 
+		    ON e.resource_id = f.id
+	  WHERE a.del_flag = 0 AND b.del_flag = 0 
+	        AND c.del_flag = 0 AND d.del_flag = 0 
+	        AND e.del_flag = 0 AND f.del_flag = 0 AND f.type=1
+	        AND a.id = #{userId,jdbcType=BIGINT} and f.url = #{url,jdbcType=VARCHAR} LIMIT 0,1
+  </select>
+  
+  <select id="getAllAdminTabListByUserId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    SELECT f.* FROM (SELECT 
+		  DISTINCT a.resource_id
+		FROM
+		  rabc_privilege a 
+		  LEFT JOIN rabc_role_privilege b 
+		    ON a.id = b.privilege_id 
+		  LEFT JOIN rabc_role c 
+		    ON b.role_id = c.id 
+		  LEFT JOIN rabc_user_role d 
+		    ON c.id = d.role_id 
+		  LEFT JOIN base_user e ON d.user_id = e.id WHERE 
+		   a.del_flag = 0 
+		  AND b.del_flag = 0 
+		  AND c.del_flag = 0 
+		  AND d.del_flag = 0 
+		  AND e.del_flag = 0 
+		  AND e.id = #{userId,jdbcType=BIGINT}) temp LEFT JOIN rabc_resource f ON f.id=temp.resource_id 
+ 	  WHERE f.del_flag = 0 AND f.TYPE=3
+  </select>
+  
+  <select id="getAllAdminOperationListByUserId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+     SELECT f.* FROM (SELECT 
+		  DISTINCT a.resource_id
+		FROM
+		  rabc_privilege a 
+		  LEFT JOIN rabc_role_privilege b 
+		    ON a.id = b.privilege_id 
+		  LEFT JOIN rabc_role c 
+		    ON b.role_id = c.id 
+		  LEFT JOIN rabc_user_role d 
+		    ON c.id = d.role_id 
+		  LEFT JOIN base_user e ON d.user_id = e.id WHERE 
+		   a.del_flag = 0 
+		  AND b.del_flag = 0 
+		  AND c.del_flag = 0 
+		  AND d.del_flag = 0 
+		  AND e.del_flag = 0 
+		  AND e.id = #{userId,jdbcType=BIGINT}) temp LEFT JOIN rabc_resource f ON f.id=temp.resource_id 
+ 	  WHERE f.del_flag = 0 AND f.TYPE=2
+   </select>
+   
+  <select id="getOperationByUserIdAndUrl" resultMap="BaseResultMap">
+     SELECT 
+		  DISTINCT f.id,f.url
+		FROM
+		  base_user a 
+		  LEFT JOIN rabc_user_role b 
+		    ON a.id = b.user_id 
+		  LEFT JOIN rabc_role c 
+		    ON b.role_id = c.id
+		  LEFT JOIN rabc_role_privilege d
+		    ON d.role_id = c.id
+		  LEFT JOIN rabc_privilege e 
+		    ON d.privilege_id = e.id
+		  LEFT JOIN rabc_resource f 
+		    ON e.resource_id = f.id
+	  WHERE a.del_flag = 0 AND b.del_flag = 0 
+	        AND c.del_flag = 0 AND d.del_flag = 0 
+	        AND e.del_flag = 0 AND f.del_flag = 0 AND f.type=2
+	        AND a.id = #{userId,jdbcType=BIGINT} and f.url = #{url,jdbcType=VARCHAR} LIMIT 0,1
+   </select>
+   
+   <select id="getOperationByUserIdAndUrlAndDeaprtId" resultMap="BaseResultMap">
+     SELECT 
+		  DISTINCT f.id,f.url
+		FROM
+		  base_user a 
+		  LEFT JOIN rabc_user_role b 
+		    ON a.id = b.user_id 
+		  LEFT JOIN rabc_role c 
+		    ON b.role_id = c.id
+		  LEFT JOIN rabc_role_privilege d
+		    ON d.role_id = c.id
+		  LEFT JOIN rabc_privilege e 
+		    ON d.privilege_id = e.id
+		  LEFT JOIN rabc_resource f 
+		    ON e.resource_id = f.id
+	  WHERE a.del_flag = 0 AND b.del_flag = 0 
+	        AND c.del_flag = 0 AND d.del_flag = 0 
+	        AND e.del_flag = 0 AND f.del_flag = 0 AND f.type=2
+	        AND a.id = #{userId,jdbcType=BIGINT} and f.url = #{url,jdbcType=VARCHAR} 
+	        AND c.depart_id = #{departId,jdbcType=BIGINT} LIMIT 0,1
+   </select>
+  
+  <insert id="save" parameterType="com.ule.oa.base.po.RabcResource" >
+  	<selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">
+		SELECT LAST_INSERT_ID() AS id
+	</selectKey>
+  
+    insert into rabc_resource
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="resourceName != null" >
+        resource_name,
+      </if>
+      <if test="url != null" >
+        url,
+      </if>
+      <if test="rank != null" >
+        rank,
+      </if>
+      <if test="parentId != null" >
+        parent_id,
+      </if>
+      <if test="level != null" >
+        level,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="createUser != null" >
+        create_user,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+      <if test="updateUser != null" >
+        update_user,
+      </if>
+      <if test="delFlag != null" >
+        del_flag,
+      </if>
+      <if test="remark != null" >
+        remark,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="resourceName != null" >
+        #{resourceName,jdbcType=VARCHAR},
+      </if>
+      <if test="url != null" >
+        #{url,jdbcType=VARCHAR},
+      </if>
+      <if test="rank != null" >
+        #{rank,jdbcType=INTEGER},
+      </if>
+      <if test="parentId != null" >
+        #{parentId,jdbcType=INTEGER},
+      </if>
+      <if test="level != null" >
+        #{level,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUser != null" >
+        #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUser != null" >
+        #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="delFlag != null" >
+        #{delFlag,jdbcType=INTEGER},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  <update id="updateById" parameterType="com.ule.oa.base.po.RabcResource" >
+    update rabc_resource
+    <set >
+      <if test="resourceName != null" >
+        resource_name = #{resourceName,jdbcType=VARCHAR},
+      </if>
+      <if test="url != null" >
+        url = #{url,jdbcType=VARCHAR},
+      </if>
+      <if test="rank != null" >
+        rank = #{rank,jdbcType=INTEGER},
+      </if>
+      <if test="parentId != null" >
+        parent_id = #{parentId,jdbcType=INTEGER},
+      </if>
+      <if test="level != null" >
+        level = #{level,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUser != null" >
+        create_user = #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="delFlag != null" >
+        del_flag = #{delFlag,jdbcType=INTEGER},
+      </if>
+      <if test="remark != null" >
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

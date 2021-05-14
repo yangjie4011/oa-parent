@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ule.oa.base.mapper.AttnTaskRecordMapper" >
+  <resultMap id="BaseResultMap" type="com.ule.oa.base.po.AttnTaskRecord" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="employ_id" property="employId" jdbcType="BIGINT" />
+    <result column="attn_date" property="attnDate" jdbcType="DATE" />
+    <result column="set_sign_record_status" property="setSignRecordStatus" jdbcType="INTEGER" />
+    <result column="set_sign_record_time" property="setSignRecordTime" jdbcType="TIMESTAMP" />
+    <result column="set_work_hours_status" property="setWorkHoursStatus" jdbcType="INTEGER" />
+    <result column="set_work_hours_time" property="setWorkHoursTime" jdbcType="TIMESTAMP" />
+    <result column="set_attn_statistics_status" property="setAttnStatisticsStatus" jdbcType="INTEGER" />
+    <result column="set_attn_statistics_time" property="setAttnStatisticsTime" jdbcType="TIMESTAMP" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <resultMap id="EmpTaskResultMap" type="com.ule.oa.base.po.Employee" >
+    <result column="id" property="id" jdbcType="BIGINT" />
+    <result column="cn_name" property="cnName" jdbcType="VARCHAR"/>
+    <result column="attnTaskId" property="attnTaskId" jdbcType="BIGINT" />
+    <result column="attnDate" property="attnDate" jdbcType="DATE" />
+    <result column="company_id" property="companyId" jdbcType="BIGINT" />
+    <result column="whetherSchedulingName" property="whetherSchedulingName" jdbcType="VARCHAR" />
+    <result column="workTypeName" property="workTypeName" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    id, employ_id,attn_date, set_sign_record_status, set_sign_record_time, set_work_hours_status, 
+    set_work_hours_time, set_attn_statistics_status, set_attn_statistics_time, create_time, 
+    create_user, update_time, update_user
+  </sql>
+  
+  <select id="selectByCondition" resultMap="BaseResultMap" parameterType="com.ule.oa.base.po.AttnTaskRecord" >
+    select 
+    <include refid="Base_Column_List" />
+    from attn_task_record
+    <where>
+	      <if test="id != null" >
+	        id = #{id,jdbcType=BIGINT},
+	      </if>
+	      <if test="employId != null" >
+	        employ_id = #{employId,jdbcType=BIGINT},
+	      </if>
+	      <if test="attnDate != null" >
+	        attn_date = #{attnDate,jdbcType=DATE},
+	      </if>
+	      <if test="setSignRecordStatus != null" >
+	        set_sign_record_status = #{setSignRecordStatus,jdbcType=INTEGER},
+	      </if>
+	      <if test="setSignRecordTime != null" >
+	        set_sign_record_time = #{setSignRecordTime,jdbcType=TIMESTAMP},
+	      </if>
+	      <if test="setWorkHoursStatus != null" >
+	        set_work_hours_status = #{setWorkHoursStatus,jdbcType=INTEGER},
+	      </if>
+	      <if test="setWorkHoursTime != null" >
+	        set_work_hours_time = #{setWorkHoursTime,jdbcType=TIMESTAMP},
+	      </if>
+	      <if test="setAttnStatisticsStatus != null" >
+	        set_attn_statistics_status = #{setAttnStatisticsStatus,jdbcType=INTEGER},
+	      </if>
+	      <if test="setAttnStatisticsTime != null" >
+	        set_attn_statistics_time = #{setAttnStatisticsTime,jdbcType=TIMESTAMP},
+	      </if>
+    </where>
+  </select>
+ 
+  <select id="getMaxDateOfTask" resultType="java.util.Date">
+    SELECT max(attn_date) attn_date FROM attn_task_record 
+    WHERE set_work_hours_status = 0
+  </select>
+  
+  <select id="selectEmpByAttnTask" resultMap="EmpTaskResultMap" parameterType="com.ule.oa.base.po.AttnTaskRecord" >
+  select be.cn_name,be.id,atr.id attnTaskId,atr.attn_date attnDate,be.company_id,sc.display_code whetherSchedulingName,scs.display_code workTypeName 
+	from attn_task_record atr
+	INNER JOIN base_employee be ON atr.employ_id = be.id AND be.del_flag=0
+	LEFT JOIN sys_config sc on be.whether_scheduling = sc.id AND be.del_flag=0
+	LEFT JOIN sys_company_config scs on be.work_type = scs.id AND be.del_flag=0
+	<where>
+	      <if test="companyId != null" >
+	        and be.company_id = #{companyId,jdbcType=BIGINT}
+	      </if>
+	      <if test="employId != null" >
+	        and atr.employ_id = #{employId,jdbcType=BIGINT}
+	      </if>
+	      <if test="attnDate != null" >
+	        and atr.attn_date = #{attnDate,jdbcType=DATE}
+	      </if>
+	      <if test="startTime != null" >
+	        and atr.attn_date &gt;= #{startTime,jdbcType=DATE}
+	      </if>
+	      <if test="endTime != null" >
+	        and atr.attn_date &lt; #{endTime,jdbcType=DATE}
+	      </if>
+	      <if test="setSignRecordStatus != null" >
+	        and atr.set_sign_record_status = #{setSignRecordStatus,jdbcType=INTEGER}
+	      </if>
+	      <if test="setWorkHoursStatus != null" >
+	        and atr.set_work_hours_status = #{setWorkHoursStatus,jdbcType=INTEGER}
+	      </if>
+	      <if test="setAttnStatisticsStatus != null" >
+	        and atr.set_attn_statistics_status = #{setAttnStatisticsStatus,jdbcType=INTEGER}
+	      </if>
+	      <if test="ids != null"> 
+		      and be.id in 
+		      <foreach collection="ids" index="index" item="item" open="(" separator="," close=")">
+	               #{item}
+	          </foreach>
+		  </if>
+	</where>
+	ORDER BY atr.id
+	<if test="offset != null" >
+	    limit #{offset},#{limit}
+	</if>
+  </select>
+
+  <insert id="insert" parameterType="com.ule.oa.base.po.AttnTaskRecord" >
+    insert into attn_task_record (employ_id,attn_date, set_sign_record_status, 
+      set_sign_record_time, set_work_hours_status, 
+      set_work_hours_time, set_attn_statistics_status, 
+      set_attn_statistics_time, create_time, 
+      create_user, update_time, update_user
+      )
+    values (#{employId,jdbcType=BIGINT},#{attnDate,jdbcType=DATE}, #{setSignRecordStatus,jdbcType=INTEGER}, 
+      #{setSignRecordTime,jdbcType=TIMESTAMP}, #{setWorkHoursStatus,jdbcType=INTEGER}, 
+      #{setWorkHoursTime,jdbcType=TIMESTAMP}, #{setAttnStatisticsStatus,jdbcType=INTEGER}, 
+      #{setAttnStatisticsTime,jdbcType=TIMESTAMP}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{createUser,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP}, #{updateUser,jdbcType=VARCHAR}
+      )
+  </insert>
+  
+  <delete id="deleteByDate">
+     delete from attn_task_record where attn_date = #{attnDate,jdbcType=DATE}
+     <if test="ids != null"> 
+	      and employ_id in 
+	      <foreach collection="ids" index="index" item="item" open="(" separator="," close=")">
+               #{item}
+          </foreach>
+	  </if>
+  </delete>
+  
+  <insert id="saveBatch" parameterType="com.ule.oa.base.po.AttnTaskRecord">
+	  insert into attn_task_record (employ_id,attn_date,set_sign_record_status, 
+      set_sign_record_time, set_work_hours_status, 
+      set_work_hours_time, set_attn_statistics_status, 
+      set_attn_statistics_time, create_time, 
+      create_user, update_time, update_user
+      )
+      values 
+     <foreach collection ="list" item="item" index= "index" separator =",">
+ 	  (#{item.employId,jdbcType=BIGINT},#{item.attnDate,jdbcType=DATE}, #{item.setSignRecordStatus,jdbcType=INTEGER}, 
+      #{item.setSignRecordTime,jdbcType=TIMESTAMP}, #{item.setWorkHoursStatus,jdbcType=INTEGER}, 
+      #{item.setWorkHoursTime,jdbcType=TIMESTAMP}, #{item.setAttnStatisticsStatus,jdbcType=INTEGER}, 
+      #{item.setAttnStatisticsTime,jdbcType=TIMESTAMP}, #{item.createTime,jdbcType=TIMESTAMP}, 
+      #{item.createUser,jdbcType=VARCHAR}, #{item.updateTime,jdbcType=TIMESTAMP}, #{item.updateUser,jdbcType=VARCHAR}
+      )
+     </foreach >
+  </insert>
+  
+  <update id="updateById" parameterType="com.ule.oa.base.po.AttnTaskRecord" >
+    update attn_task_record
+    <set >
+      <if test="employId != null" >
+        employ_id = #{employId,jdbcType=BIGINT},
+      </if>
+      <if test="attnDate != null" >
+        attn_date = #{attnDate,jdbcType=DATE},
+      </if>
+      <if test="setSignRecordStatus != null" >
+        set_sign_record_status = #{setSignRecordStatus,jdbcType=INTEGER},
+      </if>
+      <if test="setSignRecordTime != null" >
+        set_sign_record_time = #{setSignRecordTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="setWorkHoursStatus != null" >
+        set_work_hours_status = #{setWorkHoursStatus,jdbcType=INTEGER},
+      </if>
+      <if test="setWorkHoursTime != null" >
+        set_work_hours_time = #{setWorkHoursTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="setAttnStatisticsStatus != null" >
+        set_attn_statistics_status = #{setAttnStatisticsStatus,jdbcType=INTEGER},
+      </if>
+      <if test="setAttnStatisticsTime != null" >
+        set_attn_statistics_time = #{setAttnStatisticsTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUser != null" >
+        create_user = #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+</mapper>

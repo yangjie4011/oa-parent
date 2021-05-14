@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ule.oa.base.mapper.DelayWorkRegisterMapper" >
+  <resultMap id="BaseResultMap" type="com.ule.oa.base.po.DelayWorkRegister" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="employee_id" property="employeeId" jdbcType="BIGINT" />
+    <result column="delay_date" property="delayDate" jdbcType="DATE" />
+    <result column="expect_start_time" property="expectStartTime" jdbcType="TIMESTAMP" />
+    <result column="expect_end_time" property="expectEndTime" jdbcType="TIMESTAMP" />
+    <result column="expect_delay_hour" property="expectDelayHour" jdbcType="DOUBLE" />
+    <result column="actual_start_time" property="actualStartTime" jdbcType="TIMESTAMP" />
+    <result column="actual_end_time" property="actualEndTime" jdbcType="TIMESTAMP" />
+    <result column="actual_delay_hour" property="actualDelayHour" jdbcType="DOUBLE" />
+    <result column="delay_item" property="delayItem" jdbcType="VARCHAR" />
+    <result column="is_matched" property="isMatched" jdbcType="INTEGER" />
+    <result column="is_confirm" property="isConfirm" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="del_flag" property="delFlag" jdbcType="INTEGER" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    id, employee_id, delay_date, expect_start_time, expect_end_time,expect_delay_hour,
+    actual_start_time,actual_end_time,actual_delay_hour,delay_item,is_matched,is_confirm,
+    create_time,update_time, create_user, update_user, del_flag
+  </sql>
+  
+  <select id="getDelayWorkRegisterByMonth" resultMap="BaseResultMap">
+  	select <include refid="Base_Column_List"/>
+  	from delay_work_register
+  	where employee_id = #{employeeId}
+  	and delay_date &gt;= #{fristDay}
+	and delay_date &lt;= #{lastDay}
+	and del_flag = 0
+  </select>
+  
+  <select id="getListByDate" resultMap="BaseResultMap">
+  	select <include refid="Base_Column_List"/>
+  	from delay_work_register
+  	where delay_date &gt;= #{startDate}
+	and delay_date &lt;= #{endDate}
+	and del_flag = 0
+  </select>
+  
+  <select id="getDelayWorkDetail" resultMap="BaseResultMap">
+  	select <include refid="Base_Column_List"/>
+  	from delay_work_register
+  	where employee_id = #{employeeId}
+  	and delay_date = #{delayDate}
+	and del_flag = 0
+	limit 1
+  </select>
+  
+  <select id="getUnMatchedListByDelayDate" resultMap="BaseResultMap">
+  	select <include refid="Base_Column_List"/>
+  	from delay_work_register
+  	where del_flag = 0 and is_matched = 0
+  	and delay_date &lt;= #{delayDate,jdbcType=DATE}
+  </select>
+  
+  <update id="matchActaulTime" parameterType="com.ule.oa.base.po.DelayWorkRegister" >
+    update delay_work_register set 
+       actual_start_time=#{actualStartTime},
+       actual_end_time=#{actualEndTime},
+       actual_delay_hour=#{actualDelayHour},
+       is_matched=#{isMatched}
+      where id = #{id}
+  </update>
+  <insert id="insertDelayWorkDetail" parameterType="com.ule.oa.base.po.DelayWorkRegister" useGeneratedKeys="true" keyProperty="id">
+  	insert into delay_work_register(employee_id,delay_date,expect_start_time,expect_end_time,
+  	expect_delay_hour,actual_start_time,actual_end_time,actual_delay_hour,delay_item,
+  	create_time, create_user, update_time, update_user, del_flag)
+  	values (#{employeeId},#{delayDate},#{expectStartTime},#{expectEndTime},#{expectDelayHour},
+  	#{actualStartTime},#{actualEndTime},#{actualDelayHour},#{delayItem},
+  	#{createTime},#{createUser},#{updateTime},#{updateUser},#{delFlag})
+  	<selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">
+        SELECT LAST_INSERT_ID() AS id
+    </selectKey>
+  </insert>
+  <update id="updateDelayWorkDetail" parameterType="com.ule.oa.base.po.DelayWorkRegister" >
+    update delay_work_register
+    <set >
+	  <if test="expectStartTime != null">
+	    expect_start_time = #{expectStartTime}, 
+	  </if>
+      <if test="expectEndTime != null" >
+        expect_end_time = #{expectEndTime},
+      </if>
+      <if test="expectDelayHour != null" >
+        expect_delay_hour = #{expectDelayHour},
+      </if>
+      <if test="delayItem != null" >
+        delay_item = #{delayItem},
+      </if>
+      <if test="isConfirm != null" >
+        is_confirm = #{isConfirm},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser},
+      </if>
+    </set>
+    where id = #{id}
+  </update>
+  <update id="confirmDelayWorkDetail" parameterType="com.ule.oa.base.po.DelayWorkRegister">
+  	 update delay_work_register
+  	 <set>
+	  	 <if test="actualDelayHour != null" >
+	        actual_delay_hour = #{actualDelayHour},
+	      </if>
+	      <if test="isConfirm != null" >
+	        is_confirm = #{isConfirm},
+	      </if>
+	      <if test="updateTime != null" >
+	        update_time = #{updateTime},
+	      </if>
+	      <if test="updateUser != null" >
+	        update_user = #{updateUser},
+	      </if>
+  	 </set>
+  	 where id = #{id}
+  </update>
+  <update id="deleteDelayWorkDetail" parameterType="com.ule.oa.base.po.DelayWorkRegister">
+  	 update delay_work_register
+  	 <set>
+	  	 <if test="delFlag != null" >
+	        del_Flag = #{delFlag},
+	      </if>
+	      <if test="updateTime != null" >
+	        update_time = #{updateTime},
+	      </if>
+	      <if test="updateUser != null" >
+	        update_user = #{updateUser},
+	      </if>
+  	 </set>
+  	 where id = #{id}
+  </update>
+   <select id="getById" resultMap="BaseResultMap">
+  	select <include refid="Base_Column_List"/>
+  	from delay_work_register
+  	where del_flag = 0 and id = #{id}
+  </select>
+</mapper>

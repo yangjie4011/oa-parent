@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ule.oa.base.mapper.ActivitiMapper" >
+	<select id="queryKeyByInstanceId" parameterType="java.lang.String" resultType="java.lang.String">
+		SELECT KEY_ FROM ACT_RE_PROCDEF 
+		WHERE ID_ = (SELECT PROC_DEF_ID_ FROM ACT_HI_PROCINST WHERE PROC_INST_ID_ = #{instanceId,jdbcType=VARCHAR})
+	</select>
+	<!-- AND TASK_DEF_KEY_ != 'actualTime'  -->
+    <select id="queryTaskByAssignee" parameterType="java.util.Map" resultType="java.util.Map">
+    	SELECT TASK_DEF_KEY_ taskDefinitionKey, PROC_INST_ID_ instanceId,PROC_DEF_ID_ definitionId FROM ACT_HI_TASKINST 
+    	WHERE ID_ in (
+    	select MAX(ID_) id FROM ACT_HI_TASKINST 
+    	WHERE ASSIGNEE_ = #{assignee,jdbcType=VARCHAR} 
+    	AND TASK_DEF_KEY_ != 'proposer' AND TASK_DEF_KEY_ != 'usertask1' AND END_TIME_ is NOT NULL  GROUP BY PROC_INST_ID_)  
+    	ORDER BY START_TIME_ DESC    
+		LIMIT #{pageNo,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
+	</select>
+	
+	<select id="queryTaskCount" parameterType="java.util.List" resultType="java.lang.Integer">
+       select count(1) from base_emp_application_leave where APPROVAL_STATUS = 100
+			 <if test="processinstanceIdList != null">
+			    AND	PROCESSINSTANCE_ID in
+				<foreach collection ="processinstanceIdList" item="id" index= "index" open="(" separator="," close=")">
+			        #{id}
+			    </foreach>
+			 </if>
+		UNION ALL
+		
+		select count(1) from base_emp_application_outgoing where APPROVAL_STATUS = 100
+			<if test="processinstanceIdList != null">
+				AND PROCESSINSTANCE_ID in
+				<foreach collection ="processinstanceIdList" item="id" index= "index" open="(" separator="," close=")">
+			        #{id}
+			    </foreach>
+			</if>
+		UNION ALL
+		
+		select count(1) from base_emp_application_abnormal_attendance where APPROVAL_STATUS = 100
+		   <if test="processinstanceIdList != null">
+			    AND	PROCESSINSTANCE_ID in
+					<foreach collection ="processinstanceIdList" item="id" index= "index" open="(" separator="," close=")">
+				        #{id}
+				    </foreach>
+			</if>
+		UNION ALL
+		
+		select count(1) from base_emp_application_overtime where APPROVAL_STATUS = 100
+			<if test="processinstanceIdList != null">
+			AND	PROCESSINSTANCE_ID in
+					<foreach collection ="processinstanceIdList" item="id" index= "index" open="(" separator="," close=")">
+				        #{id}
+				    </foreach>
+			</if>
+		UNION ALL
+		
+		select count(1) from emp_entry_registration where APPROVAL_STATUS = 100
+			<if test="processinstanceIdList != null">
+			AND	PROCESSINSTANCE_ID in
+					<foreach collection ="processinstanceIdList" item="id" index= "index" open="(" separator="," close=")">
+				        #{id}
+				    </foreach>
+			</if>
+        UNION ALL
+           
+		select count(1) from attn_application_employ_class where APPROVAL_STATUS = 100
+			<if test="processinstanceIdList != null">
+			AND	PROCESSINSTANCE_ID in
+					<foreach collection ="processinstanceIdList" item="id" index= "index" open="(" separator="," close=")">
+				        #{id}
+				    </foreach>
+			</if>
+		UNION ALL
+		
+		select count(1) from attn_application_employ_duty where APPROVAL_STATUS = 100
+				<if test="processinstanceIdList != null">
+				AND	PROCESSINSTANCE_ID in
+					<foreach collection ="processinstanceIdList" item="id" index= "index" open="(" separator="," close=")">
+				        #{id}
+				    </foreach>
+				</if>
+		UNION ALL
+				
+		select count(1) from base_emp_application_business where APPROVAL_STATUS = 100
+				<if test="processinstanceIdList != null">
+				AND	PROCESSINSTANCE_ID in
+					<foreach collection ="processinstanceIdList" item="id" index= "index" open="(" separator="," close=")">
+				        #{id}
+				    </foreach>
+				</if>
+		UNION ALL
+		
+		select count(1) from base_emp_application_leave_abolish where approval_status = 100	
+			<if test="processinstanceIdList != null">
+					AND	processinstance_id in
+						<foreach collection ="processinstanceIdList" item="id" index= "index" open="(" separator="," close=")">
+					        #{id}
+					    </foreach>
+			</if>
+		
+		UNION ALL		
+	
+		select count(1) from base_emp_application_business where APPROVAL_REPORT_STATUS in(0,100)
+			<if test="processinstanceIdList != null">
+			AND	PROCESSINSTANCE_REPORT_ID in
+					<foreach collection ="processinstanceIdList" item="id" index= "index" open="(" separator="," close=")">
+				        #{id}
+				    </foreach>
+			</if>
+			
+		UNION ALL		
+	
+		select count(1) from remove_subordinate_absence where approal_status =100
+			<if test="processinstanceIdList != null">
+			AND	processinstance_id in
+					<foreach collection ="processinstanceIdList" item="id" index= "index" open="(" separator="," close=")">
+				        #{id}
+				    </foreach>
+			</if>	
+			
+	</select>
+
+	
+	
+	
+</mapper>

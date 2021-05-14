@@ -1,0 +1,347 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ule.oa.base.mapper.CompanyConfigMapper" >
+  <resultMap id="BaseResultMap" type="com.ule.oa.base.po.CompanyConfig" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="company_id" property="companyId" jdbcType="BIGINT" />
+    <result column="company_name" property="companyName" jdbcType="VARCHAR" />
+    <result column="code" property="code" jdbcType="VARCHAR" />
+    <result column="description" property="description" jdbcType="VARCHAR" />
+    <result column="display_name" property="displayName" jdbcType="VARCHAR" />
+    <result column="display_code" property="displayCode" jdbcType="VARCHAR" />
+    <result column="rank" property="rank" jdbcType="INTEGER" />
+    <result column="user_def1" property="userDef1" jdbcType="VARCHAR" />
+    <result column="user_def2" property="userDef2" jdbcType="VARCHAR" />
+    <result column="user_def3" property="userDef3" jdbcType="VARCHAR" />
+    <result column="user_def4" property="userDef4" jdbcType="VARCHAR" />
+    <result column="user_def5" property="userDef5" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="del_flag" property="delFlag" jdbcType="INTEGER" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    sc.id,sc.company_id,bc.name company_name,sc.code, sc.description,sc.display_name, sc.display_code,sc.rank,sc.user_def1, sc.user_def2, sc.user_def3, sc.user_def4, 
+    sc.user_def5, sc.create_time, sc.create_user, sc.update_time, sc.update_user, sc.del_flag, sc.remark 
+  </sql>
+  
+  <select id="getById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+  	select * from sys_company_config
+  	where id = #{id,jdbcType=BIGINT}
+  </select>
+
+  <insert id="save" parameterType="com.ule.oa.base.po.CompanyConfig" >
+    insert into sys_company_config (company_id,code,description,display_name, 
+      display_code, rank,user_def1, user_def2, 
+      user_def3, user_def4, user_def5, 
+      create_time, create_user, update_time, 
+      update_user, del_flag, remark
+      )
+    values (#{companyId,jdbcType=VARCHAR},#{code,jdbcType=VARCHAR},#{description,jdbcType=VARCHAR},#{displayName,jdbcType=VARCHAR}, 
+      #{displayCode,jdbcType=VARCHAR}, #{rank,jdbcType=INTEGER}, #{userDef1,jdbcType=VARCHAR}, #{userDef2,jdbcType=VARCHAR}, 
+      #{userDef3,jdbcType=VARCHAR}, #{userDef4,jdbcType=VARCHAR}, #{userDef5,jdbcType=VARCHAR}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{createUser,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP}, 
+      #{updateUser,jdbcType=VARCHAR}, #{delFlag,jdbcType=INTEGER}, #{remark,jdbcType=VARCHAR}
+      )
+  </insert>
+  
+  <update id="updateById" parameterType="com.ule.oa.base.po.CompanyConfig" >
+    update sys_company_config
+    <set >
+      <if test="companyId != null" >
+        company_id = #{companyId,jdbcType=VARCHAR},
+      </if>
+      <if test="code != null" >
+        code = #{code,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null" >
+        description = #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="displayName != null" >
+        display_name = #{displayName,jdbcType=VARCHAR},
+      </if>
+      <if test="displayCode != null" >
+        display_code = #{displayCode,jdbcType=VARCHAR},
+      </if>
+      <if test="rank != null" >
+        rank = #{rank,jdbcType=INTEGER},
+      </if>
+      <if test="userDef1 != null" >
+        user_def1 = #{userDef1,jdbcType=VARCHAR},
+      </if>
+      <if test="userDef2 != null" >
+        user_def2 = #{userDef2,jdbcType=VARCHAR},
+      </if>
+      <if test="userDef3 != null" >
+        user_def3 = #{userDef3,jdbcType=VARCHAR},
+      </if>
+      <if test="userDef4 != null" >
+        user_def4 = #{userDef4,jdbcType=VARCHAR},
+      </if>
+      <if test="userDef5 != null" >
+        user_def5 = #{userDef5,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="delFlag != null" >
+        del_flag = #{delFlag,jdbcType=INTEGER},
+      </if>
+      <if test="remark != null" >
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+  <select id="getListByCondition" resultMap="BaseResultMap" parameterType="com.ule.oa.base.po.CompanyConfig" >
+	    select <include refid="Base_Column_List" /> 
+	    from sys_company_config sc
+	    LEFT JOIN base_company bc on sc.company_id = bc.id
+	    where sc.del_flag in (0,2)
+		<if test="id != null">
+			and sc.id = #{id,jdbcType=BIGINT}
+		</if>
+		<if test="description != null" >
+        	and sc.description = #{description,jdbcType=VARCHAR}
+        </if>
+		<if test="code != null" >
+		  and sc.code = #{code,jdbcType=VARCHAR}
+		</if>
+		<if test="companyId != null" >
+		  and sc.company_id = #{companyId,jdbcType=BIGINT}
+		</if>
+		<if test="displayName != null" >
+		  and sc.display_name = #{displayName,jdbcType=VARCHAR}
+		</if>
+		<if test="displayCode != null" >
+		  and sc.display_code = #{displayCode,jdbcType=VARCHAR}
+		</if>
+		<if test="rank != null" >
+          and sc.rank = #{rank,jdbcType=INTEGER}
+        </if>
+		<if test="userDef1 != null" >
+		  and sc.user_def1 = #{userDef1,jdbcType=VARCHAR}
+		</if>
+		<if test="userDef2 != null" >
+		  and sc.user_def2 = #{userDef2,jdbcType=VARCHAR}
+		</if>
+		<if test="userDef3 != null" >
+		  and sc.user_def3 = #{userDef3,jdbcType=VARCHAR}
+		</if>
+		<if test="userDef4 != null" >
+		  and sc.user_def4 = #{userDef4,jdbcType=VARCHAR}
+		</if>
+		<if test="userDef5 != null" >
+		  and sc.user_def5 = #{userDef5,jdbcType=VARCHAR}
+		</if>
+		<if test="updateTime != null" >
+		  and sc.update_time = #{updateTime,jdbcType=TIMESTAMP}
+		</if>
+		<if test="updateUser != null" >
+		  and sc.update_user = #{updateUser,jdbcType=VARCHAR}
+		</if>
+		<if test="remark != null" >
+		  and sc.remark = #{remark,jdbcType=VARCHAR}
+		</if>
+		<if test="offset != null and limit != null">
+			limit #{offset},#{limit}
+		</if>
+  </select>
+  
+  
+  	<select id="count" resultType="integer" parameterType="com.ule.oa.base.po.CompanyConfig">
+		select  count(1) from sys_company_config sc
+		<where>
+			<if test="displayName != null and displayName !=''">and upper(sc.display_name) like upper(CONCAT('%',#{displayName,jdbcType=VARCHAR},'%'))</if>
+			<if test="code != null and code != '' ">and upper(sc.code) like upper(CONCAT('%',#{code,jdbcType=VARCHAR},'%'))</if>
+			<if test="delFlag != null">and sc.del_flag =#{delFlag,jdbcType=NUMERIC}</if>
+		</where>	
+	</select>
+	
+	<select id="getByPagenation"  parameterType="com.ule.oa.base.po.CompanyConfig" resultMap="BaseResultMap">
+		select <include refid="Base_Column_List"></include>
+	    from sys_company_config sc
+        LEFT JOIN base_company bc on sc.company_id = bc.id
+		<where>
+			<if test="displayName != null and displayName !=''">and upper(sc.display_name) like upper(CONCAT('%',#{displayName,jdbcType=VARCHAR},'%'))</if>
+			<if test="code != null and code != '' ">and upper(sc.code) like upper(CONCAT('%',#{code,jdbcType=VARCHAR},'%'))</if>
+			<if test="delFlag != null">and sc.del_flag =#{delFlag,jdbcType=NUMERIC}</if>
+		</where>	
+		order by sc.create_time desc limit #{offset} , #{limit}
+	</select>
+	
+	<update id="delete" parameterType="com.ule.oa.base.po.CompanyConfig">
+		update sys_company_config 
+		    set del_flag=#{delFlag,jdbcType=NUMERIC}
+			<if test="updateUser != null">,UPDATE_USER = #{updateUser,jdbcType=VARCHAR} </if>
+			<if test="updateTime != null">,UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP} </if>
+		where id = #{id}
+	</update>
+	
+	<select id="getWorkTypeByEmployeeId"  parameterType="java.lang.Long" resultType="java.lang.String">
+		select display_code from sys_company_config where id =(select work_type from base_employee where id=#{employeeId})
+	</select>
+	
+	<!-- 公司配置信息 -->
+  <sql id="tiaojian">
+   <where>
+	  	<if test="companyId != null ">
+	  		and scc.company_id = #{companyId,jdbcType=BIGINT}
+	  	</if>
+  		<if test="code != null and code != ''">
+  			and scc.code like concat('%',#{code,jdbcType=VARCHAR},'%')
+  		</if> 		
+  		<if test="description != null and description!= ''">
+  			and scc.description = #{description,jdbcType=VARCHAR}
+  			<if test="displayName != null and displayName!='' ">
+  				and scc.display_name = #{displayName,jdbcType=VARCHAR}  				
+  			</if>
+  		</if>	  				
+	</where>	
+  </sql>
+
+      <!-- 分页查询报表 -->
+  <select id="getReportPageList" parameterType="com.ule.oa.base.po.CompanyConfig" resultType="com.ule.oa.base.po.CompanyConfig">
+	SELECT bc.`name`,scc.id,scc.description,scc.display_name,
+	scc.display_code,scc.rank,scc.user_def1,scc.user_def2,scc.company_id,
+	scc.user_def3,scc.user_def4,scc.user_def5,scc.del_flag,scc.remark,scc.`code`
+	FROM sys_company_config scc INNER JOIN base_company bc ON scc.company_id = bc.id 
+	and scc.del_flag=0 <include refid="tiaojian"></include> order by scc.update_time DESC limit #{offset},#{limit}		
+	
+ </select>
+  
+  <!-- 查询报表总记录数 -->
+  <select id="getReportCount" parameterType="com.ule.oa.base.po.CompanyConfig" resultType="java.lang.Integer">
+  	 SELECT  count(1) FROM sys_company_config scc INNER JOIN base_company bc ON scc.company_id=bc.id and scc.del_flag=0  	
+  		<include refid="tiaojian"></include>
+  </select>
+  
+  
+  <select id="getConfigInfoById" parameterType="int" resultType="com.ule.oa.base.po.CompanyConfig">
+  	SELECT bc.`name`,scc.id,scc.description,scc.display_name,
+	scc.display_code,scc.rank,scc.user_def1,scc.user_def2,scc.company_id,
+	scc.user_def3,scc.user_def4,scc.user_def5,scc.del_flag,scc.remark,scc.`code`
+	FROM sys_company_config scc INNER JOIN base_company bc ON scc.company_id = bc.id 		
+	and scc.id=${id}
+  </select>
+  
+  <insert id="saveConfig"  parameterType="com.ule.oa.base.po.CompanyConfig">  			
+		insert into sys_company_config (company_id,code,description,display_name, 
+	      display_code, rank,user_def1, user_def2, 
+	      user_def3, user_def4, user_def5, 
+	      create_time, create_user, update_time, 
+	      update_user, del_flag, remark
+      	)
+    	values (#{companyId,jdbcType=INTEGER},#{code,jdbcType=VARCHAR},#{description,jdbcType=VARCHAR},#{displayName,jdbcType=VARCHAR}, 
+	      #{displayCode,jdbcType=VARCHAR}, #{rank,jdbcType=INTEGER}, #{userDef1,jdbcType=VARCHAR}, #{userDef2,jdbcType=VARCHAR}, 
+	      #{userDef3,jdbcType=VARCHAR}, #{userDef4,jdbcType=VARCHAR}, #{userDef5,jdbcType=VARCHAR}, 
+	      #{createTime,jdbcType=TIMESTAMP}, #{createUser,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP}, 
+	      #{updateUser,jdbcType=VARCHAR}, #{delFlag,jdbcType=INTEGER}, #{remark,jdbcType=VARCHAR}
+	    )
+       
+       <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+        SELECT LAST_INSERT_ID()
+    </selectKey>
+       
+       
+  </insert>
+ 
+ <select id="getCompanyinfo" resultType="com.ule.oa.base.po.CompanyConfig" >
+ 	select name,id as company_id from base_company where del_flag=0;
+ </select>
+ 
+ <update id="updateCompanyConfig" parameterType="com.ule.oa.base.po.CompanyConfig" >
+    update sys_company_config
+    <set >
+      <if test="companyId != null" >
+        company_id = #{companyId,jdbcType=INTEGER},
+      </if>
+      <if test="code != null" >
+        code = #{code,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null" >
+        description = #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="displayName != null" >
+        display_name = #{displayName,jdbcType=VARCHAR},
+      </if>
+      <if test="displayCode != null" >
+        display_code = #{displayCode,jdbcType=VARCHAR},
+      </if>
+      <if test="rank != null" >
+        rank = #{rank,jdbcType=INTEGER},
+      </if>
+      <if test="userDef1 != null" >
+        user_def1 = #{userDef1,jdbcType=VARCHAR},
+      </if>
+      <if test="userDef2 != null" >
+        user_def2 = #{userDef2,jdbcType=VARCHAR},
+      </if>
+      <if test="userDef3 != null" >
+        user_def3 = #{userDef3,jdbcType=VARCHAR},
+      </if>
+      <if test="userDef4 != null" >
+        user_def4 = #{userDef4,jdbcType=VARCHAR},
+      </if>
+      <if test="userDef5 != null" >
+        user_def5 = #{userDef5,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="delFlag != null" >
+        del_flag = #{delFlag,jdbcType=INTEGER},
+      </if>
+      <if test="remark != null" >
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+  <update id="deleteCompanyConfig">
+  	update sys_company_config
+  	<set>
+  	  <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+  		del_flag = #{delFlag,jdbcType=INTEGER}  		
+  	</set>
+  	 where id = #{id,jdbcType=INTEGER}
+  </update>
+  <!-- 根据部门名获取群组email -->
+  <select id="getGroupEmail" resultType="string">
+  	SELECT display_code
+  	FROM sys_company_config
+  	WHERE code = 'groupEmail'
+  	AND display_name = #{groupName}
+  	AND del_flag = 0
+  </select>
+  
+  <select id="getListByCodes" resultMap="BaseResultMap">
+	    select <include refid="Base_Column_List" /> 
+	    from sys_company_config sc
+	    LEFT JOIN base_company bc on sc.company_id = bc.id
+	    where sc.del_flag in (0,2)
+		<if test="codeList != null and codeList.size > 0" >
+           and sc.code in
+           <foreach collection="codeList" index="index" item="item" open="(" separator="," close=")">
+	           #{item}
+	       </foreach>
+        </if>
+  </select>
+  
+</mapper>

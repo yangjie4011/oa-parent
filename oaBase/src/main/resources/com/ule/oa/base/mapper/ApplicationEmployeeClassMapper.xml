@@ -1,0 +1,616 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ule.oa.base.mapper.ApplicationEmployeeClassMapper" >
+  <resultMap id="BaseResultMap" type="com.ule.oa.base.po.ApplicationEmployeeClass" >
+    <id column="ID" property="id" jdbcType="BIGINT" />
+    <result column="DEPART_ID" property="departId" jdbcType="BIGINT" />
+    <result column="DEPART_NAME" property="departName" jdbcType="VARCHAR" />
+    <result column="CLASS_MONTH" property="classMonth" jdbcType="DATE" />
+    <result column="EMPLOYEE_NUM" property="employeeNum" jdbcType="INTEGER" />
+    <result column="CLASS_EMPLOYEE_NUM" property="classEmployeeNum" jdbcType="INTEGER" />
+    <result column="class_setting_person" property="classSettingPerson" jdbcType="VARCHAR"/>
+    <result column="Approval_status" property="approvalStatus" jdbcType="BIGINT" />
+    <result column="approval_Reason" property="approvalReason" jdbcType="VARCHAR" />
+    <result column="del_flag" property="delFlag" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="version" property="version" jdbcType="BIGINT"/>
+    <result column="is_move" property="isMove" jdbcType="INTEGER" />
+    <result column="processInstance_Id" property="processInstanceId" jdbcType="VARCHAR" />
+    <result column="employee_id" property="employeeId" jdbcType="BIGINT" />
+    <result column="group_id" property="groupId" jdbcType="BIGINT" />
+    <result column="move_type" property="moveType" jdbcType="INTEGER" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    ID, DEPART_ID,DEPART_NAME, CLASS_MONTH, EMPLOYEE_NUM, CLASS_EMPLOYEE_NUM, CLASS_SETTING_PERSON, APPROVAL_STATUS,APPROVAL_REASON,
+    del_flag, create_time, create_user, update_user, update_time,version,is_move,processInstance_Id,employee_id,group_id,move_type,remark
+  </sql>
+  
+  <insert id="save" parameterType="com.ule.oa.base.po.ApplicationEmployeeClass" useGeneratedKeys="true" keyProperty="id">
+    insert into attn_application_employ_class (
+      DEPART_ID,
+      DEPART_NAME,
+      CLASS_MONTH,
+      EMPLOYEE_NUM,
+      CLASS_EMPLOYEE_NUM,
+      class_setting_person,
+      Approval_status,
+      VERSION,
+      create_time,
+      create_user,  
+      del_flag,
+      is_move,
+      processInstance_Id,
+      employee_id,
+      group_id,
+      move_type,
+      remark
+      )
+    values (
+      #{departId,jdbcType=BIGINT},
+      #{departName,jdbcType=VARCHAR}, 
+      #{classMonth,jdbcType=DATE}, 
+      #{employeeNum,jdbcType=INTEGER},
+      #{classEmployeeNum,jdbcType=INTEGER}, 
+      #{classSettingPerson,jdbcType=VARCHAR}, 
+      #{approvalStatus,jdbcType=BIGINT}, 
+      #{version,jdbcType=VARCHAR}, 
+      #{createTime,jdbcType=TIMESTAMP}, 
+      #{createUser,jdbcType=VARCHAR},
+      #{delFlag,jdbcType=INTEGER},
+      #{isMove,jdbcType=INTEGER},
+      #{processInstanceId,jdbcType=VARCHAR},
+      #{employeeId,jdbcType=BIGINT},
+      #{groupId,jdbcType=BIGINT},
+      #{moveType,jdbcType=INTEGER},
+      #{remark,jdbcType=VARCHAR}
+      )
+  </insert>
+  
+  <select id="getById" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+      <include refid="Base_Column_List" /> from attn_application_employ_class where del_flag = 0 and id = #{id,jdbcType=BIGINT}
+  </select>
+  
+  <select id="getByCondition" resultMap="BaseResultMap" parameterType="com.ule.oa.base.po.ApplicationEmployeeClass" >
+    select 
+    <include refid="Base_Column_List" />
+    from attn_application_employ_class where del_flag = 0 
+    <if test="id != null" >
+      and id = #{id,jdbcType=BIGINT}
+    </if>
+    <if test="isMove != null" >
+      and is_move = #{isMove,jdbcType=BIGINT}
+    </if>
+    <if test="departId != null" >
+      and DEPART_ID = #{departId,jdbcType=BIGINT}
+    </if>
+    <if test="groupId != null" >
+      and group_id = #{groupId,jdbcType=BIGINT}
+    </if>
+    <if test="classMonth != null" >
+      and DATE_FORMAT(CLASS_MONTH,'%Y-%m') = DATE_FORMAT(#{classMonth,jdbcType=DATE},'%Y-%m')
+    </if>
+    <if test="startTime != null" >
+      and DATE_FORMAT(CLASS_MONTH,'%Y-%m') &gt;= DATE_FORMAT(#{startTime,jdbcType=DATE},'%Y-%m')
+    </if>
+    <if test="approvalStatus != null" >
+      and approval_status = #{approvalStatus,jdbcType=BIGINT}
+    </if>
+    <if test="null != groupIdList and groupIdList.size > 0">
+    	and group_id in
+    	<foreach collection="groupIdList" item="item" open="(" separator="," close=")">
+    		#{item}
+    	</foreach>
+    </if>
+    <if test="null != approvalStatusNoList and approvalStatusNoList.size > 0">
+    	and approval_status not in
+    	<foreach collection="approvalStatusNoList" item="appStatus" open="(" separator="," close=")">
+    		#{appStatus}
+    	</foreach>
+    </if>
+    <if test="null != approvalStatusList and approvalStatusList.size > 0">
+    	    and approval_status  in
+    	<foreach collection="approvalStatusList" item="appStatus" open="(" separator="," close=")">
+    		#{appStatus}
+    	</foreach>
+    	</if>
+    ORDER BY create_time desc,class_month desc
+    
+    <if test="offset != null and limit != null">
+	    LIMIT #{offset},#{limit}
+	</if>
+    
+  </select>
+  
+  <select id="getCountByCondition" parameterType="com.ule.oa.base.po.ApplicationEmployeeClass" resultType="java.lang.Integer" >
+    select count(1)
+    from attn_application_employ_class where del_flag = 0 
+    <if test="id != null" >
+      and id = #{id,jdbcType=BIGINT}
+    </if>
+    <if test="isMove != null" >
+      and is_move = #{isMove,jdbcType=BIGINT}
+    </if>
+    <if test="departId != null" >
+      and DEPART_ID = #{departId,jdbcType=BIGINT}
+    </if>
+    <if test="groupId != null" >
+      and group_id = #{groupId,jdbcType=BIGINT}
+    </if>
+    <if test="classMonth != null" >
+      and DATE_FORMAT(CLASS_MONTH,'%Y-%m') = DATE_FORMAT(#{classMonth,jdbcType=DATE},'%Y-%m')
+    </if>
+    <if test="startTime != null" >
+      and DATE_FORMAT(CLASS_MONTH,'%Y-%m') &gt;= DATE_FORMAT(#{startTime,jdbcType=DATE},'%Y-%m')
+    </if>
+    <if test="approvalStatus != null" >
+      and approval_status = #{approvalStatus,jdbcType=BIGINT}
+    </if>
+    <if test="null != groupIdList and groupIdList.size > 0">
+    	and group_id in
+    	<foreach collection="groupIdList" item="item" open="(" separator="," close=")">
+    		#{item}
+    	</foreach>
+    </if>
+    <if test="null != approvalStatusNoList and approvalStatusNoList.size > 0">
+    	and approval_status not in
+    	<foreach collection="approvalStatusNoList" item="appStatus" open="(" separator="," close=")">
+    		#{appStatus}
+    	</foreach>
+    </if>
+    <if test="null != approvalStatusList and approvalStatusList.size > 0">
+    	    and approval_status  in
+    	<foreach collection="approvalStatusList" item="appStatus" open="(" separator="," close=")">
+    		#{appStatus}
+    	</foreach>
+    	</if>
+    ORDER BY create_time desc,class_month desc
+  </select>
+  
+  
+  <select id="queryByProcessInstanceId" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+      <include refid="Base_Column_List" /> from attn_application_employ_class where del_flag = 0 and processInstance_Id = #{processInstanceId,jdbcType=VARCHAR}
+  </select>
+  
+  <select id="getPassList" resultMap="BaseResultMap" parameterType="com.ule.oa.base.po.ApplicationEmployeeClass" >
+    select 
+    <include refid="Base_Column_List" />
+    from attn_application_employ_class where del_flag = 0 
+    <if test="departId != null" >
+      and DEPART_ID = #{departId,jdbcType=BIGINT}
+    </if>
+    <if test="classMonth != null" >
+      and DATE_FORMAT(CLASS_MONTH,'%Y-%m') = DATE_FORMAT(#{classMonth,jdbcType=DATE},'%Y-%m')
+    </if>
+    <if test="approvalStatus != null" >
+      and Approval_status = #{approvalStatus,jdbcType=BIGINT}
+    </if>
+    ORDER BY create_time ASC
+  </select>
+  
+  <update id="updateById" parameterType="com.ule.oa.base.po.ApplicationEmployeeClass" >
+    update attn_application_employ_class
+    <set>
+      Approval_status = #{approvalStatus,jdbcType=BIGINT},
+      <if test="classEmployeeNum != null" >
+        CLASS_EMPLOYEE_NUM = #{classEmployeeNum,jdbcType=INTEGER},
+      </if>
+      <if test="employeeNum != null" >
+        EMPLOYEE_NUM = #{employeeNum,jdbcType=INTEGER},
+      </if>
+      <if test="approvalReason != null" >
+        approval_Reason = #{approvalReason,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isMove != null" >
+        is_move = #{isMove,jdbcType=INTEGER},
+      </if>
+      <if test="processInstanceId != null and processInstanceId != ''" >
+        processInstance_Id = #{processInstanceId,jdbcType=VARCHAR}
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+  <update id="deleteById" parameterType="com.ule.oa.base.po.ApplicationEmployeeClass" >
+    update attn_application_employ_class
+    <set>
+      del_flag = 1,
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP}
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+  <select id="getEmpClassReprotById" resultType="Map" parameterType="com.ule.oa.base.po.ApplicationEmployeeClass">
+  	select be.code code,cd.employ_id empId,cd.employ_name empName,cd.should_time shouldTime,day(cd.class_date) classDay,cs.name name,
+		cd.class_date classDate,cd.class_setting_id classSettingId,concat(year(class_date),'-',month(class_date)) yearMonth,cs.must_attn_time mustAttnTime
+	from attn_employ_class cd,attn_class_setting cs,base_employee be
+	where cd.depart_id = #{departId,jdbcType=BIGINT}
+	and cd.class_date &gt;= #{startTime,jdbcType=DATE}
+	and cd.class_date &lt;= #{endTime,jdbcType=DATE}
+	<if test="groupId != null" >
+    and cd.group_id = #{groupId,jdbcType=BIGINT}
+     </if>
+	and cd.class_setting_id = cs.id
+	and cd.employ_id = be.id
+	and cd.del_flag = 0
+	<if test="employeeIds != null"> 
+	    and cd.employ_id in 
+	    <foreach collection="employeeIds" index="index" item="item" open="(" separator="," close=")">
+             #{item}
+         	</foreach>
+  	</if>
+	order by cd.employ_id
+  </select>
+  
+  <select id="getDetailById" resultType="Map" parameterType="java.lang.Long">
+  	SELECT cd.employ_id empId,cd.employ_name empName,cd.should_time shouldTime,DAY(cd.class_date) classDay,cs.name name,
+		cd.class_date classDate,cd.class_setting_id classSettingId,CONCAT(YEAR(class_date),'-',MONTH(class_date)) yearMonth,cs.must_attn_time mustAttnTime
+	from attn_application_employ_class_detail cd LEFT JOIN attn_class_setting cs on cd.class_setting_id = cs.id
+	WHERE cd.attn_application_employ_class_id=#{id,jdbcType=BIGINT}
+	and cd.del_flag = 0
+	and cd.is_move = #{isMove,jdbcType=BIGINT}
+	ORDER BY cd.employ_id
+  </select>
+  
+  <!--分页查询待办 -->
+  <select id="getHandlingListByPage" resultMap="BaseResultMap" parameterType="com.ule.oa.base.po.ApplicationEmployeeClass">
+  	   select ao.id,ao.depart_id,ao.depart_name,ao.class_month,ao.class_setting_person,ao.create_time,ao.is_move,ao.processinstance_id,ao.class_employee_num,ao.approval_status,ao.group_id FROM attn_application_employ_class ao
+	<where>
+  		ao.del_flag = 0
+  		<if test="departId != null">
+  			AND ao.depart_id = #{departId,jdbcType=BIGINT}
+  		</if>
+  		<if test="groupId != null">
+  			AND ao.group_id = #{groupId,jdbcType=BIGINT}
+  		</if>
+  		<if test="classMonth != null">
+  			AND ao.CLASS_MONTH = #{classMonth,jdbcType=DATE}
+  		</if>
+  		<if test="approvalStatus != null" >
+	        AND ao.approval_status = #{approvalStatus,jdbcType=BIGINT}
+        </if>
+		<if test="assignee != null and assignee != ''" >
+			AND ao.processinstance_id IN (SELECT DISTINCT
+					* 
+				FROM
+					(
+				SELECT
+					rt.PROC_INST_ID_ 
+				FROM
+					ACT_RU_IDENTITYLINK ri
+					LEFT JOIN ACT_RU_TASK rt ON ri.TASK_ID_ = rt.ID_ 
+				WHERE
+					ri.TYPE_ = 'candidate' 
+					AND ri.USER_ID_ = #{assignee,jdbcType=VARCHAR}
+					
+					UNION ALL
+					
+				SELECT
+					PROC_INST_ID_ 
+				FROM
+					ACT_RU_TASK 
+				WHERE
+					ASSIGNEE_ = #{assignee,jdbcType=VARCHAR}
+					) instance_id
+					)
+		</if>
+	</where>
+	ORDER BY ao.create_time DESC
+	<if test="offset != null and limit != null">
+	    LIMIT #{offset},#{limit}
+	</if>
+  </select>
+  
+  <!--查询待办总数 -->
+  <select id="getHandlingCount" parameterType="com.ule.oa.base.po.ApplicationEmployeeClass" resultType="java.lang.Integer">
+    select count(1) FROM attn_application_employ_class ao
+	<where>
+  		ao.del_flag = 0
+  		<if test="departId != null">
+  			AND ao.depart_id = #{departId,jdbcType=BIGINT}
+  		</if>
+  		<if test="groupId != null">
+  			AND ao.group_id = #{groupId,jdbcType=BIGINT}
+  		</if>
+        <if test="classMonth != null">
+  			AND ao.CLASS_MONTH = #{classMonth,jdbcType=DATE}
+  		</if>
+  		<if test="approvalStatus != null" >
+	                AND ao.approval_status = #{approvalStatus,jdbcType=BIGINT}
+        </if>
+		<if test="assignee != null and assignee != ''" >
+			AND ao.processinstance_id IN (SELECT DISTINCT
+					* 
+				FROM
+					(
+				SELECT
+					rt.PROC_INST_ID_ 
+				FROM
+					ACT_RU_IDENTITYLINK ri
+					LEFT JOIN ACT_RU_TASK rt ON ri.TASK_ID_ = rt.ID_ 
+				WHERE
+					ri.TYPE_ = 'candidate' 
+					AND ri.USER_ID_ = #{assignee,jdbcType=VARCHAR}
+					
+					UNION ALL
+					
+				SELECT
+					PROC_INST_ID_ 
+				FROM
+					ACT_RU_TASK 
+				WHERE
+					ASSIGNEE_ = #{assignee,jdbcType=VARCHAR}
+					) instance_id
+					)
+		</if>
+	</where>
+  </select>
+  
+   <!-- 假期已办列表 -->
+  <select id="getHandledListByPage" resultMap="BaseResultMap" parameterType="com.ule.oa.base.po.ApplicationEmployeeClass">
+	 SELECT ao.id,ao.depart_id,ao.depart_name,ao.class_month,ao.class_setting_person,ao.create_time,ao.is_move,ao.processinstance_id,ao.class_employee_num,ao.approval_status,ao.group_id
+	 from attn_application_employ_class ao 
+	 LEFT JOIN ACT_HI_TASKINST t 
+	 ON ao.PROCESSINSTANCE_ID = t.PROC_INST_ID_
+	 <where>
+	    ao.del_flag = 0  
+  		and t.ASSIGNEE_ = #{assignee,jdbcType=VARCHAR}
+    	AND t.TASK_DEF_KEY_ != 'proposer' 
+    	AND t.TASK_DEF_KEY_ != 'usertask1' 
+    	AND t.END_TIME_ IS NOT NULL 
+    	AND t.PROC_DEF_ID_ LIKE '%scheduling%'
+	    <if test="departId != null">
+  			AND ao.depart_id = #{departId,jdbcType=BIGINT}
+  		</if>
+  		<if test="groupId != null">
+  			AND ao.group_id = #{groupId,jdbcType=BIGINT}
+  		</if>
+  		<if test="classMonth != null">
+  			AND ao.CLASS_MONTH = #{classMonth,jdbcType=DATE}
+  		</if>
+  		<if test="approvalStatus != null" >
+	        AND ao.approval_status = #{approvalStatus,jdbcType=BIGINT}
+        </if>
+	</where>
+    ORDER BY t.END_TIME_ DESC limit #{offset},#{limit}
+  </select>
+  
+  <!--查询已办总数 -->
+  <select id="getHandledCount" parameterType="com.ule.oa.base.po.ApplicationEmployeeClass" resultType="java.lang.Integer">
+     SELECT count(1)
+	 from attn_application_employ_class ao 
+	 LEFT JOIN ACT_HI_TASKINST t 
+	 ON ao.PROCESSINSTANCE_ID = t.PROC_INST_ID_
+	 <where>
+	    ao.del_flag = 0  
+  		and t.ASSIGNEE_ = #{assignee,jdbcType=VARCHAR}
+    	AND t.TASK_DEF_KEY_ != 'proposer' 
+    	AND t.TASK_DEF_KEY_ != 'usertask1' 
+    	AND t.END_TIME_ IS NOT NULL 
+    	AND t.PROC_DEF_ID_ LIKE '%scheduling%'
+	    <if test="departId != null">
+  			AND ao.depart_id = #{departId,jdbcType=BIGINT}
+  		</if>
+  		<if test="groupId != null">
+  			AND ao.group_id = #{groupId,jdbcType=BIGINT}
+  		</if>
+  		<if test="classMonth != null">
+  			AND ao.CLASS_MONTH = #{classMonth,jdbcType=DATE}
+  		</if>
+  		<if test="approvalStatus != null" >
+	        AND ao.approval_status = #{approvalStatus,jdbcType=BIGINT}
+        </if>
+	</where>
+  </select>
+  
+  <!--统计排班申请详情数据 -->
+  <select id="getClassHoursMap" resultType="Map" parameterType="java.lang.Long" >
+    SELECT e.first_Entry_time as firstEntryTime,e.Quit_time as quitTime,ANY_VALUE(a.employ_name) as employ_name,ANY_VALUE(a.should_time) as should_time,a.employ_id,SUM(b.must_attn_time)must_attn_time,count(1) as dayCount
+		FROM attn_application_employ_class_detail a
+		LEFT JOIN attn_class_setting b ON a.class_setting_id = b.id 
+		left join base_employee e on e.id=a.employ_id
+		where a.del_flag=0 and a.employ_id is not null and a.class_setting_id is not null and a.attn_application_employ_class_id=#{id,jdbcType=BIGINT}
+    GROUP BY a.employ_id
+  </select>
+
+  <select id="getEmpClassById" resultType="Map" parameterType="com.ule.oa.base.po.ApplicationEmployeeClass">
+  	select cd.employ_id empId,cd.employ_name empName,cd.should_time shouldTime,day(cd.class_date) classDay,cs.name name,
+		cd.class_date classDate,cd.class_setting_id classSettingId,concat(year(cd.class_date),'-',month(cd.class_date)) yearMonth,cs.must_attn_time mustAttnTime
+	from attn_employ_class cd,attn_class_setting cs,attn_application_employ_class aac,attn_application_employ_class_detail aad 
+	where cd.depart_id = #{departId,jdbcType=BIGINT}
+	and cd.class_date &gt;= #{startTime,jdbcType=DATE}
+	and cd.class_date &lt;= #{endTime,jdbcType=DATE}
+	and cd.class_setting_id = cs.id
+	and aac.id=aad.attn_application_employ_class_id
+	and aad.employ_id=cd.employ_id
+	and cd.del_flag = 0
+	and aac.id= #{id,jdbcType=BIGINT}
+	order by cd.employ_id
+  </select>
+  
+  <select id="getEmployeeIdListById" resultType="java.lang.Long" parameterType="java.util.List" >
+	    SELECT DISTINCT employ_id FROM attn_application_employ_class_detail WHERE del_flag=0 and attn_application_employ_class_id=#{id,jdbcType=BIGINT};
+  </select>
+  
+  <select id="getChangeEmpClassById" resultType="Map" parameterType="com.ule.oa.base.po.ApplicationEmployeeClass">
+	select
+	    aad.employ_id as empId,aad.employ_name,aad.class_date as classDate,aad.class_setting_id as classSettingId,cs.name ,
+	    DAY (aad.class_date) classDay,cs.start_time,cs.end_time,aad.is_move
+	from attn_application_employ_class_detail  aad
+		left  join attn_class_setting cs  on cs.id=aad.class_setting_id
+		inner join attn_application_employ_class ac on aad.attn_application_employ_class_id=ac.id
+		where 1=1
+		 <if test="isMove != null">
+  			AND aad.is_move = #{isMove,jdbcType=BIGINT}
+  		</if>
+  		<if test="startTime != null">
+  			AND aad.class_date &gt;= #{startTime,jdbcType=DATE}
+  		</if>
+  		<if test="endTime != null" >
+	        AND aad.class_date &lt;= #{endTime,jdbcType=DATE}
+        </if>
+		<if test="id !=null">
+		 and aad.attn_application_employ_class_id=#{id,jdbcType=BIGINT}
+		</if>
+		<if test="employeeId !=null">
+		 and aad.employ_id=#{employeeId,jdbcType=BIGINT}
+		</if>
+		<if test="attnApplicationEmployClassId !=null">
+		 and aad.attn_application_employ_class_id=#{attnApplicationEmployClassId,jdbcType=BIGINT}
+		</if>
+		<if test="classDate !=null">
+		 and class_date=#{classDate,jdbcType=DATE}
+		</if>
+		<if test="approvalStatus !=null">
+			and ac.approval_status=#{approvalStatus,jdbcType=DATE}
+		</if>
+		<if test="null != approvalStatusList and approvalStatusList.size > 0">
+    	    and approval_status  in
+    	<foreach collection="approvalStatusList" item="appStatus" open="(" separator="," close=")">
+    		#{appStatus}
+    	</foreach>
+    	</if>
+		
+	ORDER BY aad.create_time	
+  </select>
+  
+  <select id="getFlagDataByInfo" resultType="Map" parameterType="com.ule.oa.base.po.ApplicationEmployeeClass">
+  	select 
+		aad.employ_id AS empId,aad.employ_name,aad.class_date AS classDate,aad.class_setting_id AS classSettingId,
+		cs.NAME AS name,cs.must_attn_time AS mustAttnTime,DAY (aad.class_date) classDay,cs.start_time,cs.end_time
+ 	from attn_employ_class  aad
+	inner join attn_class_setting cs on cs.id=aad.class_setting_id
+	inner join base_employee e on aad.employ_id = e.id AND CASE WHEN e.Quit_time IS NOT NULL THEN aad.class_date  &lt;= e.Quit_time WHEN e.Quit_time IS NULL THEN aad.class_date &gt;= #{startTime,jdbcType=DATE} END
+	where 1=1 and aad.del_flag=0
+	<if test="startTime != null">
+  		AND aad.class_date &gt;= #{startTime,jdbcType=DATE}
+  	</if>
+  	<if test="endTime != null" >
+	    AND aad.class_date &lt;= #{endTime,jdbcType=DATE}
+    </if>
+    <if test="departId != null" >
+      and aad.depart_id = #{departId,jdbcType=BIGINT}
+    </if>
+    <if test="groupId != null" >
+      and aad.group_id = #{groupId,jdbcType=BIGINT}
+    </if>
+  </select>
+  
+  <select id="getFlagDataCountByInfo" resultType="Map" parameterType="com.ule.oa.base.po.ApplicationEmployeeClass">
+   SELECT e.first_Entry_time as firstEntryTime,e.Quit_time as quitTime,e.job_status as jobStatus,ANY_VALUE(a.employ_name) as employ_name,ANY_VALUE(a.should_time) as should_time,a.employ_id,SUM(b.must_attn_time)must_attn_time,count(1) as dayCount
+		FROM attn_employ_class a
+		left JOIN attn_class_setting b ON a.class_setting_id = b.id 
+		inner join base_employee e on e.id=a.employ_id AND CASE WHEN e.Quit_time IS NOT NULL THEN a.class_date &lt;= e.Quit_time WHEN e.Quit_time IS NULL THEN a.class_date &gt;= #{startTime,jdbcType=DATE} END
+		where   1=1 and a.del_flag=0
+		<if test="startTime != null">
+  		AND a.class_date &gt;= #{startTime,jdbcType=DATE}
+	  	</if>
+	  	<if test="endTime != null" >
+		AND a.class_date &lt;= #{endTime,jdbcType=DATE}
+	    </if>
+	    <if test="departId != null" >
+	    and a.depart_id = #{departId,jdbcType=BIGINT}
+	    </if>
+	    <if test="groupId != null" >
+	      and a.group_id = #{groupId,jdbcType=BIGINT}
+	    </if>
+    GROUP BY a.employ_id
+  </select>
+  
+   <select id="getCountDataCountByInfo" resultType="com.ule.oa.base.po.ApplicationEmployeeClass" parameterType="com.ule.oa.base.po.ApplicationEmployeeClass" >
+  	 SELECT bd.name AS departName,ANY_VALUE(bg.name) AS groupName,MIN(a.class_date) As classMonth,
+		count(DISTINCT(a.employ_id)) AS classEmployeeNum,ANY_VALUE(a.create_user) As createUser,ANY_VALUE(a.create_time) As createTime,
+		ANY_VALUE(a.depart_id) As departId,ANY_VALUE(a.group_id) As groupId
+	 FROM attn_employ_class a
+		left JOIN attn_class_setting b ON a.class_setting_id = b.id 
+		left join base_employee e on e.id=a.employ_id
+		left join base_schedule_group bg on bg.id=a.group_id
+		left join base_depart bd on  a.depart_id=bd.id
+	where   1=1 and a.del_flag=0
+		<if test="startTime != null">
+  		AND a.class_date &gt;= #{startTime,jdbcType=DATE}
+	  	</if>
+	  	<if test="endTime != null" >
+		AND a.class_date &lt;= #{endTime,jdbcType=DATE}
+	    </if>
+	    <if test="departId != null" >
+	    and a.depart_id = #{departId,jdbcType=BIGINT}
+	    </if>
+	    <if test="groupId != null" >
+	      and a.group_id = #{groupId,jdbcType=BIGINT}
+	    </if>	
+	GROUP BY bd.name<if test="groupId != null" >,bg.name</if>
+  </select> 
+  
+   <select id="getCountEmpByInfo" resultType="com.ule.oa.base.po.ApplicationEmployeeClass" parameterType="com.ule.oa.base.po.ApplicationEmployeeClass" >
+	   SELECT count(DISTINCT(employ_id))AS classEmployeeNum ,ANY_VALUE(a.depart_id) As departId,ANY_VALUE(a.group_id) As groupId
+
+	 FROM attn_employ_class a
+		left JOIN attn_class_setting b ON a.class_setting_id = b.id 
+		left join base_employee e on e.id=a.employ_id
+		left join base_schedule_group bg on bg.id=a.group_id
+		left join base_depart bd on  a.depart_id=bd.id
+	where   1=1 and a.del_flag=0
+			<if test="startTime != null">
+	  		AND a.class_date &gt;= #{startTime,jdbcType=DATE}
+		  	</if>
+		  	<if test="endTime != null" >
+			AND a.class_date &lt;= #{endTime,jdbcType=DATE}
+		    </if>
+		    <if test="departId != null" >
+		    and a.depart_id = #{departId,jdbcType=BIGINT}
+		    </if>
+		    <if test="groupId != null" >
+		      and a.group_id = #{groupId,jdbcType=BIGINT}
+		    </if>	
+		GROUP BY bd.name<if test="groupId != null" >,bg.name</if>
+	 </select> 
+	 
+	 <select id="getUnCommitData" resultMap="BaseResultMap" parameterType="com.ule.oa.base.po.ApplicationEmployeeClass" >
+	    select <include refid="Base_Column_List" /> from attn_application_employ_class 
+	    where del_flag = 0 and is_move = 0 and DEPART_ID = #{departId,jdbcType=BIGINT} 
+	          and group_id = #{groupId,jdbcType=BIGINT} and DATE_FORMAT(CLASS_MONTH,'%Y-%m') = DATE_FORMAT(#{classMonth,jdbcType=DATE},'%Y-%m')
+	          and approval_status is null
+     </select>
+  <select id="getNotSubmittedClass" resultMap="BaseResultMap" parameterType="com.ule.oa.base.po.ApplicationEmployeeClass" >
+    select 
+    <include refid="Base_Column_List" />
+    from attn_application_employ_class where del_flag = 0 
+    <if test="departId != null" >
+      and DEPART_ID = #{departId,jdbcType=BIGINT}
+    </if>
+    <if test="groupId != null" >
+      and group_id = #{groupId,jdbcType=BIGINT}
+    </if>
+    <if test="classMonth != null" >
+      and DATE_FORMAT(CLASS_MONTH,'%Y-%m') = DATE_FORMAT(#{classMonth,jdbcType=DATE},'%Y-%m')
+    </if>
+    <if test="approvalStatus != null" >
+      and approval_status = #{approvalStatus,jdbcType=BIGINT}
+    </if>
+    <if test="null != approvalStatusNoList and approvalStatusNoList.size > 0">
+    	and (approval_status not in
+    	<foreach collection="approvalStatusNoList" item="appStatus" open="(" separator="," close=")">
+    		#{appStatus}
+    	</foreach>
+    	or approval_status is null)
+    </if>
+  </select>
+  
+</mapper>

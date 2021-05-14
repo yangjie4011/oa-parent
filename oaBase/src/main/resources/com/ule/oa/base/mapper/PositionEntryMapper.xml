@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ule.oa.base.mapper.PositionEntryMapper" >
+  
+    <!-- 分页查询报表 -->
+  <select id="getReportPageList" parameterType="com.ule.oa.base.po.EmpEntryRegistration" resultType="com.ule.oa.base.po.EmpEntryRegistration">
+	SELECT eer.depart_id,bc.`name`,bet.type_c_name,eer.cn_Name,bp.position_name as positionName,eer.create_Time,dbemp.cn_name as deptLeaderName,
+		eer.employment_date,bd.`name` as dpname,eer.email,eer.id,eer.ENTRY_STATUS,bemp.cn_name as LeaderName,eer.delay_entry_date
+	FROM emp_entry_registration eer
+		INNER JOIN base_company bc ON eer.company_id = bc.id
+		INNER JOIN base_depart bd ON eer.depart_id = bd.id
+		left join base_employee dbemp on dbemp.id=bd.leader
+		INNER JOIN base_emp_type bet ON eer.employee_type_id = bet.id
+		inner join base_position bp on bp.id=eer.position_id
+		inner join base_employee bemp on bemp.id=eer.leader		
+	  <where>
+  		and eer.del_flag = 0
+	  	<if test="entryStatus != null">
+	  		and eer.ENTRY_STATUS =#{entryStatus,jdbcType=BIGINT}
+	  	</if>
+  	
+  		<if test="yanqi != null and yanqi == 1 ">
+  			and eer.delay_entry_date is not null
+  		</if>
+  		<if test="yanqi != null and yanqi == 2 ">
+  			and eer.delay_entry_date is  null
+  		</if>
+  		
+  		<if test="firstDepart != null">
+  			and eer.depart_id = #{firstDepart,jdbcType=BIGINT}
+  		</if>
+  		<if test="cnName != null and cnName != ''">
+  			and eer.cn_Name  like concat('%',#{cnName,jdbcType=VARCHAR},'%')
+  		</if>
+  		
+  		<if test="employmentDateBegin != null and employmentDateBegin != ''">
+  			and DATE_FORMAT(eer.employment_date,'%Y-%m-%d') &gt;= #{employmentDateBegin,jdbcType=DATE}
+  		</if>
+  		<if test="employmentDateEnd != null and employmentDateEnd != ''">
+  			and DATE_FORMAT(eer.employment_date,'%Y-%m-%d') &lt;= #{employmentDateEnd,jdbcType=DATE}
+  		</if>
+  		<if test="createTimeBegin != null and createTimeBegin != ''">
+  			and DATE_FORMAT(eer.create_Time,'%Y-%m-%d') &gt;= #{createTimeBegin,jdbcType=DATE}
+  		</if>
+  		<if test="createTimeEnd != null and createTimeEnd != ''">
+  			and DATE_FORMAT(eer.create_Time,'%Y-%m-%d') &lt;= #{createTimeEnd,jdbcType=DATE}
+  		</if>	 		
+	</where>
+		order by eer.employment_date desc
+	 	limit #{offset},#{limit}	 
+  </select>
+  
+  
+  <!-- 查询报表总记录数 -->
+  <select id="getReportCount" parameterType="com.ule.oa.base.po.EmpEntryRegistration" resultType="java.lang.Integer">
+  	SELECT count(1)
+		FROM emp_entry_registration eer
+		INNER JOIN base_company bc ON eer.company_id = bc.id
+		INNER JOIN base_depart bd ON eer.depart_id = bd.id
+		left join base_employee dbemp on dbemp.id=bd.leader
+		INNER JOIN base_emp_type bet ON eer.employee_type_id = bet.id
+		inner join base_position bp on bp.id=eer.position_id
+		inner join base_employee bemp on bemp.id=eer.leader
+		  <where>
+  		and eer.del_flag = 0
+	  	<if test="entryStatus != null">
+	  		and eer.ENTRY_STATUS =#{entryStatus,jdbcType=BIGINT}
+	  	</if>
+  
+  		
+  		<if test="yanqi != null and yanqi == 1 ">
+  			and eer.delay_entry_date is not null
+  		</if>
+  		<if test="yanqi != null and yanqi == 2 ">
+  			and eer.delay_entry_date is  null
+  		</if>
+  		
+  		<if test="firstDepart != null">
+  			and eer.depart_id = #{firstDepart,jdbcType=BIGINT}
+  		</if>
+  		
+  		<if test="departList != null">
+  			and eer.depart_id in
+  			<foreach collection="departList" item="departId" open="(" separator="," close=")">
+  				#{departId,jdbcType=BIGINT}
+  			</foreach>
+  		</if>
+  		
+  		<if test="cnName != null and cnName != ''">
+  			and eer.cn_Name  like concat('%',#{cnName,jdbcType=VARCHAR},'%')
+  		</if>
+  		
+  		<if test="employmentDateBegin != null and employmentDate != ''">
+  			and DATE_FORMAT(eer.employment_date,'%Y-%m-%d') &gt;= #{employmentDateBegin,jdbcType=DATE}
+  		</if>
+  		<if test="employmentDateEnd != null and employmentDateEnd != ''">
+  			and DATE_FORMAT(eer.employment_date,'%Y-%m-%d') &lt;= #{employmentDateEnd,jdbcType=DATE}
+  		</if>
+  		<if test="createTimeBegin != null and createTime != ''">
+  			and DATE_FORMAT(eer.create_Time,'%Y-%m-%d') &gt;= #{createTimeBegin,jdbcType=DATE}
+  		</if>
+  		<if test="createTimeEnd != null and createTimeEnd != ''">
+  			and DATE_FORMAT(eer.create_Time,'%Y-%m-%d') &lt;= #{createTimeEnd,jdbcType=DATE}
+  		</if>	 		
+	</where>
+  </select>
+  
+  <select id="getExportReportList" parameterType="com.ule.oa.base.po.EmpEntryRegistration" resultType="java.util.HashMap">
+	SELECT bc.`name`,bet.type_c_name,eer.cn_Name,bp.position_name as positionName,eer.create_Time,dbemp.cn_name as deptLeaderName,
+		eer.employment_date,bd.`name` as dpname,eer.email,eer.id,eer.ENTRY_STATUS,bemp.cn_name as LeaderName
+	FROM emp_entry_registration eer
+		INNER JOIN base_company bc ON eer.company_id = bc.id
+		INNER JOIN base_depart bd ON eer.depart_id = bd.id
+		left join base_employee dbemp on dbemp.id=bd.leader
+		INNER JOIN base_emp_type bet ON eer.employee_type_id = bet.id
+		inner join base_position bp on bp.id=eer.position_id
+		inner join base_employee bemp on bemp.id=eer.leader		
+	  <where>
+  		and eer.del_flag = 0
+	  	<if test="entryStatus != null">
+	  		and eer.ENTRY_STATUS =#{entryStatus,jdbcType=BIGINT}
+	  	</if>
+  		<if test="yanqi != null and yanqi == 3 ">
+  			and eer.ENTRY_STATUS = 3	
+  		</if>
+  		<if test="yanqi != null and yanqi == 2 ">
+  			and eer.ENTRY_STATUS in (1,2)	
+  		</if>
+  		<if test="departId != null">
+  			and eer.depart_id = #{departId,jdbcType=BIGINT}
+  		</if>
+  		<if test="departList != null">
+  			and eer.depart_id in
+  			<foreach collection="departList" item="departId" open="(" separator="," close=")">
+  				#{departId,jdbcType=BIGINT}
+  			</foreach>
+  		</if>
+  		
+  		<if test="cnName != null and cnName != ''">
+  			and eer.cn_Name  like concat('%',#{cnName,jdbcType=VARCHAR},'%')
+  		</if>
+  		
+  		<if test="employmentDate != null and employmentDate != ''">
+  			and DATE_FORMAT(eer.employment_date,'%Y-%m-%d') &gt;= #{employmentDate,jdbcType=DATE}
+  		</if>
+  		<if test="employmentDateEnd != null and employmentDateEnd != ''">
+  			and DATE_FORMAT(eer.employment_date,'%Y-%m-%d') &lt;= #{employmentDateEnd,jdbcType=DATE}
+  		</if>
+  		<if test="createTime != null and createTime != ''">
+  			and DATE_FORMAT(eer.create_Time,'%Y-%m-%d') &gt;= #{createTime,jdbcType=DATE}
+  		</if>
+  		<if test="createTimeEnd != null and createTimeEnd != ''">
+  			and DATE_FORMAT(eer.create_Time,'%Y-%m-%d') &lt;= #{createTimeEnd,jdbcType=DATE}
+  		</if>	 		
+	</where>
+		order by eer.employment_date desc
+	<if test="offset != null and limit != null">
+		limit #{offset},#{limit}
+	</if>	
+  </select>
+</mapper>

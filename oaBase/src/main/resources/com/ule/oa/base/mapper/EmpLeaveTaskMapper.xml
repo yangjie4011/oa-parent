@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ule.oa.base.mapper.EmpLeaveTaskMapper" >
+  <resultMap id="BaseResultMap" type="com.ule.oa.base.po.EmpLeaveTask" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="employee_id" property="employeeId" jdbcType="BIGINT" />
+    <result column="type" property="type" jdbcType="INTEGER" />
+    <result column="cal_date" property="calDate" jdbcType="DATE" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="version" property="version" jdbcType="BIGINT" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    id, employee_id, type, cal_date, status, create_time, update_time, create_user, update_user, 
+    version,remark
+  </sql>
+  
+  <select id="getListByCondition" parameterType="com.ule.oa.base.po.EmpLeaveTask" resultMap="BaseResultMap">
+  	select <include refid="Base_Column_List"/> from base_emp_leave_task
+  	<where>
+  		<if test="status != null">
+  			and status = #{status,jdbcType=INTEGER}	
+	  	</if>
+	  	<if test="type != null">
+	  		and type = #{type,jdbcType=INTEGER}
+	  	</if>
+  	</where>
+  	<if test="offset != null and limit != null">
+  		limit #{offset},#{limit}
+  	</if>
+  </select>
+  
+  <!-- 自动计算假期sql,就是这样，没有where条件，请勿改动 -->
+  <delete id="deleteAllByType" parameterType="java.lang.Integer">
+  	delete from base_emp_leave_task
+  	where type = #{type,jdbcType=INTEGER}
+  </delete>
+  
+  <!-- 删除任务表数据 -->
+  <delete id="deleteAllByCondition" parameterType="com.ule.oa.base.po.EmpLeaveTask">
+  	delete from base_emp_leave_task
+  	<where>
+  		<if test="null != type">and type = #{type,jdbcType=INTEGER}</if>
+  		<if test="null != employeeId">and employee_id = #{employeeId,jdbcType=INTEGER}</if>
+  	</where>
+  </delete>
+  
+  <select id="getCount" parameterType="com.ule.oa.base.po.EmpLeaveTask" resultType="java.lang.Long">
+  	select count(1) from base_emp_leave_task
+  	<where>
+		<if test="status != null" >
+			and status = #{status,jdbcType=INTEGER}
+		</if>
+		<if test="type != null" >
+			and type = #{type,jdbcType=INTEGER}
+		</if>
+  	</where>
+  </select>
+  
+  <select id="getById" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from base_emp_leave_task
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  
+  <insert id="save" parameterType="com.ule.oa.base.po.EmpLeaveTask" >
+  	<selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">
+		SELECT LAST_INSERT_ID() AS id
+	</selectKey>
+  
+    insert into base_emp_leave_task
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="employeeId != null" >
+        employee_id,
+      </if>
+      <if test="type != null" >
+        type,
+      </if>
+      <if test="calDate != null" >
+        cal_date,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+      <if test="createUser != null" >
+        create_user,
+      </if>
+      <if test="updateUser != null" >
+        update_user,
+      </if>
+      <if test="version != null" >
+        version,
+      </if>
+      <if test="remark != null">
+      	remark,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="employeeId != null" >
+        #{employeeId,jdbcType=BIGINT},
+      </if>
+      <if test="type != null" >
+        #{type,jdbcType=INTEGER},
+      </if>
+      <if test="calDate != null" >
+        #{calDate,jdbcType=DATE},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUser != null" >
+        #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUser != null" >
+        #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="version != null" >
+        #{version,jdbcType=BIGINT},
+      </if>
+      <if test="remark != null">
+      	#{remark,jdbcType=VARCHAR}
+      </if>
+    </trim>
+  </insert>
+  
+  <update id="updateById" parameterType="com.ule.oa.base.po.EmpLeaveTask" >
+    update base_emp_leave_task
+    <set >
+      <if test="employeeId != null" >
+        employee_id = #{employeeId,jdbcType=BIGINT},
+      </if>
+      <if test="type != null" >
+        type = #{type,jdbcType=INTEGER},
+      </if>
+      <if test="calDate != null" >
+        cal_date = #{calDate,jdbcType=DATE},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUser != null" >
+        create_user = #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null">
+      	remark = #{remark,jdbcType=VARCHAR},
+      </if>
+        version = version + 1,
+    </set>
+    where id = #{id,jdbcType=BIGINT} and version = #{version,jdbcType=BIGINT}
+  </update>
+  
+  <insert id="batchSaveYearTaskByType" parameterType="java.util.Map">
+    	INSERT INTO base_emp_leave_task(employee_id,type,status,cal_date,create_time,create_user,update_time,update_user) 
+    	SELECT emp.id,#{type,jdbcType=INTEGER},1,now(),now(),'API',now(),'API' FROM base_employee emp
+    	where emp.del_flag = 0 and emp.job_status in (0,2,3) and emp.work_address_type = 0
+    	<if test="autoCalculateLeave != null">
+      	   and emp.auto_calculate_leave = #{autoCalculateLeave,jdbcType=VARCHAR}
+        </if>
+        <if test="empTypeIdList != null and empTypeIdList.size > 0" >
+           and emp.emp_type_id in
+           <foreach collection="empTypeIdList" index="index" item="item" open="(" separator="," close=")">
+	           #{item}
+	       </foreach>
+        </if>
+  </insert>
+</mapper>

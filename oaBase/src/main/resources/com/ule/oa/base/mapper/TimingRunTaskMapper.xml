@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ule.oa.base.mapper.TimingRunTaskMapper">
+
+	<resultMap id="BaseResultMap" type="com.ule.oa.base.po.TimingRunTask">
+		<result column="ID" property="id" jdbcType="BIGINT"/>
+		<result column="RE_PROCDEF_CODE" property="reProcdefCode" jdbcType="VARCHAR"/>
+		<result column="CREATOR_ID" property="creatorId" jdbcType="BIGINT"/>
+		<result column="START_TIME" property="startTime" jdbcType="TIMESTAMP"/>
+		<result column="ENTITY_ID" property="entityId" jdbcType="VARCHAR" />
+		<result column="PROCESS_STATUS" property="processStatus" jdbcType="BIGINT"/>
+		<result column="VERSION" property="version" jdbcType="BIGINT"/>
+		<result column="DEL_FLAG" property="delFlag" jdbcType="BIGINT"/>
+		<result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP"/>
+		<result column="UPDATE_TIME" property="updateTime" jdbcType="TIMESTAMP"/>
+		<result column="CREATE_USER" property="createUser" jdbcType="VARCHAR"/>
+		<result column="UPDATE_USER" property="updateUser" jdbcType="VARCHAR"/>
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		ID,RE_PROCDEF_CODE,CREATOR_ID,START_TIME,ENTITY_ID,VERSION,
+		DEL_FLAG,CREATE_TIME,UPDATE_TIME,CREATE_USER,UPDATE_USER,PROCESS_STATUS
+	</sql>
+
+	<!-- 分页查询我的协作列表 -->
+	<select id="getList" resultMap="BaseResultMap">
+		SELECT <include refid="Base_Column_List" /> FROM bpm_timing_run_task
+		 where del_flag = 0  and START_TIME &lt; now() and PROCESS_STATUS  = 0
+	</select>
+
+	<!-- 保存信息 -->
+	<insert id="save" parameterType="com.ule.oa.base.po.TimingRunTask" useGeneratedKeys="true" keyProperty="id">
+		insert into bpm_timing_run_task
+		(  
+			RE_PROCDEF_CODE,
+			PROCESS_STATUS,
+			CREATOR_ID,
+			START_TIME,
+			ENTITY_ID,
+			VERSION,
+			DEL_FLAG,
+			CREATE_TIME,
+			UPDATE_TIME,
+			CREATE_USER,
+			UPDATE_USER
+		)
+		values  ( 
+			#{reProcdefCode,jdbcType=VARCHAR},
+			#{processStatus,jdbcType=BIGINT},
+			#{creatorId,jdbcType=BIGINT},
+			#{startTime,jdbcType=TIMESTAMP},
+			#{entityId,jdbcType=VARCHAR},
+			1,
+			0,
+			now(),
+			#{updateTime,jdbcType=TIMESTAMP},
+			#{createUser,jdbcType=VARCHAR},
+			#{updateUser,jdbcType=VARCHAR}
+		)
+	</insert>
+	
+	<!-- 根据主键更新信息 -->
+	<update id="updateById" parameterType="com.ule.oa.base.po.TimingRunTask">
+		update bpm_timing_run_task
+		<set>
+			<if test="processStatus != null">PROCESS_STATUS=#{processStatus,jdbcType=BIGINT},</if>
+			<if test="updateUser != null"> UPDATE_USER = #{updateUser ,jdbcType=VARCHAR}, </if>
+			UPDATE_TIME = now()
+	    </set>
+		where id = #{id,jdbcType=BIGINT}
+	</update>
+	
+	<update id="deleteByCodeAndEntityId">
+		update bpm_timing_run_task set del_flag = 1 where 
+	    RE_PROCDEF_CODE = #{reProcdefCode,jdbcType=VARCHAR} and ENTITY_ID = #{entityId,jdbcType=VARCHAR}
+	</update>
+	
+	<select id="getAssigneeListWait" resultType="Map">
+		select DISTINCT r.ASSIGNEE as assigneeName,r.ASSIGNEE_ID as assigneeId from bpm_ru_procdef r
+		LEFT JOIN bpm_run_task t on r.RU_TASK_ID = t.ID
+		where r.PROCESS_STATUS = 100
+	    <if test="beginDate != null" >
+	        and t.START_TIME &gt;= #{beginDate,jdbcType=DATE}
+	    </if>
+	    <if test="endDate != null" >
+	        and t.START_TIME &lt;= #{endDate,jdbcType=DATE}
+	    </if>
+		group by r.ASSIGNEE,r.ASSIGNEE_ID
+	</select>
+	
+	<select id="getWaitAssigneeList" resultType="Map">
+		SELECT DISTINCT assigneeId from (
+		SELECT DISTINCT
+			ASSIGNEE_ as assigneeId
+		FROM
+			act_ru_task rt 
+		WHERE
+			PROC_INST_ID_ IN 
+		( SELECT PROC_INST_ID_ FROM act_hi_procinst 
+			WHERE rev_ = 1 
+	        and START_TIME_ &gt;= #{beginDate,jdbcType=DATE}
+	        and START_TIME_ &lt;= #{endDate,jdbcType=DATE}
+	    ) 
+	    UNION ALL
+		SELECT DISTINCT
+			user_id_ AS assigneeId 
+		FROM
+			act_ru_identitylink ri
+		INNER JOIN act_ru_task rt ON ri.task_id_ = rt.id_ 
+		WHERE
+		rt.PROC_INST_ID_ IN 
+		( SELECT PROC_INST_ID_ FROM act_hi_procinst 
+			WHERE rev_ = 1 
+	        AND START_TIME_ &gt;= #{beginDate,jdbcType=DATE}
+	        AND START_TIME_ &lt;= #{endDate,jdbcType=DATE}
+		)
+		) assignee where assigneeId IS NOT NULL
+	</select>
+</mapper>

@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kafka-clients>
+	<!-- 记录考勤任务状态 -->
+	<producer>
+        <!-- 唯一ID -->
+        <id>com.ule.oa.service.attnTaskRecordProducer</id>
+        <!-- 生产的topic -->
+        <topic>KAFKA_OA_ATTN_TASK_RECORD_REQ1</topic>
+        <!-- kafka的链接url（不是zookeeper） -->
+        <kafka.broker.list>kafka02.beta.uledns.com:9092</kafka.broker.list>
+        <!-- 处理类，继承AbstractProducerHandler，可以不写，不写的话使用DefaultProducerHandler -->
+        <handler.class></handler.class>
+        <!--  producer是否等待服务器确认回复（acks）的选择，三种选择 -->
+        <!--  0，意味着producer永远不会等待一个来自broker的ack。这个选项提供了最低的延迟，但是持久化的保证是最弱的，当server挂掉的时候会丢失一些数据。-->
+        <!--  1，意味着在leader replica已经接收到数据后，producer会得到一个ack。这个选项提供了更好的持久性，因为在server确认请求成功处理后，client才会返回。如果刚写到leader上，还没来得及复制leader就挂了，那么消息才可能会丢失。-->
+        <!-- -1，意味着在所有的ISR都接收到数据后，producer才得到一个ack。这个选项提供了最好的持久性，只要还有一个replica存活，那么数据就不会丢失。-->
+        <request.required.acks>1</request.required.acks>
+    </producer>
+    
+    <!-- 接收记录考勤任务状态请求  -->
+	<consumer>
+		<!-- 唯一ID -->
+		<id>com.ule.oa.service.attnTaskRecordConsumer</id>
+		<!-- 消费的topic -->
+		<topic>KAFKA_OA_ATTN_TASK_RECORD_REQ1</topic>
+		<!-- comsumer的处理类，继承抽象类AbstractConsumerHandler -->
+		<handler.class>com.ule.oa.service.kafka.handler.AttnTaskRecordHandler</handler.class>
+		<!-- 执行服务类，实现IKafkaClientsExecutorService，默认为ThreadPoolExecutorService，为使用线程池管理 -->
+		<!-- <executor.service.class></executor.service.class> -->
+		<!-- 消费者的groupId，为kafka consumer group -->
+		<!-- 同一个groupID为queue模式，不同的groupID为publish-subscribe模式 -->
+		<group.id>ATTN_TASK_RECORD_REQ</group.id>
+		<!-- zookeeper集群的链接 -->
+		<zookeeper.connect>zk02.beta.uledns.com:2181</zookeeper.connect>
+		<!-- 自动Commit，默认true -->
+		<auto.commit.enable>true</auto.commit.enable>
+		<!-- 自动Commit间隔时间，默认60 * 1000毫秒 -->
+		<auto.commit.interval.ms>10</auto.commit.interval.ms>
+		<!-- 消费者接受线程数量,推荐和kafka服务器中的该topic的partitions一样大小，默认1 -->
+		<num.consumer.fetchers>1</num.consumer.fetchers>
+		<!-- 当用户组用户从未接受过某个topic,默认从哪里接受数据，两种选择 -->
+		<!-- largest 从当前最大值开始接受，smallest从0开始接受 -->
+		<auto.offset.reset>largest</auto.offset.reset>
+	</consumer>
+
+	<!-- 发送考勤记录汇总到考勤工时表 -->
+	<producer>
+        <!-- 唯一ID -->
+        <id>com.ule.oa.service.signRecordToAttnWorkProducer</id>
+        <!-- 生产的topic -->
+        <topic>KAFKA_OA_SIGN_RECORD_TO_ATTN_WORK_REQ1</topic>
+        <!-- kafka的链接url（不是zookeeper） -->
+        <kafka.broker.list>kafka02.beta.uledns.com:9092</kafka.broker.list>
+        <!-- 处理类，继承AbstractProducerHandler，可以不写，不写的话使用DefaultProducerHandler -->
+        <handler.class></handler.class>
+        <!--  producer是否等待服务器确认回复（acks）的选择，三种选择 -->
+        <!--  0，意味着producer永远不会等待一个来自broker的ack。这个选项提供了最低的延迟，但是持久化的保证是最弱的，当server挂掉的时候会丢失一些数据。-->
+        <!--  1，意味着在leader replica已经接收到数据后，producer会得到一个ack。这个选项提供了更好的持久性，因为在server确认请求成功处理后，client才会返回。如果刚写到leader上，还没来得及复制leader就挂了，那么消息才可能会丢失。-->
+        <!-- -1，意味着在所有的ISR都接收到数据后，producer才得到一个ack。这个选项提供了最好的持久性，只要还有一个replica存活，那么数据就不会丢失。-->
+        <request.required.acks>1</request.required.acks>
+    </producer>
+    
+    <!-- 接收考勤记录汇总到考勤工时表  -->
+	<consumer>
+		<!-- 唯一ID -->
+		<id>com.ule.oa.service.signRecordToAttnWorkConsumer</id>
+		<!-- 消费的topic -->
+		<topic>KAFKA_OA_SIGN_RECORD_TO_ATTN_WORK_REQ1</topic>
+		<!-- comsumer的处理类，继承抽象类AbstractConsumerHandler -->
+		<handler.class>com.ule.oa.service.kafka.handler.AttnWorkHoursHandler</handler.class>
+		<!-- 执行服务类，实现IKafkaClientsExecutorService，默认为ThreadPoolExecutorService，为使用线程池管理 -->
+		<!-- <executor.service.class></executor.service.class> -->
+		<!-- 消费者的groupId，为kafka consumer group -->
+		<!-- 同一个groupID为queue模式，不同的groupID为publish-subscribe模式 -->
+		<group.id>SIGN_RECORD_TO_ATTN_WORK_REQ</group.id>
+		<!-- zookeeper集群的链接 -->
+		<zookeeper.connect>zk02.beta.uledns.com:2181</zookeeper.connect>
+		<!-- 自动Commit，默认true -->
+		<auto.commit.enable>true</auto.commit.enable>
+		<!-- 自动Commit间隔时间，默认60 * 1000毫秒 -->
+		<auto.commit.interval.ms>10</auto.commit.interval.ms>
+		<!-- 消费者接受线程数量,推荐和kafka服务器中的该topic的partitions一样大小，默认1 -->
+		<num.consumer.fetchers>1</num.consumer.fetchers>
+		<!-- 当用户组用户从未接受过某个topic,默认从哪里接受数据，两种选择 -->
+		<!-- largest 从当前最大值开始接受，smallest从0开始接受 -->
+		<auto.offset.reset>largest</auto.offset.reset>
+	</consumer>
+	
+	
+	<!-- 发送考勤记录汇总到考勤工时表 -->
+	<producer>
+        <!-- 唯一ID -->
+        <id>com.ule.oa.service.attnWorkToAttnStatisProducer</id>
+        <!-- 生产的topic -->
+        <topic>KAFKA_OA_ATTN_WORK_TO_ATTN_STATIS_REQ1</topic>
+        <!-- kafka的链接url（不是zookeeper） -->
+        <kafka.broker.list>kafka02.beta.uledns.com:9092</kafka.broker.list>
+        <!-- 处理类，继承AbstractProducerHandler，可以不写，不写的话使用DefaultProducerHandler -->
+        <handler.class></handler.class>
+        <!--  producer是否等待服务器确认回复（acks）的选择，三种选择 -->
+        <!--  0，意味着producer永远不会等待一个来自broker的ack。这个选项提供了最低的延迟，但是持久化的保证是最弱的，当server挂掉的时候会丢失一些数据。-->
+        <!--  1，意味着在leader replica已经接收到数据后，producer会得到一个ack。这个选项提供了更好的持久性，因为在server确认请求成功处理后，client才会返回。如果刚写到leader上，还没来得及复制leader就挂了，那么消息才可能会丢失。-->
+        <!-- -1，意味着在所有的ISR都接收到数据后，producer才得到一个ack。这个选项提供了最好的持久性，只要还有一个replica存活，那么数据就不会丢失。-->
+        <request.required.acks>1</request.required.acks>
+    </producer>
+    
+    <!-- 接收考勤记录汇总到考勤工时表  -->
+	<consumer>
+		<!-- 唯一ID -->
+		<id>com.ule.oa.service.attnWorkToAttnStatisConsumer</id>
+		<!-- 消费的topic -->
+		<topic>KAFKA_OA_ATTN_WORK_TO_ATTN_STATIS_REQ1</topic>
+		<!-- comsumer的处理类，继承抽象类AbstractConsumerHandler -->
+		<handler.class>com.ule.oa.service.kafka.handler.AttnStatisticsHandler</handler.class>
+		<!-- 执行服务类，实现IKafkaClientsExecutorService，默认为ThreadPoolExecutorService，为使用线程池管理 -->
+		<!-- <executor.service.class></executor.service.class> -->
+		<!-- 消费者的groupId，为kafka consumer group -->
+		<!-- 同一个groupID为queue模式，不同的groupID为publish-subscribe模式 -->
+		<group.id>ATTN_WORK_TO_ATTN_STATIS_REQ</group.id>
+		<!-- zookeeper集群的链接 -->
+		<zookeeper.connect>zk02.beta.uledns.com:2181</zookeeper.connect>
+		<!-- 自动Commit，默认true -->
+		<auto.commit.enable>true</auto.commit.enable>
+		<!-- 自动Commit间隔时间，默认60 * 1000毫秒 -->
+		<auto.commit.interval.ms>1000</auto.commit.interval.ms>
+		<!-- 消费者接受线程数量,推荐和kafka服务器中的该topic的partitions一样大小，默认1 -->
+		<num.consumer.fetchers>1</num.consumer.fetchers>
+		<!-- 当用户组用户从未接受过某个topic,默认从哪里接受数据，两种选择 -->
+		<!-- largest 从当前最大值开始接受，smallest从0开始接受 -->
+		<auto.offset.reset>largest</auto.offset.reset>
+	</consumer>
+</kafka-clients>
+

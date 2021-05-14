@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ule.oa.base.mapper.ReProcdefDetailMapper">
+
+	<resultMap id="BaseResultMap" type="com.ule.oa.base.po.ReProcdefDetail">
+		<result column="ID" property="id" jdbcType="BIGINT"/>
+		<result column="RE_PROCDEF_CODE" property="reProcdefCode" jdbcType="VARCHAR"/>
+		<result column="NODE_MODULE" property="nodeModule" jdbcType="VARCHAR"/>
+		<result column="NODE_MODULE_NAME" property="nodeModuleName" jdbcType="VARCHAR"/>
+		<result column="NODE_MODULE_TYPE" property="nodeModuleType" jdbcType="BIGINT"/>
+		<result column="NODE_CODE" property="nodeCode" jdbcType="VARCHAR"/>
+		<result column="NODE_NAME" property="nodeName" jdbcType="VARCHAR"/>
+		<result column="NODE_TYPE" property="nodeType" jdbcType="BIGINT"/>
+		<result column="REDIRECT_URL" property="redirectUrl" jdbcType="VARCHAR"/>
+		<result column="NEXT_NODE_CODE" property="nextNodeCode" jdbcType="VARCHAR"/>
+		<result column="VERSION" property="version" jdbcType="BIGINT"/>
+		<result column="DEL_FLAG" property="delFlag" jdbcType="VARCHAR"/>
+		<result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP"/>
+		<result column="UPDATE_TIME" property="updateTime" jdbcType="TIMESTAMP"/>
+		<result column="CREATE_USER" property="createUser" jdbcType="VARCHAR"/>
+		<result column="UPDATE_USER" property="updateUser" jdbcType="VARCHAR"/>
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		ID,RE_PROCDEF_CODE,NODE_MODULE,NODE_MODULE_TYPE,NODE_CODE,
+		NODE_NAME,NODE_TYPE,REDIRECT_URL,NEXT_NODE_CODE,VERSION,
+		DEL_FLAG,CREATE_TIME,UPDATE_TIME,CREATE_USER,UPDATE_USER,NODE_MODULE_TYPE
+	</sql>
+
+	<select id="getById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from bpm_re_procdef_detail
+		where id = #{id,jdbcType=BIGINT}
+	</select>
+
+	<!-- 查询 -->
+	<select id="getList" parameterType="com.ule.oa.base.po.ReProcdefDetail" resultMap="BaseResultMap">
+		select * from bpm_re_procdef_detail r
+		where r.del_flag != ${@com.ule.oa.common.po.CommonPo@STATUS_DELETE}
+		<if test="reProcdefCode != null"> and RE_PROCDEF_CODE=#{reProcdefCode,jdbcType=VARCHAR}</if>
+		<if test="nodeCode != null"> and NODE_CODE=#{nodeCode,jdbcType=VARCHAR}</if>
+		<if test="nodeCodes != null"> 
+		      and NODE_CODE in 
+		      <foreach collection="nodeCodes" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+          	  </foreach>
+		  </if>
+		order by id desc
+	</select>
+
+	<!-- 分页查询 -->
+	<select id="getPageList" parameterType="com.ule.oa.base.po.ReProcdefDetail" resultMap="BaseResultMap">
+		select * from bpm_re_procdef_detail r
+		where r.del_flag != ${@com.ule.oa.common.po.CommonPo@STATUS_DELETE}
+		order by p.id desc limit #{offset},#{limit}
+	</select>
+
+	<!-- 查询总记录数 -->
+	<select id="getCount" parameterType="com.ule.oa.base.po.ReProcdefDetail" resultType="java.lang.Integer">
+		select count(*) from bpm_re_procdef_detail r
+		where r.del_flag != ${@com.ule.oa.common.po.CommonPo@STATUS_DELETE}
+	</select>
+
+	<!-- 保存信息 -->
+	<insert id="save" parameterType="com.ule.oa.base.po.ReProcdefDetail" useGeneratedKeys="true" keyProperty="id">
+		insert into bpm_re_procdef_detail
+		(  
+			RE_PROCDEF_CODE,
+			NODE_MODULE,
+			NODE_MODULE_TYPE,
+			NODE_MODULE_TYPE,
+			NODE_CODE,
+			NODE_NAME,
+			NODE_TYPE,
+			REDIRECT_URL,
+			NEXT_NODE_CODE,
+			VERSION,
+			DEL_FLAG,
+			CREATE_TIME,
+			UPDATE_TIME,
+			CREATE_USER,
+			UPDATE_USER
+		)
+		values  ( 
+			#{reProcdefCode,jdbcType=VARCHAR},
+			#{nodeModule,jdbcType=VARCHAR},
+			#{nodeModuleName,jdbcType=VARCHAR},
+			#{nodeModuleType,jdbcType=BIGINT},
+			#{nodeCode,jdbcType=VARCHAR},
+			#{nodeName,jdbcType=VARCHAR},
+			#{nodeType,jdbcType=BIGINT},
+			#{redirectUrl,jdbcType=VARCHAR},
+			#{nextNodeCode,jdbcType=VARCHAR},
+			1,
+			#{delFlag,jdbcType=BIGINT},
+			#{createTime,jdbcType=TIMESTAMP},
+			#{updateTime,jdbcType=TIMESTAMP},
+			#{createUser,jdbcType=VARCHAR},
+			#{updateUser,jdbcType=VARCHAR}
+		)
+	</insert>
+	<!-- 批量信息 -->
+	<insert id="batchSave" parameterType="java.util.List" >
+   		insert into bpm_re_procdef_detail 
+   		(       
+			RE_PROCDEF_CODE,
+			NODE_MODULE,
+			NODE_MODULE_TYPE,
+			NODE_MODULE_TYPE,
+			NODE_CODE,
+			NODE_NAME,
+			NODE_TYPE,
+			REDIRECT_URL,
+			NEXT_NODE_CODE,
+			VERSION,
+			DEL_FLAG,
+			CREATE_TIME,
+			UPDATE_TIME,
+			CREATE_USER,
+			UPDATE_USER
+	    )
+        select T.* FROM (
+      	<foreach collection="list" item="item" index="index" separator="UNION">
+			SELECT
+				#{item.reProcdefCode,jdbcType=VARCHAR} as RE_PROCDEF_CODE,
+				#{item.nodeModule,jdbcType=VARCHAR} as NODE_MODULE,
+				#{item.nodeModuleName,jdbcType=VARCHAR} as NODE_MODULE_NAME,
+				#{item.nodeModuleType,jdbcType=BIGINT} as NODE_MODULE_TYPE,
+				#{item.nodeCode,jdbcType=VARCHAR} as NODE_CODE,
+				#{item.nodeName,jdbcType=VARCHAR} as NODE_NAME,
+				#{item.nodeType,jdbcType=BIGINT} as NODE_TYPE,
+				#{item.redirectUrl,jdbcType=VARCHAR} as REDIRECT_URL,
+				#{item.nextNodeCode,jdbcType=VARCHAR} as NEXT_NODE_CODE,
+				1 as VERSION,
+				#{item.delFlag,jdbcType=BIGINT} as DEL_FLAG,
+				#{item.createTime,jdbcType=TIMESTAMP} as CREATE_TIME,
+				#{item.updateTime,jdbcType=TIMESTAMP} as UPDATE_TIME,
+				#{item.createUser,jdbcType=VARCHAR} as CREATE_USER,
+				#{item.updateUser,jdbcType=VARCHAR} as UPDATE_USER
+			FROM DUAL
+		</foreach>
+      ) T
+    </insert>
+
+	<!-- 根据主键更新信息 -->
+	<update id="updateById" parameterType="com.ule.oa.base.po.ReProcdefDetail">
+		update bpm_re_procdef_detail
+		<set>
+			<if test="id != null">ID=#{id,jdbcType=BIGINT},</if>
+			<if test="reProcdefCode != null">RE_PROCDEF_CODE=#{reProcdefCode,jdbcType=VARCHAR},</if>
+			<if test="nodeModule != null">NODE_MODULE=#{nodeModule,jdbcType=VARCHAR},</if>
+			<if test="nodeModuleName != null">NODE_MODULE_NAME=#{nodeModuleName,jdbcType=VARCHAR},</if>
+			<if test="nodeModuleType != null">NODE_MODULE_TYPE=#{nodeModuleType,jdbcType=BIGINT},</if>
+			<if test="nodeCode != null">NODE_CODE=#{nodeCode,jdbcType=VARCHAR},</if>
+			<if test="nodeName != null">NODE_NAME=#{nodeName,jdbcType=VARCHAR},</if>
+			<if test="nodeType != null">NODE_TYPE=#{nodeType,jdbcType=BIGINT},</if>
+			<if test="redirectUrl != null">REDIRECT_URL=#{redirectUrl,jdbcType=VARCHAR},</if>
+			<if test="nextNodeCode != null">NEXT_NODE_CODE=#{nextNodeCode,jdbcType=VARCHAR},</if>
+			<if test="version != null">VERSION=#{version,jdbcType=BIGINT},</if>
+			<if test="delFlag != null">DEL_FLAG=#{delFlag,jdbcType=BIGINT},</if>
+			<if test="createTime != null">CREATE_TIME=#{createTime,jdbcType=TIMESTAMP},</if>
+			<if test="updateTime != null">UPDATE_TIME=#{updateTime,jdbcType=TIMESTAMP},</if>
+			<if test="createUser != null">CREATE_USER=#{createUser,jdbcType=VARCHAR},</if>
+			<if test="updateUser != null">UPDATE_USER=#{updateUser,jdbcType=VARCHAR},</if>
+	    </set>
+		where id = #{id,jdbcType=BIGINT}
+	</update>
+</mapper>

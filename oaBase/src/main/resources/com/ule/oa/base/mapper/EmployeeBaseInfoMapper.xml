@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ule.oa.base.mapper.EmployeeBaseInfoMapper" >
+
+<select id="getYGKQMXReport" resultType="com.ule.oa.base.po.EmployeeBaseInfoDTO">
+    
+   SELECT 
+	  a.id,
+	  a.cn_name cnName,
+	  a.code,
+	  c.name departName,
+	  e.position_name positionName,
+	  a.work_type workType
+	FROM
+	  base_employee a 
+	  LEFT JOIN base_emp_depart b ON a.id=b.employee_id 
+	  LEFT JOIN base_depart c ON b.depart_id = c.id
+	  LEFT JOIN base_emp_position d ON d.employee_id = a.id
+	  LEFT JOIN base_position e ON e.id = d.position_id
+	WHERE a.del_flag = 0 AND b.del_flag=0 AND d.del_flag = 0
+	  AND 
+	  CASE
+	    WHEN a.Quit_time IS NOT NULL 
+	    THEN a.Quit_time &gt;= #{startTime,jdbcType=DATE}
+	    WHEN a.Quit_time IS NULL THEN 1=1 END 
+	    AND a.first_Entry_time &lt;= #{endTime,jdbcType=DATE}
+	   <if test="departId != null" >
+       	 AND b.depart_id = #{departId,jdbcType=BIGINT}
+  	   </if>
+       <if test="empTypeIdList != null and empTypeIdList.size > 0" >
+        	AND a.emp_type_id in
+           <foreach collection="empTypeIdList" index="index" item="item" open="(" separator="," close=")">
+	           #{item}
+	       </foreach>
+       </if>
+	ORDER BY a.cn_name,a.code
+    
+  </select>
+
+  <select id="getBaseInfoList" resultType="com.ule.oa.base.po.EmployeeBaseInfoDTO" parameterType="com.ule.oa.base.po.EmployeeBaseInfoParam">
+    
+   SELECT 
+	  a.id,
+	  a.cn_name cnName,
+	  a.code,
+	  c.name departName,
+	  e.position_name positionName,
+	  a.work_type workType
+	FROM
+	  base_employee a 
+	  LEFT JOIN base_emp_depart b ON a.id=b.employee_id 
+	  LEFT JOIN base_depart c ON b.depart_id = c.id
+	  LEFT JOIN base_emp_position d ON d.employee_id = a.id
+	  LEFT JOIN base_position e ON e.id = d.position_id
+	WHERE a.del_flag = 0 AND b.del_flag=0 AND d.del_flag = 0
+	   <if test="departId != null" >
+       	 AND b.depart_id = #{departId,jdbcType=BIGINT}
+  	   </if>
+       <if test="empTypeIdList != null and empTypeIdList.size > 0" >
+        	AND a.emp_type_id in
+           <foreach collection="empTypeIdList" index="index" item="item" open="(" separator="," close=")">
+	           #{item}
+	       </foreach>
+       </if>
+	   <if test="departId != null" >
+	        and b.depart_id = #{departId,jdbcType=BIGINT}
+	   </if>
+	    <if test="code != null and code != ''">
+	  		and a.code like concat('%',#{code,jdbcType=VARCHAR},'%')
+	  	</if>
+		<if test="cnName != null and cnName != ''">
+			and a.cn_name like concat('%',#{cnName,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="workType != null and workType != ''">
+			and a.work_type = #{workType,jdbcType=BIGINT}
+		</if>
+		<if test="empTypeId != null">
+			and a.emp_type_id = #{empTypeId,jdbcType=BIGINT}
+		</if>
+		<if test="whetherScheduling != null">
+			and a.whether_scheduling = #{whetherScheduling,jdbcType=BIGINT}
+		</if>
+	    <if test="currentUserDepart != null and currentUserDepart.size > 0">
+			and a.id in
+			<foreach collection="currentUserDepart" item="id" open="(" separator="," close=")">
+				#{id,jdbcType=BIGINT}
+			</foreach>
+		</if>
+		<if test="subEmployeeIdList != null and subEmployeeIdList.size > 0">
+			and a.id in
+			<foreach collection="subEmployeeIdList" item="id" open="(" separator="," close=")">
+				#{id,jdbcType=BIGINT}
+			</foreach>
+		</if>
+  </select>
+
+  
+</mapper>

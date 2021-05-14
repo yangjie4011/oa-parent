@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ule.oa.base.mapper.EmpContractMapper" >
+
+  <resultMap id="BaseResultMap" type="com.ule.oa.base.po.EmpContract" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="company_id" property="companyId" jdbcType="BIGINT" />
+    <result column="employee_id" property="employeeId" jdbcType="BIGINT" />
+    <result column="contract_code" property="contractCode" jdbcType="VARCHAR" />
+    <result column="contract_description" property="contractDescription" jdbcType="VARCHAR" />
+    <result column="contract_signed_date" property="contractSignedDate" jdbcType="TIMESTAMP" />
+    <result column="contract_period" property="contractPeriod" jdbcType="DOUBLE" />
+    <result column="probation_expire" property="probationExpire" jdbcType="DOUBLE" />
+    <result column="contract_start_time" property="contractStartTime" jdbcType="TIMESTAMP" />
+    <result column="contract_end_time" property="contractEndTime" jdbcType="TIMESTAMP" />
+    <result column="is_active" property="isActive" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="del_flag" property="delFlag" jdbcType="INTEGER" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="version" property="version" jdbcType="BIGINT"/>
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    id, company_id, employee_id, contract_code, contract_description, contract_signed_date, 
+    contract_period, probation_expire, contract_start_time, contract_end_time, is_active, 
+    create_time, create_user, update_time, update_user,del_flag, remark,version
+  </sql>
+  
+  <select id="getListByCondition" resultMap="BaseResultMap" parameterType="com.ule.oa.base.po.EmpContract">
+  	select <include refid="Base_Column_List"/> from base_emp_contract
+  	where del_flag = 0
+  	<if test="null != id">
+  		and id = #{id,jdbcType=BIGINT}
+  	</if>
+  	<if test="null != companyId">
+  		and company_id = #{companyId,jdbcType=BIGINT}
+  	</if>
+  	<if test="employeeId != null">
+  		and employee_id = #{employeeId,jdbcType=BIGINT}
+  	</if>
+  	<if test="isActive != null">
+  		and is_active = #{isActive,jdbcType=BIGINT}
+  	</if>
+  </select>
+  
+ <select id="getListByEmployeeId" resultMap="BaseResultMap">
+  	select <include refid="Base_Column_List"/> from base_emp_contract
+  	where del_flag = 0 and employee_id = #{employeeId,jdbcType=BIGINT}
+
+  </select>
+  
+  <insert id="save" parameterType="com.ule.oa.base.po.EmpContract">  
+      insert into base_emp_contract(
+      	company_id, employee_id, contract_code, contract_description, contract_signed_date, 
+	    contract_period, probation_expire, contract_start_time, contract_end_time, is_active, 
+	    create_time, create_user, update_time, update_user,del_flag, remark
+      ) values
+      (
+        #{companyId,jdbcType=BIGINT},#{employeeId,jdbcType=BIGINT},#{contractCode,jdbcType=VARCHAR},
+        #{contractDescription,jdbcType=VARCHAR},#{contractSignedDate,jdbcType=VARCHAR},#{contractPeriod,jdbcType=VARCHAR},
+        #{probationExpire,jdbcType=VARCHAR},#{contractStartTime,jdbcType=VARCHAR},#{contractEndTime,jdbcType=VARCHAR},
+        #{isActive,jdbcType=BIGINT},#{createTime,jdbcType=TIMESTAMP},#{createUser,jdbcType=VARCHAR},#{updateTime,jdbcType=TIMESTAMP},
+        #{updateUser,jdbcType=VARCHAR},#{delFlag,jdbcType=BIGINT},#{remark,jdbcType=VARCHAR}
+      )  
+  </insert>
+  
+  <update id="updateById" parameterType="com.ule.oa.base.po.EmpContract">
+  	update base_emp_contract
+  	<set>
+  		<if test="null != companyId">
+  			company_id = #{companyId,jdbcType=BIGINT},
+	  	</if>
+	  	<if test="employeeId != null">
+	  		employee_id = #{employeeId,jdbcType=BIGINT},
+	  	</if>
+	  	<if test="contractCode != null">
+	  		contract_code = #{contractCode,jdbcType=VARCHAR},
+	  	</if>
+	  	<if test="contractDescription != null">
+	  		contract_description = #{contractDescription,jdbcType=VARCHAR},
+	  	</if>
+	  	<if test="contractSignedDate != null">
+	  		contract_signed_date = #{contractSignedDate,jdbcType=VARCHAR},
+	  	</if>
+	  	<if test="contractPeriod != null">
+	  		contract_period = #{contractPeriod,jdbcType=VARCHAR},
+	  	</if>
+	  	<if test="probationExpire != null">
+	  		probation_expire = #{probationExpire,jdbcType=VARCHAR},
+	  	</if>
+	  	<if test="contractStartTime != null">
+	  		contract_start_time = #{contractStartTime,jdbcType=VARCHAR},
+	  	</if>
+	  	<if test="contractEndTime != null">
+	  		contract_end_time = #{contractEndTime,jdbcType=VARCHAR},
+	  	</if>
+	  	<if test="remark != null">
+	  		remark = #{remark,jdbcType=VARCHAR},
+	  	</if>
+	  	<if test="isActive != null">
+	  		is_active = #{isActive,jdbcType=BIGINT},
+	  	</if>
+	  	<if test="delFlag != null">
+	  		del_flag = #{delFlag,jdbcType=BIGINT},
+	  	</if>
+	  	<if test="updateUser != null">
+	  		update_user = #{updateUser,jdbcType=VARCHAR},
+	  	</if>
+	  	<if test="updateTime != null">
+	  		update_time = #{updateTime,jdbcType=TIMESTAMP},
+	  	</if>
+  		version = version +1
+  	</set>
+  	where id = #{id,jdbcType=BIGINT} and version = #{version,jdbcType=BIGINT}
+  </update>
+
+  <insert id="saveBatch" parameterType="com.ule.oa.base.po.EmpContract" >
+      insert into base_emp_contract (company_id,employee_id, contract_code, 
+      contract_signed_date, contract_period, probation_expire, 
+      contract_start_time, contract_end_time, is_active,create_time, 
+      create_user, update_time, update_user, 
+      del_flag, remark)
+      values
+      <foreach collection ="list" item="item" index= "index" separator =",">
+	      (#{item.companyId,jdbcType=BIGINT},#{item.employeeId,jdbcType=BIGINT}, #{item.contractCode,jdbcType=VARCHAR}, 
+	       #{item.contractSignedDate,jdbcType=TIMESTAMP}, #{item.contractPeriod,jdbcType=DOUBLE}, #{item.probationExpire,jdbcType=DOUBLE}, 
+	       #{item.contractStartTime,jdbcType=TIMESTAMP}, #{item.contractEndTime,jdbcType=TIMESTAMP}, #{item.isActive,jdbcType=INTEGER},#{item.createTime,jdbcType=TIMESTAMP}, 
+	       #{item.createUser,jdbcType=VARCHAR}, #{item.updateTime,jdbcType=TIMESTAMP}, #{item.updateUser,jdbcType=VARCHAR}, 
+	       #{item.delFlag,jdbcType=INTEGER}, #{item.remark,jdbcType=VARCHAR})
+      </foreach >
+  </insert>
+  
+  <update id="deleteByEmployeeId">
+	    update base_emp_contract set del_flag = 1,update_time=#{updateTime,jdbcType=TIMESTAMP}
+	    ,update_user = #{updateUser,jdbcType=VARCHAR}
+	    where del_flag=0 and employee_id = #{employeeId,jdbcType=BIGINT} 
+  </update>
+  
+</mapper>

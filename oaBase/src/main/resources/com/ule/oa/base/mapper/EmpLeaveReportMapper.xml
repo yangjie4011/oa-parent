@@ -1,0 +1,314 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ule.oa.base.mapper.EmpLeaveReportMapper" >
+
+  <resultMap id="BaseResultMap" type="com.ule.oa.base.po.EmpLeaveReport" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="depart_id" property="departId" jdbcType="BIGINT" />
+    <result column="employee_id" property="employeeId" jdbcType="BIGINT" />
+    <result column="month" property="month" jdbcType="VARCHAR" />
+    <result column="employee_name" property="employeeName" jdbcType="VARCHAR" />
+    <result column="type" property="type" jdbcType="INTEGER" />
+    <result column="date1" property="date1" jdbcType="DOUBLE" />
+    <result column="date2" property="date2" jdbcType="DOUBLE" />
+    <result column="date3" property="date3" jdbcType="DOUBLE" />
+    <result column="date4" property="date4" jdbcType="DOUBLE" />
+    <result column="date5" property="date5" jdbcType="DOUBLE" />
+    <result column="date6" property="date6" jdbcType="DOUBLE" />
+    <result column="date7" property="date7" jdbcType="DOUBLE" />
+    <result column="date8" property="date8" jdbcType="DOUBLE" />
+    <result column="date9" property="date9" jdbcType="DOUBLE" />
+    <result column="date10" property="date10" jdbcType="DOUBLE" />
+    <result column="date11" property="date11" jdbcType="DOUBLE" />
+    <result column="date12" property="date12" jdbcType="DOUBLE" />
+    <result column="date13" property="date13" jdbcType="DOUBLE" />
+    <result column="date14" property="date14" jdbcType="DOUBLE" />
+    <result column="date15" property="date15" jdbcType="DOUBLE" />
+    <result column="date16" property="date16" jdbcType="DOUBLE" />
+    <result column="date17" property="date17" jdbcType="DOUBLE" />
+    <result column="date18" property="date18" jdbcType="DOUBLE" />
+    <result column="date19" property="date19" jdbcType="DOUBLE" />
+    <result column="date20" property="date20" jdbcType="DOUBLE" />
+    <result column="date21" property="date21" jdbcType="DOUBLE" />
+    <result column="date22" property="date22" jdbcType="DOUBLE" />
+    <result column="date23" property="date23" jdbcType="DOUBLE" />
+    <result column="date24" property="date24" jdbcType="DOUBLE" />
+    <result column="date25" property="date25" jdbcType="DOUBLE" />
+    <result column="date26" property="date26" jdbcType="DOUBLE" />
+    <result column="date27" property="date27" jdbcType="DOUBLE" />
+    <result column="date28" property="date28" jdbcType="DOUBLE" />
+    <result column="date29" property="date29" jdbcType="DOUBLE" />
+    <result column="date30" property="date30" jdbcType="DOUBLE" />
+    <result column="date31" property="date31" jdbcType="DOUBLE" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="del_flag" property="delFlag" jdbcType="INTEGER" />
+  </resultMap>
+   
+  <sql id="Base_Column_List" >
+    id, depart_id, employee_id, month, type, employee_name, date1, date2, date3, date4, date5, date6, date7, date8, date9, date10, date11,
+    date12, date13, date14, date15, date16, date17, date18, date19, date20, date21, date22, date23, date24, date25, 
+    date26, date27, date28, date29, date30, date31, create_time, create_user, update_time, update_user,del_flag
+  </sql>
+  
+   <sql id="Base_Alias_Column_List" >
+    belr.id, belr.depart_id, belr.employee_id, belr.month, belr.type, belr.employee_name, belr.date1, belr.date2, belr.date3, belr.date4, belr.date5, belr.date6, belr.date7, belr.date8, belr.date9, belr.date10, belr.date11, 
+    belr.date12, belr.date13, belr.date14, belr.date15, belr.date16, belr.date17, belr.date18, belr.date19, belr.date20, belr.date21, belr.date22, belr.date23, belr.date24, belr.date25, belr.date26, belr.date27, 
+    belr.date28, belr.date29, belr.date30, belr.date31, belr.create_time, belr.create_user, belr.update_time, belr.update_user, belr.del_flag
+  </sql>
+  
+  <select id="getListByCondition" resultMap="BaseResultMap" parameterType="com.ule.oa.base.po.EmpLeaveReport">
+    select <include refid="Base_Alias_Column_List" />,bd.name as "departName" from base_emp_leave_report belr, base_depart bd where belr.del_flag=0 and bd.del_flag = 0 and bd.id = belr.depart_id 
+    <if test="null != month and '' != month">and belr.month=#{month}</if>
+    <if test="null != employeeId">and belr.employee_id=#{employeeId}</if>
+    <if test="null != departId">and belr.depart_id=#{departId}</if>
+    <if test="null != type">and belr.type=#{type}</if>
+    <if test="null != months and months.size > 0">and belr.month in <foreach collection="months" separator="," open="(" close=")" item="month">#{month}</foreach></if>
+    <if test="null != offset and null != limit">
+   	 limit #{offset} , #{limit}
+    </if>
+  </select>
+  
+  <select id="getList" resultMap="BaseResultMap" parameterType="com.ule.oa.base.po.EmpLeaveReport">
+    select <include refid="Base_Alias_Column_List" /> from base_emp_leave_report belr where belr.del_flag=0
+    <if test="null != month and '' != month">and belr.month=#{month}</if>
+    <if test="null != employeeId">and belr.employee_id=#{employeeId}</if>
+    <if test="null != type">and belr.type=#{type}</if>
+  </select>
+  
+  
+  <select id="deleteByCondition" parameterType="com.ule.oa.base.po.EmpLeaveReport">
+     delete from base_emp_leave_report where del_flag=0 and employee_id=#{employeeId}
+     <if test="month != null and month != ''">and month=#{month}  </if>
+     <if test="type != null">and type=#{type} </if>
+  </select>
+  
+  <select id="deleteAll" parameterType="com.ule.oa.base.po.EmpLeaveReport">
+     delete from base_emp_leave_report
+  </select>
+  
+  <insert id="save" parameterType="com.ule.oa.base.po.EmpLeaveReport" >
+    insert into base_emp_leave_report (
+        depart_id,
+        employee_id,
+        month,
+        type,
+        employee_name,
+        date1,
+        date2,
+        date3,
+        date4,
+        date5,
+        date6,
+        date7,
+        date8,
+        date9,
+        date10,
+        date11,
+        date12,
+        date13,
+        date14,
+        date15,
+        date16,
+        date17,
+        date18,
+        date19,
+        date20,
+        date21,
+        date22,
+        date23,
+        date24,
+        date25,
+        date26,
+        date27,
+        date28,
+        date29,
+        date30,
+        date31,
+        create_time,
+        create_user,
+        del_flag
+      )
+    values (
+      #{departId,jdbcType=BIGINT},
+      #{employeeId,jdbcType=BIGINT},
+      #{month,jdbcType=VARCHAR},
+      #{type,jdbcType=INTEGER},
+      #{employeeName,jdbcType=VARCHAR}, 
+      #{date1,jdbcType=DOUBLE}, 
+      #{date2,jdbcType=DOUBLE}, 
+      #{date3,jdbcType=DOUBLE}, 
+      #{date4,jdbcType=DOUBLE}, 
+      #{date5,jdbcType=DOUBLE}, 
+      #{date6,jdbcType=DOUBLE}, 
+      #{date7,jdbcType=DOUBLE}, 
+      #{date8,jdbcType=DOUBLE}, 
+      #{date9,jdbcType=DOUBLE}, 
+      #{date10,jdbcType=DOUBLE}, 
+      #{date11,jdbcType=DOUBLE}, 
+      #{date12,jdbcType=DOUBLE}, 
+      #{date13,jdbcType=DOUBLE}, 
+      #{date14,jdbcType=DOUBLE}, 
+      #{date15,jdbcType=DOUBLE}, 
+      #{date16,jdbcType=DOUBLE}, 
+      #{date17,jdbcType=DOUBLE}, 
+      #{date18,jdbcType=DOUBLE}, 
+      #{date19,jdbcType=DOUBLE}, 
+      #{date20,jdbcType=DOUBLE}, 
+      #{date21,jdbcType=DOUBLE}, 
+      #{date22,jdbcType=DOUBLE}, 
+      #{date23,jdbcType=DOUBLE}, 
+      #{date24,jdbcType=DOUBLE}, 
+      #{date25,jdbcType=DOUBLE}, 
+      #{date26,jdbcType=DOUBLE}, 
+      #{date27,jdbcType=DOUBLE}, 
+      #{date28,jdbcType=DOUBLE}, 
+      #{date29,jdbcType=DOUBLE}, 
+      #{date30,jdbcType=DOUBLE}, 
+      #{date31,jdbcType=DOUBLE}, 
+      #{createTime,jdbcType=TIMESTAMP}, 
+      #{createUser,jdbcType=VARCHAR},
+      #{delFlag,jdbcType=INTEGER}
+      )
+  </insert>
+  
+  <insert id="batchSave" parameterType="java.util.List">
+	insert into base_emp_leave_report (
+	    depart_id,
+	    employee_id,
+        month,
+        type,
+        employee_name,
+	    date1,
+        date2,
+        date3,
+        date4,
+        date5,
+        date6,
+        date7,
+        date8,
+        date9,
+        date10,
+        date11,
+        date12,
+        date13,
+        date14,
+        date15,
+        date16,
+        date17,
+        date18,
+        date19,
+        date20,
+        date21,
+        date22,
+        date23,
+        date24,
+        date25,
+        date26,
+        date27,
+        date28,
+        date29,
+        date30,
+        date31,
+        create_time,
+        create_user,
+        del_flag
+	)
+	select T.* FROM (
+     	<foreach collection="list" item="item" index="index" separator="UNION">
+		SELECT
+			#{item.departId} as depart_id,
+			#{item.employeeId} as employee_id,
+			#{item.month} as month,
+			#{item.type} as type,
+			#{item.employeeName} as employee_name,
+			#{item.date1} as date1,
+			#{item.date2} as date2,
+			#{item.date3} as date3,
+			#{item.date4} as date4,
+			#{item.date5} as date5,
+			#{item.date6} as date6,
+			#{item.date7} as date7,
+			#{item.date8} as date8,
+			#{item.date9} as date9,
+			#{item.date10} as date10,
+			#{item.date11} as date11,
+			#{item.date12} as date12,
+			#{item.date13} as date13,
+			#{item.date14} as date14,
+			#{item.date15} as date15,
+			#{item.date16} as date16,
+			#{item.date17} as date17,
+			#{item.date18} as date18,
+			#{item.date19} as date19,
+			#{item.date20} as date20,
+			#{item.date21} as date21,
+			#{item.date22} as date22,
+			#{item.date23} as date23,
+			#{item.date24} as date24,
+			#{item.date25} as date25,
+			#{item.date26} as date26,
+			#{item.date27} as date27,
+			#{item.date28} as date28,
+			#{item.date29} as date29,
+			#{item.date30} as date30,
+			#{item.date31} as date31,
+			#{item.createTime} as create_time,
+			#{item.createUser} as create_user,
+			#{item.delFlag} as del_flag
+		FROM DUAL
+	</foreach>
+       ) T
+  </insert>
+  
+	<update id="update" parameterType="com.ule.oa.base.po.EmpLeaveReport">
+		update base_emp_leave_report
+  		<set>
+  			<if test="departId !=null">depart_id=#{departId},</if>
+			<if test="employeeId !=null">employee_id=#{employeeId},</if>
+			<if test="month !=null">month=#{month},</if>
+			<if test="type !=null">type=#{type},</if>
+			<if test="employeeName !=null">employee_name=#{employeeName},</if>
+			<if test="date1 !=null">date1=#{date1},</if>
+			<if test="date2 !=null">date2=#{date2},</if>
+			<if test="date3 !=null">date3=#{date3},</if>
+			<if test="date4 !=null">date4=#{date4},</if>
+			<if test="date5 !=null">date5=#{date5},</if>
+			<if test="date6 !=null">date6=#{date6},</if>
+			<if test="date7 !=null">date7=#{date7},</if>
+			<if test="date8 !=null">date8=#{date8},</if>
+			<if test="date9 !=null">date9=#{date9},</if>
+			<if test="date10 !=null">date10=#{date10},</if>
+			<if test="date11 !=null">date11=#{date11},</if>
+			<if test="date12 !=null">date12=#{date12},</if>
+			<if test="date13 !=null">date13=#{date13},</if>
+			<if test="date14 !=null">date14=#{date14},</if>
+			<if test="date15 !=null">date15=#{date15},</if>
+			<if test="date16 !=null">date16=#{date16},</if>
+			<if test="date17 !=null">date17=#{date17},</if>
+			<if test="date18 !=null">date18=#{date18},</if>
+			<if test="date19 !=null">date19=#{date19},</if>
+			<if test="date20 !=null">date20=#{date20},</if>
+			<if test="date21 !=null">date21=#{date21},</if>
+			<if test="date22 !=null">date22=#{date22},</if>
+			<if test="date23 !=null">date23=#{date23},</if>
+			<if test="date24 !=null">date24=#{date24},</if>
+			<if test="date25 !=null">date25=#{date25},</if>
+			<if test="date26 !=null">date26=#{date26},</if>
+			<if test="date27 !=null">date27=#{date27},</if>
+			<if test="date28 !=null">date28=#{date28},</if>
+			<if test="date29 !=null">date29=#{date29},</if>
+			<if test="date30 !=null">date30=#{date30},</if>
+			<if test="date31 !=null">date31=#{date31},</if>
+			<if test="createTime !=null">create_time=#{createTime},</if>
+			<if test="createUser !=null">create_user=#{createUser},</if>
+			<if test="updateTime !=null">update_time=#{updateTime},</if>
+			<if test="updateUser !=null">update_user=#{updateUser},</if>
+			<if test="delFlag !=null">del_flag=#{delFlag},</if>
+  		</set>
+		where id = #{id}
+	</update>
+  
+</mapper>

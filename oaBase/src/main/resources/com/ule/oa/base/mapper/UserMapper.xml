@@ -1,0 +1,322 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ule.oa.base.mapper.UserMapper" >
+
+  <resultMap id="BaseResultMap" type="com.ule.oa.base.po.User" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="user_name" property="userName" jdbcType="VARCHAR" />
+    <result column="company_id" property="companyId" jdbcType="BIGINT" />
+    <result column="employee_id" property="employeeId" jdbcType="BIGINT" />
+    <result column="is_locked" property="isLocked" jdbcType="INTEGER" />
+    <result column="last_login_time" property="lastLoginTime" jdbcType="TIMESTAMP" />
+    <result column="last_login_ip" property="lastLoginIp" jdbcType="VARCHAR" />
+    <result column="login_error_times" property="loginErrorTimes" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="del_flag" property="delFlag" jdbcType="INTEGER" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    id,user_name,company_id, employee_id, is_locked, last_login_time, 
+    last_login_ip, login_error_times, create_time, create_user, update_time, update_user, 
+    del_flag, remark
+  </sql>
+  
+  <select id="getLoginUser" resultMap="BaseResultMap" parameterType="com.ule.oa.base.po.User" >
+    select a.* from base_user a left join base_employee b on a.employee_id=b.id
+    where a.del_flag = 0 and a.user_name = #{userName,jdbcType=VARCHAR} and b.job_status in (0,2)
+          and a.is_locked = #{isLocked,jdbcType=INTEGER} limit 0,1
+  </select>
+  
+  <select id="getListByCondition" resultMap="BaseResultMap" parameterType="com.ule.oa.base.po.User" >
+    select 
+      a.*
+    from base_user a left join base_employee b on a.employee_id=b.id
+    where a.del_flag = 0
+      <if test="userName != null" >
+        and a.user_name = #{userName,jdbcType=VARCHAR}
+      </if>
+      <if test="empTypeIdList != null and empTypeIdList.size > 0" >
+        and b.emp_type_id in
+           <foreach collection="empTypeIdList" index="index" item="item" open="(" separator="," close=")">
+	           #{item}
+	       </foreach>
+      </if>
+      <if test="jobStatusList != null and jobStatusList.size > 0"> 
+	        and b.job_status in 
+		    <foreach collection="jobStatusList" index="index" item="item" open="(" separator="," close=")">
+	           #{item}
+	        </foreach>
+	  </if>
+      <if test="companyId != null" >
+        and a.company_id = #{companyId,jdbcType=BIGINT}
+      </if>
+      <if test="employeeId != null" >
+        and a.employee_id = #{employeeId,jdbcType=BIGINT}
+      </if>
+      <if test="isLocked != null" >
+        and a.is_locked = #{isLocked,jdbcType=INTEGER}
+      </if>
+      <if test="lastLoginTime != null" >
+        and a.last_login_time = #{lastLoginTime,jdbcType=TIMESTAMP}
+      </if>
+      <if test="lastLoginIp != null" >
+        and a.last_login_ip = #{lastLoginIp,jdbcType=VARCHAR}
+      </if>
+      <if test="loginErrorTimes != null" >
+        and a.login_error_times = #{loginErrorTimes,jdbcType=INTEGER}
+      </if>
+      <if test="updateTime != null" >
+        and a.update_time = #{updateTime,jdbcType=TIMESTAMP}
+      </if>
+      <if test="updateUser != null" >
+        and a.update_user = #{updateUser,jdbcType=VARCHAR}
+      </if>
+      <if test="remark != null" >
+        and a.remark = #{remark,jdbcType=VARCHAR}
+      </if>
+      <if test="ids != null"> 
+	      and a.id in 
+	      <foreach collection="ids" index="index" item="item" open="(" separator="," close=")">
+               #{item}
+          </foreach>
+	  </if>
+  </select>
+  
+  <select id="getByEmployeeId" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from base_user
+    where del_flag = 0 and employee_id = #{employeeId,jdbcType=BIGINT}
+  </select>
+  
+  <select id="getByCode" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    SELECT a.* FROM base_user a LEFT JOIN base_employee b ON a.employee_id=b.id
+     WHERE b.code=#{code,jdbcType=VARCHAR}  ORDER BY a.id DESC LIMIT 0,1
+  </select>
+
+  <insert id="save" parameterType="com.ule.oa.base.po.User" >
+    insert into base_user (user_name, 
+      company_id, employee_id, 
+      is_locked, last_login_time, last_login_ip, 
+      login_error_times, create_time, create_user, 
+      update_time, update_user, del_flag, 
+      remark)
+    values (#{userName,jdbcType=VARCHAR}, 
+      #{companyId,jdbcType=BIGINT}, #{employeeId,jdbcType=BIGINT}, 
+      #{isLocked,jdbcType=INTEGER}, #{lastLoginTime,jdbcType=TIMESTAMP}, #{lastLoginIp,jdbcType=VARCHAR}, 
+      #{loginErrorTimes,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{createUser,jdbcType=VARCHAR}, 
+      #{updateTime,jdbcType=TIMESTAMP}, #{updateUser,jdbcType=VARCHAR}, #{delFlag,jdbcType=INTEGER}, 
+      #{remark,jdbcType=VARCHAR})
+  </insert>
+  
+  <update id="updateById" parameterType="com.ule.oa.base.po.User" >
+    update base_user
+    <set >
+      <if test="userName != null" >
+        user_name = #{userName,jdbcType=VARCHAR},
+      </if>
+      <if test="companyId != null" >
+        company_id = #{companyId,jdbcType=BIGINT},
+      </if>
+      <if test="employeeId != null" >
+        employee_id = #{employeeId,jdbcType=BIGINT},
+      </if>
+      <if test="isLocked != null" >
+        is_locked = #{isLocked,jdbcType=INTEGER},
+      </if>
+      <if test="lastLoginTime != null" >
+        last_login_time = #{lastLoginTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="lastLoginIp != null" >
+        last_login_ip = #{lastLoginIp,jdbcType=VARCHAR},
+      </if>
+      <if test="loginErrorTimes != null" >
+        login_error_times = #{loginErrorTimes,jdbcType=INTEGER},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="delFlag != null" >
+        del_flag = #{delFlag,jdbcType=INTEGER},
+      </if>
+      <if test="remark != null" >
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+  <update id="updateByEmployeeId" parameterType="com.ule.oa.base.po.User" >
+    update base_user
+    <set >
+      <if test="userName != null" >
+        user_name = #{userName,jdbcType=VARCHAR},
+      </if>
+      <if test="companyId != null" >
+        company_id = #{companyId,jdbcType=BIGINT},
+      </if>
+      <if test="isLocked != null" >
+        is_locked = #{isLocked,jdbcType=INTEGER},
+      </if>
+      <if test="lastLoginTime != null" >
+        last_login_time = #{lastLoginTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="lastLoginIp != null" >
+        last_login_ip = #{lastLoginIp,jdbcType=VARCHAR},
+      </if>
+      <if test="loginErrorTimes != null" >
+        login_error_times = #{loginErrorTimes,jdbcType=INTEGER},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="delFlag != null" >
+        del_flag = #{delFlag,jdbcType=INTEGER},
+      </if>
+      <if test="remark != null" >
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where employee_id = #{employeeId,jdbcType=BIGINT}
+  </update>
+  
+  
+  <select id="getUserManageList" resultType="com.ule.oa.base.po.User" parameterType="com.ule.oa.base.po.User" >
+  	select any_value(bu.id) as id,any_value(be.cn_name) as cnName,any_value(rur.del_flag) as delFlag,any_value(rr.id) as roleId,
+		any_value(be.code) as code ,any_value(bu.update_time) as updateTime,any_value(bu.remark) as remark,any_value(bu.update_user) as updateUser,any_value(bu.is_locked) as isLocked
+	from base_user bu
+	left join base_employee be on be.id = bu.employee_id
+	left join rabc_user_role rur on rur.user_id = bu.id
+	left join rabc_role rr  on rur.role_id = rr.id
+	WHERE bu.del_flag=0 and be.del_flag=0 
+	
+	<if test="empTypeIdList != null and empTypeIdList !=''"><!--员工类型集合-->
+	      and be.emp_type_id in 
+	      <foreach collection="empTypeIdList" index="index" item="item" open="(" separator="," close=")">
+               #{item}
+          </foreach>
+	</if>
+	
+	<if test="code != null and code !=''"><!--用于姓名和编号 一起模糊查询 -->
+		and (be.code like concat('%',#{code,jdbcType=VARCHAR},'%')
+		or be.cn_name like concat('%',#{code,jdbcType=VARCHAR},'%'))
+	</if>
+	<if test="roleStr != null and roleStr !=''"><!--权限查询 -->
+		and rr.name like concat('%',#{roleStr,jdbcType=VARCHAR},'%')
+	</if>
+    <if test="isLocked != null" >
+     and  bu.is_locked = #{isLocked,jdbcType=BIGINT}
+    </if>
+    <if test="id != null and id !=''"><!--userId查询 -->
+		and rur.user_id = #{id,jdbcType=BIGINT}
+	</if>
+	<if test="departId != null and departId !=''"><!--departId查询 -->
+		and rr.depart_id = #{departId,jdbcType=BIGINT}
+	</if>
+	GROUP BY bu.id
+  	ORDER BY CAST(SUBSTRING(be.CODE, 3) AS SIGNED),be.job_status asc
+	<if test="offset != null and limit != null">
+		limit #{offset},#{limit}
+	</if>
+  </select>
+  
+  
+  <select id="getUserManageListCount" resultType="java.lang.Integer" parameterType="com.ule.oa.base.po.User" >
+  	select count(str.id) from (
+  	  select count(bu.id) as id
+  		from base_user bu
+	left join base_employee be on be.id = bu.employee_id
+	left join rabc_user_role rur on rur.user_id = bu.id
+	left join rabc_role rr  on rur.role_id = rr.id
+	WHERE bu.del_flag=0 and be.del_flag=0 
+	
+	<if test="empTypeIdList != null and empTypeIdList !=''"><!--员工类型集合-->
+	      and be.emp_type_id in 
+	      <foreach collection="empTypeIdList" index="index" item="item" open="(" separator="," close=")">
+               #{item}
+          </foreach>
+	</if>
+	
+	<if test="code != null and code !=''"><!--用于姓名和编号 一起模糊查询 -->
+		and (be.code like concat('%',#{code,jdbcType=VARCHAR},'%')
+		or be.cn_name like concat('%',#{code,jdbcType=VARCHAR},'%'))
+	</if>
+	<if test="roleStr != null and roleStr !=''"><!--权限查询 -->
+		and rr.name like concat('%',#{roleStr,jdbcType=VARCHAR},'%')
+	</if>
+	<if test="id != null and id !=''"><!--userId查询 -->
+		and rur.user_id = #{id,jdbcType=BIGINT}
+	</if>
+	<if test="departId != null and departId !=''"><!--departId查询 -->
+		and rr.depart_id = #{departId,jdbcType=BIGINT}
+	</if>
+    <if test="isLocked != null" >
+      and  bu.is_locked = #{isLocked,jdbcType=BIGINT}
+    </if>
+	GROUP BY bu.id
+	)str
+  </select>
+  
+  <select id="getUserInfoById"  resultType="com.ule.oa.base.po.User" parameterType="java.lang.Integer" >
+  select any_value(bu.id) as id,any_value(bu.user_name) as userName,any_value(be.cn_name) as cnName,GROUP_CONCAT(ur.name SEPARATOR ',')as roleStr,
+		any_value(be.code) as code ,any_value(bu.update_time) as updateTime,any_value(bu.remark) as remark,any_value(bu.update_user) as updateUser,any_value(bu.is_locked) as isLocked
+	from base_user bu
+	left JOIN u_user_role uur on bu.id = uur.uid
+	left join u_role ur on ur.id = uur.rid
+	left join base_employee be on be.id = bu.employee_id
+	WHERE bu.del_flag=0 and be.del_flag=0
+	and bu.id = #{id,jdbcType=BIGINT}
+	GROUP BY bu.id
+  </select>
+  	
+  <select id="getDeptIdsByUserId" resultType="java.lang.Long" parameterType="java.lang.Long"  >
+   select ud.did from u_user_dept ud
+	 where ud.del_flag=0 and 
+	 uid=(SELECT id  FROM  base_user  where del_flag=0 and is_locked=0 and  employee_id =  #{employId,jdbcType=BIGINT})
+  </select>
+  
+   <select id="getUserInfoByNameOrCode"  resultType="com.ule.oa.base.po.User" parameterType="com.ule.oa.base.po.User" >
+  	select any_value(bu.id) as id,any_value(bu.user_name) as userName,any_value(be.cn_name) as cnName,GROUP_CONCAT(ur.name SEPARATOR ',')as roleStr,
+		any_value(be.code) as code ,any_value(bu.update_time) as updateTime,any_value(bu.remark) as remark,any_value(bu.update_user) as updateUser,any_value(bu.is_locked) as isLocked
+	from base_user bu
+	left JOIN u_user_role uur on bu.id = uur.uid
+	left join u_role ur on ur.id = uur.rid
+	left join base_employee be on be.id = bu.employee_id
+	WHERE bu.del_flag=0 and be.del_flag=0
+	and (be.code =#{code,jdbcType=VARCHAR}
+	or be.cn_name = #{code,jdbcType=VARCHAR})
+	GROUP BY bu.id
+  </select>
+  
+  <select id="getDeptDataByUser" resultType="java.lang.Long" parameterType="java.lang.Long"  >
+	  	SELECT 
+		  a.employee_id 
+		FROM
+		  base_emp_depart a 
+		WHERE a.del_flag = 0 
+		  AND a.depart_id IN 
+		  (SELECT 
+		    ud.did 
+		  FROM
+		    base_user u 
+		    LEFT JOIN base_employee e 
+		      ON u.employee_id = e.id 
+		    LEFT JOIN u_user_dept ud 
+		      ON ud.uid = u.id 
+		  WHERE u.del_flag = 0 
+		    AND u.is_locked = 0 
+		    AND ud.del_flag = 0 
+		    AND u.employee_id = #{employId,jdbcType=BIGINT} );
+  </select>
+  
+</mapper>

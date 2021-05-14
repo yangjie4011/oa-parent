@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ule.oa.base.mapper.EmpApplicationBusinessDetailMapper" >
+
+  <resultMap id="BaseResultMap" type="com.ule.oa.base.po.EmpApplicationBusinessDetail" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="BUSINESS_ID" property="businessId" jdbcType="BIGINT" />
+    <result column="BUSINESS_DATE" property="businessDate" jdbcType="TIMESTAMP" />
+    <result column="WORK_PLAN" property="workPlan" jdbcType="CLOB" />
+    <result column="WORK_OBJECTIVE" property="workObjective" jdbcType="CLOB" />
+    <result column="WORK_SUMMARY" property="workSummary" jdbcType="CLOB" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="del_flag" property="delFlag" jdbcType="INTEGER" />
+    <result column="VERSION" property="version" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    id, BUSINESS_ID, BUSINESS_DATE, WORK_START_DATE, WORK_END_DATE, WORK_PLAN, WORK_OBJECTIVE,WORK_SUMMARY,create_time, create_user, update_time, update_user,del_flag,VERSION
+  </sql>
+  
+  <select id="getListByCondition" resultMap="BaseResultMap" parameterType="java.lang.Long">
+    select <include refid="Base_Column_List" /> from base_emp_application_business_detail
+    where del_flag = 0
+     <if test="businessId != null">
+    	and BUSINESS_ID = #{businessId,jdbcType=BIGINT}
+     </if>	
+  </select>
+  
+  <insert id="save" parameterType="com.ule.oa.base.po.EmpApplicationBusinessDetail" >
+    insert into base_emp_application_business_detail (
+        BUSINESS_ID,
+        BUSINESS_DATE,
+        WORK_START_DATE,
+        WORK_END_DATE,
+        WORK_PLAN,
+        WORK_OBJECTIVE,
+        create_time,
+        create_user,
+        del_flag,
+        VERSION
+      )
+    values (
+      #{businessId,jdbcType=BIGINT},
+      #{businessDate,jdbcType=TIMESTAMP}, 
+      #{workStartDate,jdbcType=TIMESTAMP},
+      #{workEndDate,jdbcType=TIMESTAMP},
+      #{workPlan,jdbcType=CLOB}, 
+      #{workObjective,jdbcType=CLOB}, 
+      #{createTime,jdbcType=TIMESTAMP}, 
+      #{createUser,jdbcType=VARCHAR},
+      #{delFlag,jdbcType=INTEGER}, 
+      #{version,jdbcType=VARCHAR}
+      )
+  </insert>
+  
+  <insert id="batchSave" parameterType="java.util.List">
+	insert into base_emp_application_business_detail (
+	    BUSINESS_ID,
+        BUSINESS_DATE,
+        WORK_START_DATE,
+        WORK_END_DATE,
+        WORK_PLAN,
+        WORK_OBJECTIVE,
+        create_time,
+        create_user,
+        del_flag,
+        VERSION
+	)
+	select T.* FROM (
+     	<foreach collection="list" item="item" index="index" separator="UNION">
+		SELECT
+			#{item.businessId} as BUSINESS_ID,
+			#{item.businessDate} as BUSINESS_DATE,
+			#{item.workStartDate} as WORK_START_DATE,
+			#{item.workEndDate} as WORK_END_DATE,
+			#{item.workPlan} as WORK_PLAN,
+			#{item.workObjective} as WORK_OBJECTIVE,
+			#{item.createTime} as create_time,
+			#{item.createUser} as create_user,
+			#{item.delFlag} as del_flag,
+			#{item.version} as VERSION
+		FROM DUAL
+	</foreach>
+       ) T
+  </insert>
+  
+  <update id="updateById" parameterType="com.ule.oa.base.po.EmpApplicationBusinessDetail" >
+    update base_emp_application_business_detail
+    <set >
+      <if test="businessDate != null" >
+        BUSINESS_DATE = #{number,jdbcType=TIMESTAMP},
+      </if>
+      <if test="workPlan != null and workPlan!=''" >
+        WORK_PLAN = #{workPlan,jdbcType=CLOB},
+      </if>
+      <if test="workObjective != null and workObjective!=''" >
+        WORK_OBJECTIVE = #{workObjective,jdbcType=CLOB},
+      </if>
+      <if test="workSummary != null and workSummary!=''" >
+        WORK_SUMMARY = #{workSummary,jdbcType=CLOB},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR}
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+     <if test="businessId != null">
+    	and BUSINESS_ID = #{businessId,jdbcType=BIGINT}
+     </if>	
+  </update>
+  
+  <update id="delete" parameterType="com.ule.oa.base.po.EmpApplicationBusinessDetail" >
+    update base_emp_application_business_detail set del_flag=#{delFlag,jdbcType=NUMERIC}
+     <if test="updateTime != null" >
+       ,update_time = #{updateTime,jdbcType=TIMESTAMP}
+     </if>
+     <if test="updateUser != null" >
+       ,update_user = #{updateUser,jdbcType=VARCHAR}
+     </if>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+</mapper>

@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ule.oa.base.mapper.DailyHeathSignMapper" >
+  
+  <select id="getByEmployeeIdAndSignDate" resultType="com.ule.oa.base.po.tbl.DailyHeathSignTbl">
+    select id,type,sign_date as signDate,employee_id as employeeId,question_num as questionNum,
+    question as question,answer_num as answerNum,answer as answer from daily_heath_sign 
+    where type = #{type} and employee_id = #{employeeId}
+    <if test="signDate != null" >
+        and sign_date=#{signDate,jdbcType=DATE}
+    </if>
+  </select>
+  
+  <select id="getSignEmployeeIdByDate" resultType="java.lang.Long">
+	   SELECT DISTINCT 
+		  a.employee_id 
+		FROM
+		  daily_heath_sign a 
+		  LEFT JOIN base_employee b 
+		    ON a.employee_id = b.id 
+		WHERE a.type = 2 
+		  AND a.sign_date = #{signDate,jdbcType=DATE} 
+  </select>
+  
+  <select id="getSignEmployeeIdByDateAndDepart" resultType="java.lang.Long">
+	   SELECT DISTINCT 
+		  a.id
+		FROM
+		  base_employee a 
+		  LEFT JOIN daily_heath_sign b 
+		    ON a.id = b.employee_id 
+		  LEFT JOIN base_emp_depart c 
+		    ON a.id = c.employee_id 
+		  LEFT JOIN base_depart d 
+		    ON d.id = c.depart_id 
+		WHERE b.type = 2 
+		  AND b.sign_date = #{signDate,jdbcType=DATE}  
+		  AND a.job_status IN(0,2)
+		  AND a.del_flag=0
+		  AND c.del_flag=0
+		  AND d.del_flag=0
+		  AND d.id = #{departId} 
+  </select>
+  
+  <select id="getNeedNoticeLeader" resultType="java.lang.Long">
+	   SELECT 
+		  a.id
+		FROM
+		  base_employee a 
+		  LEFT JOIN base_emp_depart b 
+		    ON a.id = b.employee_id 
+		  LEFT JOIN base_depart c 
+		    ON b.depart_id = c.id 
+		WHERE c.id = #{departId} 
+		  AND position_seq LIKE '%总监%' 
+  </select>
+  
+  <select id="getBaseInfo" resultType="Map">
+	  SELECT  
+	 DISTINCT  
+	    b.id,
+	    b.emp_type_id,
+	    a.type_c_name,
+	    b.code,
+	    b.cn_name as cnName,
+	    d.name as departName,
+	    b.mobile,
+	    b.work_province as workProvince,
+	    b.work_city as workCity
+	  FROM
+	    base_employee b 
+	    LEFT JOIN base_emp_depart c 
+	      ON c.employee_id = b.id 
+	    LEFT JOIN base_depart d ON c.depart_id = d.id 
+	    LEFT JOIN base_emp_type a ON b.emp_type_id = a.id  
+	where b.del_flag=0 and b.job_status in(0,2) and c.del_flag=0 and d.del_flag=0 and d.code !='140'
+	ORDER BY b.emp_type_id,CAST(SUBSTRING(b.CODE, 3) AS SIGNED)
+  </select>
+  
+  <select id="getAnswerByTypeAndSignDate" resultType="com.ule.oa.base.po.tbl.DailyHeathSignTbl">
+	  SELECT  
+	   DISTINCT employee_id as employeeId,
+	   answer as answer,
+	   answer_num as answerNum
+	  FROM
+	    daily_heath_sign 
+	where type=#{type} 
+	<if test="employeeIdList != null and employeeIdList.size > 0" >
+       and employee_id  in
+           <foreach collection="employeeIdList" index="index" item="item" open="(" separator="," close=")">
+	           #{item}
+	       </foreach>
+     </if>
+     <if test="signDate != null" >
+        and sign_date=#{signDate,jdbcType=DATE}
+    </if>
+  </select>
+
+  
+  <insert id="batchSave" parameterType="java.util.List">
+	insert into daily_heath_sign (
+	    type,
+        sign_date,
+        employee_id,
+        question_num,
+        question,
+        answer_num,
+        answer,
+        create_time,
+        create_user
+	)
+	select T.* FROM (
+     	<foreach collection="list" item="item" index="index" separator="UNION">
+		SELECT
+			#{item.type} as type,
+			#{item.signDate} as sign_date,
+			#{item.employeeId} as employee_id,
+			#{item.questionNum} as question_num,
+			#{item.question} as question,
+			#{item.answerNum} as answer_num,
+			#{item.answer} as answer,
+			#{item.createTime} as create_time,
+			#{item.createUser} as create_user
+		FROM DUAL
+	</foreach>
+       ) T
+  </insert>
+  
+</mapper>

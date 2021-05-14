@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ule.oa.base.mapper.SendMailMapper" >
+
+  <resultMap id="BaseResultMap" type="com.ule.oa.base.po.SendMail" >
+    <id column="ID" property="id" jdbcType="BIGINT" />
+    <result column="RECEIVER" property="receiver" jdbcType="VARCHAR" />
+    <result column="CARBON_COPY" property="carbonCopy" jdbcType="VARCHAR" />
+    <result column="BLIND_CARBON_COPY" property="blindCarbonCopy" jdbcType="VARCHAR" />
+    <result column="SUBJECT" property="subject" jdbcType="VARCHAR" />
+    <result column="IS_SAVE" property="isSave" jdbcType="INTEGER" />
+    <result column="IS_RECEIPT" property="isReceipt" jdbcType="INTEGER" />
+    <result column="IS_PRIORITY" property="isPriority" jdbcType="INTEGER" />
+    <result column="OA_MAIL" property="oaMail" jdbcType="INTEGER" />
+    <result column="TEXT" property="text" jdbcType="VARCHAR" />
+    <result column="NICK_NAME" property="nickName" jdbcType="VARCHAR" />
+    <result column="SEND_STATUS" property="sendStatus" jdbcType="INTEGER" />
+    <result column="VERSION" property="version" jdbcType="BIGINT" />
+    <result column="DEL_FLAG" property="delFlag" jdbcType="INTEGER" />
+    <result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="CREATE_USER" property="createUser" jdbcType="VARCHAR" />
+    <result column="UPDATE_TIME" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="UPDATE_USER" property="updateUser" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    ID, RECEIVER, CARBON_COPY, BLIND_CARBON_COPY, SUBJECT, IS_SAVE, IS_RECEIPT, IS_PRIORITY, OA_MAIL, TEXT, NICK_NAME, SEND_STATUS,
+    VERSION, DEL_FLAG, CREATE_TIME, CREATE_USER, UPDATE_TIME, UPDATE_USER
+  </sql>
+  
+  <select id="getById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from base_send_mail
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  
+  <select id="getListByCondition" resultMap="BaseResultMap" parameterType="com.ule.oa.base.po.SendMail" >
+    select 
+    <include refid="Base_Column_List" />
+    from base_send_mail
+    where del_flag = 0
+	    <if test="id != null" >
+	        and ID = #{id,jdbcType=BIGINT}
+	    </if>
+	    <if test="receiver != null" >
+	        and RECEIVER = #{receiver,jdbcType=VARCHAR}
+	    </if>
+	    <if test="carbonCopy != null" >
+	        and CARBON_COPY = #{carbonCopy,jdbcType=VARCHAR}
+	    </if>
+	    <if test="blindCarbonCopy != null" >
+	        and BLIND_CARBON_COPY = #{blindCarbonCopy,jdbcType=VARCHAR}
+	    </if>
+	    <if test="subject != null" >
+	        and SUBJECT = #{subject,jdbcType=VARCHAR}
+	    </if>
+	    <if test="isSave != null" >
+	        and IS_SAVE = #{isSave,jdbcType=INTEGER}
+	    </if>
+	    <if test="isReceipt != null" >
+	        and IS_RECEIPT = #{isReceipt,jdbcType=INTEGER}
+	    </if>
+	    <if test="isPriority != null" >
+	        and IS_PRIORITY = #{isPriority,jdbcType=INTEGER}
+	    </if>
+	    <if test="oaMail != null" >
+	        and OA_MAIL = #{oaMail,jdbcType=INTEGER}
+	    </if>
+	    <if test="text != null" >
+	        and TEXT = #{text,jdbcType=VARCHAR}
+	    </if>
+	    <if test="nickName != null" >
+	        and NICK_NAME = #{nickName,jdbcType=VARCHAR}
+	    </if>
+	    <if test="sendStatus != null" >
+	        and SEND_STATUS = #{sendStatus,jdbcType=INTEGER}
+	    </if>
+	    <if test="createTimeStart != null" >
+	        and CREATE_TIME &gt;= #{createTimeStart,jdbcType=TIMESTAMP}
+	    </if>
+	    
+  </select>
+  
+  <!-- 新增 -->
+  <insert id="save" useGeneratedKeys="true" keyProperty="id" parameterType="com.ule.oa.base.po.SendMail">  
+      insert into base_send_mail(
+		RECEIVER,      	
+		CARBON_COPY,		
+		BLIND_CARBON_COPY,
+		SUBJECT,          
+		IS_SAVE,			
+		IS_RECEIPT,       
+		IS_PRIORITY,		
+		OA_MAIL,          
+		TEXT,			
+		NICK_NAME,	
+		SEND_STATUS,	
+		VERSION,          
+		DEL_FLAG,         
+		CREATE_TIME,      
+		CREATE_USER      
+      ) values
+      (
+        #{receiver,jdbcType=BIGINT},
+        #{carbonCopy,jdbcType=VARCHAR},
+        #{blindCarbonCopy,jdbcType=VARCHAR},
+        #{subject,jdbcType=VARCHAR},
+        #{isSave,jdbcType=INTEGER},
+        #{isReceipt,jdbcType=INTEGER},
+        #{isPriority,jdbcType=INTEGER},
+        #{oaMail,jdbcType=INTEGER},
+        #{text,jdbcType=VARCHAR},
+        #{nickName,jdbcType=VARCHAR},
+        #{sendStatus,jdbcType=INTEGER},
+        #{version,jdbcType=INTEGER},
+        #{delFlag,jdbcType=INTEGER},
+        #{createTime,jdbcType=TIMESTAMP},
+        #{createUser,jdbcType=VARCHAR}
+      )  
+    </insert>
+    
+    <!-- 批量信息 -->
+	<insert id="batchSave" parameterType="java.util.List" >
+   		insert into base_send_mail 
+   		(       
+			RECEIVER,      	
+			CARBON_COPY,		
+			BLIND_CARBON_COPY,
+			SUBJECT,          
+			IS_SAVE,			
+			IS_RECEIPT,       
+			IS_PRIORITY,		
+			OA_MAIL,          
+			TEXT,			
+			NICK_NAME,	
+			SEND_STATUS,	
+			VERSION,          
+			DEL_FLAG,         
+			CREATE_TIME,      
+			CREATE_USER 
+	    )
+        select T.* FROM (
+      	<foreach collection="list" item="item" index="index" separator="UNION">
+			SELECT
+				#{item.receiver,jdbcType=BIGINT} as RECEIVER,
+		        #{item.carbonCopy,jdbcType=VARCHAR} as CARBON_COPY,
+		        #{item.blindCarbonCopy,jdbcType=VARCHAR} as BLIND_CARBON_COPY,
+		        #{item.subject,jdbcType=VARCHAR} as SUBJECT,
+		        #{item.isSave,jdbcType=INTEGER} as IS_SAVE,
+		        #{item.isReceipt,jdbcType=INTEGER} as IS_RECEIPT,
+		        #{item.isPriority,jdbcType=INTEGER} as IS_PRIORITY,
+		        #{item.oaMail,jdbcType=INTEGER} as OA_MAIL,
+		        #{item.text,jdbcType=VARCHAR} as TEXT,
+		        #{item.nickName,jdbcType=VARCHAR} as NICK_NAME,
+		        #{item.sendStatus,jdbcType=INTEGER} as SEND_STATUS,
+		        #{item.version,jdbcType=INTEGER} as VERSION,
+		        #{item.delFlag,jdbcType=INTEGER} as DEL_FLAG,
+		        #{item.createTime,jdbcType=TIMESTAMP} as CREATE_TIME,
+		        #{item.createUser,jdbcType=VARCHAR} as CREATE_USER
+			FROM DUAL
+		</foreach>
+      ) T
+    </insert>
+  
+  <!-- 修改 -->
+  <update id="updateById" parameterType="com.ule.oa.base.po.SendMail" >
+    update base_send_mail
+    <set >
+      <if test="receiver != null" >
+        RECEIVER = #{receiver,jdbcType=VARCHAR},
+      </if>
+      <if test="carbonCopy != null" >
+        CARBON_COPY = #{carbonCopy,jdbcType=VARCHAR},
+      </if>
+      <if test="blindCarbonCopy != null" >
+        BLIND_CARBON_COPY = #{blindCarbonCopy,jdbcType=VARCHAR},
+      </if>
+      <if test="subject != null" >
+        SUBJECT = #{subject,jdbcType=VARCHAR},
+      </if>
+      <if test="isSave != null" >
+        IS_SAVE = #{isSave,jdbcType=INTEGER},
+      </if>
+      <if test="isReceipt != null" >
+        IS_RECEIPT = #{isReceipt,jdbcType=INTEGER},
+      </if>
+      <if test="isPriority != null" >
+        IS_PRIORITY = #{isPriority,jdbcType=INTEGER},
+      </if>
+      <if test="oaMail != null" >
+        OA_MAIL = #{oaMail,jdbcType=INTEGER},
+      </if>
+      <if test="text != null" >
+        TEXT = #{text,jdbcType=VARCHAR},
+      </if>
+      <if test="nickName != null" >
+        NICK_NAME = #{nickName,jdbcType=VARCHAR},
+      </if>
+      <if test="sendStatus != null" >
+        SEND_STATUS = #{sendStatus,jdbcType=INTEGER},
+      </if>
+      <if test="delFlag != null" >
+        DEL_FLAG = #{delFlag,jdbcType=INTEGER},
+      </if>
+      <if test="updateTime != null" >
+        UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUser != null" >
+        UPDATE_USER = #{updateUser,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+</mapper>

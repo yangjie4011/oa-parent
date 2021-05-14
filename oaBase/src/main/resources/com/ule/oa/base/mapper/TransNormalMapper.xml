@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ule.oa.base.mapper.TransNormalMapper" >
+  <resultMap id="BaseResultMap" type="com.ule.oa.base.po.tbl.TransNormalTbl" >
+    <id column="autoid" property="autoid" jdbcType="INTEGER" />
+    <result column="evttime" property="evttime" jdbcType="TIMESTAMP" />
+    <result column="lineid" property="lineid" jdbcType="INTEGER" />
+    <result column="unitid" property="unitid" jdbcType="INTEGER" />
+    <result column="doorid" property="doorid" jdbcType="INTEGER" />
+    <result column="cardzn" property="cardzn" jdbcType="INTEGER" />
+    <result column="cardid" property="cardid" jdbcType="INTEGER" />
+    <result column="userid" property="userid" jdbcType="INTEGER" />
+    <result column="evtcode" property="evtcode" jdbcType="INTEGER" />
+    <result column="hasphoto" property="hasphoto" jdbcType="BIT" />
+    <result column="cardno" property="cardno" jdbcType="VARCHAR" />
+    <result column="cardHex" property="cardhex" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <resultMap id="TransNormalMap" type="com.ule.oa.base.po.TransNormal" >
+    <id column="autoid" property="autoid" jdbcType="INTEGER" />
+    <result column="evttime" property="evttime" jdbcType="TIMESTAMP" />
+    <result column="userid" property="userid" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="oa_emp_id" property="oaEmpId" jdbcType="BIGINT" />
+  </resultMap>
+  
+  <sql id="TransNormal_List" >
+    o.autoid, o.evttime, o.userid, u.name, u.oa_emp_id
+  </sql>
+  
+  <select id="getTotalRows" resultType="INTEGER" parameterType="com.ule.oa.base.po.TransNormal" >
+    select 
+    count(0) total
+    from trans_normal o 
+	inner join users u on (u.userid=o.userid and u.deptid=1)<!-- deptid=1是考勤打卡  -->
+	<where>
+	      <if test="autoid != null" >
+	        and o.autoid > #{autoid,jdbcType=INTEGER}
+	      </if>
+	      <if test="startTime != null" >
+	        and o.evttime &gt;= #{startTime,jdbcType=TIMESTAMP}
+	      </if>
+	      <if test="endTime != null" >
+	        and o.evttime &lt;= #{endTime,jdbcType=TIMESTAMP}
+	      </if>
+	</where>
+  </select>
+  
+  <select id="getTransNormalList" resultMap="TransNormalMap" parameterType="com.ule.oa.base.po.TransNormal" >
+   SELECT t.autoid, t.evttime, t.userid, t.name, t.oa_emp_id
+   FROM (
+	    select 
+	    <include refid="TransNormal_List" />,
+		ROW_NUMBER() OVER(ORDER BY [autoid]) AS num
+	    from trans_normal o 
+	    inner join users u on (u.userid=o.userid and u.deptid=1)<!-- deptid=1是考勤打卡  -->
+		<where>
+		      <if test="autoid != null" >
+		        and o.autoid > #{autoid,jdbcType=INTEGER}
+		      </if>
+		      <if test="startTime != null" >
+		        and o.evttime &gt;= #{startTime,jdbcType=TIMESTAMP}
+		      </if>
+		      <if test="endTime != null" >
+		        and o.evttime &lt;= #{endTime,jdbcType=TIMESTAMP}
+		      </if>
+		</where>
+   ) AS t
+   WHERE t.num &gt; #{offset,jdbcType=INTEGER} AND t.num &lt;= #{limit,jdbcType=INTEGER};
+  </select>
+ 
+  <select id="getListByCardId" resultType="com.ule.oa.base.po.TransNormal" parameterType="com.ule.oa.base.po.TransNormal" >
+        select o.evttime as evttime from trans_normal o left join card_user c on o.userid=c.userid where 
+            c.cardid= #{cardid,jdbcType=INTEGER} and o.evttime &gt;= #{startTime,jdbcType=TIMESTAMP} and o.evttime &lt;= #{endTime,jdbcType=TIMESTAMP}
+  </select>
+  
+</mapper>
